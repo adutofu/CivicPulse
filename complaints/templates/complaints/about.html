@@ -1,0 +1,93 @@
+{% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .hero-mini {
+        background: linear-gradient(135deg, var(--primary, #D42F1F) 0%, var(--secondary, #1B4B3E) 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .hero-mini h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+    .mission-card {
+        border-left: 4px solid var(--primary, #D42F1F);
+        transition: transform 0.2s;
+    }
+    .mission-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<div class="hero-mini">
+    <div class="container">
+        <h1>About CivicPulse</h1>
+        <p class="lead">Bridging the gap between citizens and government through transparency and accountability.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-8 mx-auto text-center">
+            <h2>Our Mission</h2>
+            <p class="lead">To empower every Nigerian citizen to report civic issues and hold government accountable, while providing government with the tools to respond effectively and transparently.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card mission-card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem;">📢</div>
+                    <h4 class="card-title mt-2">Report</h4>
+                    <p class="card-text">Easily report bad roads, broken lights, flooding, waste, corruption, and water issues with photo and location.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mission-card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem;">👀</div>
+                    <h4 class="card-title mt-2">Track</h4>
+                    <p class="card-text">Follow the status of your reports – Reported, Under Review, In Progress, Resolved – and see government responses.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mission-card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div style="font-size: 2.5rem;">🏆</div>
+                    <h4 class="card-title mt-2">Transform</h4>
+                    <p class="card-text">Drive change through transparency scores, community upvotes, and documented government action.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h3>Our Story</h3>
+                    <p>CivicPulse was founded in 2025 by a team of civic technologists who saw the need for a simple, transparent way for Nigerians to report everyday problems. Instead of waiting for government to notice, citizens can now document issues and start a public conversation.</p>
+                    <p>We believe that accountability begins with data. Every report, every response, every resolution is tracked and visible. This creates a virtuous cycle – government sees what matters, citizens see action.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h3>Our Vision</h3>
+                    <p>To become the default civic engagement platform for Nigerian cities – a digital common where every citizen's voice is heard and every government action is transparent.</p>
+                    <p>We aim to expand to all 36 states, integrate with local government systems, and provide real‑time dashboards for officials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

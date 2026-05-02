@@ -1,0 +1,25 @@
+{% extends 'complaints/base.html' %}
+{% block content %}
+<h2>Update Complaint #{{ complaint.id }}</h2>
+<p><strong>Category:</strong> {{ complaint.get_category_display }}</p>
+<p><strong>Original Description:</strong> {{ complaint.description }}</p>
+<p><strong>Current Status:</strong> {{ complaint.get_status_display }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="status" class="form-label">Change Status</label>
+        <select name="status" id="status" class="form-select">
+            {% for value, label in complaint.STATUS_CHOICES %}
+                <option value="{{ value }}" {% if complaint.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="response" class="form-label">Government Response (optional)</label>
+        <textarea name="response" id="response" rows="4" class="form-control">{{ complaint.government_response }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

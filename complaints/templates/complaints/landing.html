@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse – Citizen Engagement Platform</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #D42F1F;      /* red – action, urgency */
+            --secondary: #1B4B3E;    /* dark green – trust, government */
+            --accent: #F5A623;       /* gold – warning, highlight */
+            --dark: #1A1A1A;
+            --light: #F7F7F7;
+            --gray: #6B7280;
+            --gray-light: #E5E7EB;
+            --border-radius: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            color: var(--dark);
+            background-color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ===== HEADER & NAVIGATION ===== */
+        header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #0f3630 100%);
+            color: white;
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: var(--transition);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-login:hover {
+            background: white;
+            color: var(--secondary);
+        }
+
+        .btn-signup {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-signup:hover {
+            background: #e8941f;
+            transform: translateY(-2px);
+        }
+
+        /* ===== JUMBOTRON ===== */
+        .jumbotron {
+            background: linear-gradient(135deg, var(--primary) 0%, #a61e14 50%, var(--secondary) 100%);
+            color: white;
+            padding: 8rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .jumbotron::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .jumbotron::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 350px;
+            height: 350px;
+            background: rgba(245, 166, 35, 0.08);
+            border-radius: 50%;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+        }
+
+        .jumbotron-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .jumbotron h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -2px;
+        }
+
+        .jumbotron p {
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+        }
+
+        .jumbotron-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 0.9rem 2.3rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        main {
+            padding: 4rem 0;
+        }
+
+        /* Weather section */
+        .weather-section {
+            background: linear-gradient(135deg, #2c5f4a 0%, #1B4B3E 100%);
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            color: white;
+            margin-bottom: 4rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .weather-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .weather-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .weather-item-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .weather-item-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .weather-current {
+            text-align: center;
+        }
+
+        .weather-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .weather-temp {
+            font-size: 3rem;
+            font-weight: 900;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .weather-condition {
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Section titles */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 2.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* News / Updates grid */
+        .updates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .update-card {
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+        }
+
+        .update-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .update-card-icon {
+            background: var(--secondary);
+            padding: 2rem;
+            text-align: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .update-card-content {
+            padding: 1.5rem;
+        }
+
+        .update-category {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .update-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 4rem 0 2rem;
+            border-top: 3px solid var(--primary);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 2rem;
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            text-decoration: none;
+            color: white;
+        }
+
+        .social-links a:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; }
+            nav { justify-content: center; }
+            .jumbotron h1 { font-size: 2.2rem; }
+            .weather-section { grid-template-columns: 1fr; }
+            .weather-details { grid-template-columns: repeat(3, 1fr); }
+            .updates-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .weather-details { grid-template-columns: 1fr; }
+            .jumbotron-buttons { flex-direction: column; }
+            .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-container">
+        <div class="logo">
+            <div class="logo-icon">📢</div>
+            CivicPulse
+        </div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#updates">Updates</a>
+            <a href="{% url 'about' %}">About</a>
+            <a href="{% url 'contact' %}">Contact</a>
+        </nav>
+        <div class="nav-buttons">
+            <a href="{% url 'login' %}" class="btn-login">Login</a>
+            <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- Hero / Jumbotron -->
+    <section class="jumbotron" id="home">
+        <div class="jumbotron-content">
+            <h1>Report. Track. Transform Your Community.</h1>
+            <p>Citizen voices meet government action – bad roads, broken lights, flooding, waste, corruption. Your report starts the change.</p>
+            <div class="jumbotron-buttons">
+                <a href="{% url 'signup' %}" class="btn-primary">Start Reporting</a>
+                <a href="{% url 'login' %}" class="btn-secondary">Government Login</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Weather & air quality (live from API) -->
+        <section class="weather-section">
+            <div class="weather-current">
+                <div class="weather-icon">🌤️</div>
+                <div class="weather-temp" id="temp">28°C</div>
+                <div class="weather-condition" id="condition">Partly Cloudy</div>
+                <p style="margin-top: 0.5rem; font-size: 0.95rem;">Abuja, Nigeria</p>
+            </div>
+            <div class="weather-info">
+                <h2>Today's Weather</h2>
+                <div class="weather-details">
+                    <div class="weather-item"><div class="weather-item-label">💧 Humidity</div><div class="weather-item-value" id="humidity">72%</div></div>
+                    <div class="weather-item"><div class="weather-item-label">💨 Wind Speed</div><div class="weather-item-value" id="wind">12 km/h</div></div>
+                    <div class="weather-item"><div class="weather-item-label">🌡️ Feels Like</div><div class="weather-item-value" id="feels">32°C</div></div>
+                    <div class="weather-item"><div class="weather-item-label">👁️ Visibility</div><div class="weather-item-value" id="visibility">10 km</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Civic Updates (instead of generic news) -->
+        <section id="updates">
+            <h2 class="section-title">Latest Civic Updates</h2>
+            <p class="section-subtitle">Recent reports, government responses & community wins</p>
+            <div class="updates-grid">
+                <div class="update-card">
+                    <div class="update-card-icon">🛣️</div>
+                    <div class="update-card-content">
+                        <span class="update-category">Infrastructure</span>
+                        <div class="update-title">Repairs begin on Wuse Market road</div>
+                        <p>Ministry of Works announced a 3‑week repair schedule. Residents reported this issue via CivicPulse – 45 upvotes.</p>
+                    </div>
+                </div>
+                <div class="update-card">
+                    <div class="update-card-icon">💡</div>
+                    <div class="update-card-content">
+                        <span class="update-category">Street Lights</span>
+                        <div class="update-title">LED replacement project approved</div>
+                        <p>Garki district to receive 200 new solar‑powered streetlights. Completion by June.</p>
+                    </div>
+                </div>
+                <div class="update-card">
+                    <div class="update-card-icon">🗑️</div>
+                    <div class="update-card-content">
+                        <span class="update-category">Waste Management</span>
+                        <div class="update-title">New waste collection schedule</div>
+                        <p>LAWMA announces twice‑weekly pickup for Phase 1 & 2. Download the updated calendar.</p>
+                    </div>
+                </div>
+                <div class="update-card">
+                    <div class="update-card-icon">📊</div>
+                    <div class="update-card-content">
+                        <span class="update-category">Transparency Score</span>
+                        <div class="update-title">Government response rate: 78%</div>
+                        <p>Last month: 342 reports, 267 resolved or in progress. Keep reporting!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4>CivicPulse</h4>
+            <p>Empowering citizens, enabling accountable governance. Report issues, track progress, and build better neighbourhoods together.</p>
+            <div class="social-links">
+                <a href="#">𝕏</a>
+                <a href="#">f</a>
+                <a href="#">📷</a>
+                <a href="#">▶</a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'contact' %}">Contact</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Use</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h4>For Government</h4>
+            <ul>
+                <li><a href="{% url 'login' %}">Officer Login</a></li>
+                <li><a href="#">Request Demo</a></li>
+                <li><a href="#">API for Agencies</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 CivicPulse – Built for Nigerian communities | <a href="#" style="color:#999;">Back to top ↑</a></p>
+    </div>
+</footer>
+
+<script>
+    // Live weather for Abuja, Nigeria (Open-Meteo)
+    async function fetchWeather() {
+        try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=9.0765&longitude=7.3986&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&temperature_unit=celsius');
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            const current = data.current;
+            document.getElementById('temp').innerText = Math.round(current.temperature_2m) + '°C';
+            document.getElementById('humidity').innerText = current.relative_humidity_2m + '%';
+            document.getElementById('wind').innerText = Math.round(current.wind_speed_10m) + ' km/h';
+            document.getElementById('feels').innerText = Math.round(current.temperature_2m - 2) + '°C';
+            const code = current.weather_code;
+            let icon = '🌤️', cond = 'Partly Cloudy';
+            if (code === 0) { icon = '☀️'; cond = 'Clear Sky'; }
+            else if (code === 1 || code === 2) { icon = '🌤️'; cond = 'Mostly Clear'; }
+            else if (code === 3) { icon = '☁️'; cond = 'Overcast'; }
+            else if (code >= 45 && code <= 48) { icon = '🌫️'; cond = 'Foggy'; }
+            else if (code >= 51 && code <= 67) { icon = '🌧️'; cond = 'Rainy'; }
+            else if (code >= 80 && code <= 82) { icon = '⛈️'; cond = 'Heavy Rain'; }
+            else if (code >= 85 && code <= 86) { icon = '🌨️'; cond = 'Showers'; }
+            document.querySelector('.weather-icon').innerText = icon;
+            document.getElementById('condition').innerText = cond;
+        } catch (err) {
+            console.log('Using default weather data');
+        }
+    }
+    window.addEventListener('load', fetchWeather);
+</script>
+</body>
+</html>
