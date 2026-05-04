@@ -6,6 +6,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from .models import Complaint, Profile
 from .forms import ComplaintForm
+from decimal import Decimal
 
 # ---------- Public Pages ----------
 def landing_page(request):
@@ -62,8 +63,10 @@ def report_complaint(request):
         if form.is_valid():
             complaint = form.save(commit=False)
             complaint.citizen = request.user
-            complaint.latitude = request.POST.get('latitude')
-            complaint.longitude = request.POST.get('longitude')
+            lat_val = request.POST.get('latitude')
+            lng_val = request.POST.get('longitude')
+            complaint.latitude = Decimal(lat_val) if lat_val and lat_val.strip() else None
+            complaint.longitude = Decimal(lng_val) if lng_val and lng_val.strip() else None
             complaint.save()
             return redirect('dashboard')
     else:

@@ -27,7 +27,7 @@ class Complaint(models.Model):
     citizen = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     description = models.TextField()
-    photo = models.ImageField(upload_to='complaints/')
+    photo = models.ImageField(upload_to='complaints/', blank=True, null=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     address_text = models.CharField(max_length=255, blank=True)
