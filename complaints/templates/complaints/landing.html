@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CivicPulse – Interactive Citizen Dashboard</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Leaflet CSS + JS for interactive heatmap -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
+{% extends 'complaints/base.html' %}
+
+{% block title %}CivicPulse – Interactive Citizen Dashboard{% endblock %}
+
+{% block extra_css %}
     <style>
         * {
             margin: 0;
@@ -46,7 +37,6 @@
             overflow-x: hidden;
         }
 
-        /* Glassmorphism panels */
         .glass-card {
             background: rgba(18, 25, 45, 0.65);
             backdrop-filter: blur(12px);
@@ -55,136 +45,6 @@
             box-shadow: var(--shadow-md);
         }
 
-        header {
-            background: rgba(11, 15, 26, 0.92);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0, 212, 255, 0.25);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 0.8rem 0;
-        }
-
-        .header-container {
-            max-width: 1440px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .logo-svg svg {
-            height: 52px;
-            width: auto;
-            filter: drop-shadow(0 2px 6px rgba(0,212,255,0.3));
-        }
-
-        nav {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        nav a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-        }
-
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--brand-cyan);
-            transition: width 0.3s ease;
-        }
-
-        nav a:hover::after { width: 100%; }
-        nav a:hover { color: var(--white); }
-
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn-login, .btn-signup {
-            padding: 0.55rem 1.5rem;
-            border-radius: 40px;
-            font-weight: 600;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-login {
-            background: transparent;
-            border: 1.5px solid var(--brand-cyan);
-            color: var(--brand-cyan);
-        }
-        .btn-login:hover {
-            background: var(--brand-cyan);
-            color: var(--dark-bg);
-            box-shadow: 0 0 12px var(--brand-cyan-glow);
-        }
-
-        .btn-signup {
-            background: var(--brand-cyan);
-            color: #0B0F1A;
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,212,255,0.3);
-        }
-        .btn-signup:hover {
-            background: var(--brand-cyan-deep);
-            transform: translateY(-2px);
-        }
-
-        /* Jumbotron with pulse animation on main button */
-        .jumbotron {
-            background: radial-gradient(ellipse at 80% 30%, #0A1428 0%, #03060C 100%);
-            padding: 7rem 2rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
-        }
-        .jumbotron-content {
-            max-width: 900px;
-            margin: 0 auto;
-            animation: fadeUp 0.7s ease-out;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(35px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .jumbotron h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3.6rem;
-            font-weight: 800;
-            margin-bottom: 1.2rem;
-            background: linear-gradient(135deg, #FFFFFF 30%, var(--brand-cyan) 80%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-        .jumbotron p {
-            font-size: 1.2rem;
-            margin-bottom: 2.5rem;
-            color: var(--text-secondary);
-        }
-        .jumbotron-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
         .btn-primary {
             background: var(--brand-cyan);
             color: #0B0F1A;
@@ -197,7 +57,6 @@
             transition: 0.2s;
             position: relative;
         }
-        /* Pulse animation */
         .btn-primary::after {
             content: '';
             position: absolute;
@@ -240,13 +99,49 @@
             transform: translateY(-2px);
         }
 
+        .jumbotron {
+            background: radial-gradient(ellipse at 80% 30%, #0A1428 0%, #03060C 100%);
+            padding: 7rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        .jumbotron-content {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeUp 0.7s ease-out;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(35px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .jumbotron h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.6rem;
+            font-weight: 800;
+            margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #FFFFFF 30%, var(--brand-cyan) 80%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .jumbotron p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            color: var(--text-secondary);
+        }
+        .jumbotron-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
-        /* Stats counters row */
         .stats-row {
             display: flex;
             justify-content: space-between;
@@ -276,7 +171,6 @@
             margin-top: 0.5rem;
         }
 
-        /* Interactive Heatmap (mini map) */
         .map-teaser {
             margin-bottom: 3rem;
             border-radius: var(--radius-lg);
@@ -291,7 +185,6 @@
             background: #0A0F1F;
         }
 
-        /* How it works stepper */
         .steps-container {
             display: flex;
             justify-content: space-between;
@@ -324,7 +217,6 @@
             color: var(--brand-cyan);
         }
 
-        /* Community Leaderboard */
         .leaderboard {
             background: rgba(18, 25, 45, 0.7);
             backdrop-filter: blur(8px);
@@ -357,7 +249,6 @@
             color: var(--text-muted);
         }
 
-        /* Existing weather panel & cards (updated glassmorphism) */
         .weather-panel {
             background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(12px);
@@ -384,40 +275,10 @@
             transform: translateY(-6px);
             border-color: var(--brand-cyan);
         }
-        /* Keep existing weather grid styles */
         .weather-grid { display: grid; grid-template-columns: 1.2fr 2fr; gap: 2rem; }
         .weather-current { background: rgba(0,212,255,0.05); border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; }
         .forecast-cards { display: flex; gap: 1.5rem; flex-wrap: wrap; }
         .forecast-card { background: rgba(0,212,255,0.05); border-radius: var(--radius-md); padding: 1.2rem; flex: 1; min-width: 150px; text-align: center; }
-
-        /* Footer unchanged */
-        footer {
-            background: #060A12;
-            border-top: 2px solid var(--brand-cyan);
-            margin-top: 3rem;
-            padding: 3.5rem 0 2rem;
-        }
-        .footer-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 2.5rem;
-        }
-        .footer-section h4 { color: var(--brand-cyan); margin-bottom: 1rem; }
-        .footer-section a { color: var(--text-secondary); text-decoration: none; }
-        .footer-section a:hover { color: var(--brand-cyan); }
-        .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
-        .social-links a {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            background: rgba(0,212,255,0.15);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--brand-cyan);
-            border: 1px solid var(--brand-cyan);
-        }
-        .footer-bottom { text-align: center; padding-top: 2rem; color: var(--text-muted); font-size: 0.8rem; }
 
         @media (max-width: 860px) {
             .weather-grid { grid-template-columns: 1fr; }
@@ -425,34 +286,9 @@
             .stats-row { flex-direction: column; }
         }
     </style>
-</head>
-<body>
+{% endblock %}
 
-<header>
-    <div class="header-container">
-        <div class="logo-svg">
-            <svg width="200" height="60" viewBox="0 0 250 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 40 L30 40 L35 25 L45 55 L50 40 L70 40" stroke="#00D4FF" stroke-width="4" fill="none" stroke-linecap="round"/>
-                <rect x="33" y="25" width="4" height="15" fill="#00D4FF" opacity="0.5" />
-                <rect x="43" y="40" width="4" height="15" fill="#00D4FF" opacity="0.5" />
-                <text x="80" y="52" font-family="'Space Grotesk', Arial, sans-serif" font-weight="bold" font-size="28" fill="#FFFFFF">Civic<tspan fill="#00D4FF">Pulse</tspan></text>
-                <text x="80" y="70" font-family="'Inter', Arial, sans-serif" font-size="10" letter-spacing="2" fill="#AAAAAA" style="text-transform:uppercase;">MAPPING ISSUES • POWERING SOLUTIONS</text>
-            </svg>
-        </div>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#updates">Updates</a>
-            <a href="{% url 'about' %}">About</a>
-            <a href="{% url 'contact' %}">Contact</a>
-        </nav>
-        <div class="nav-buttons">
-            <a href="{% url 'login' %}" class="btn-login">Login</a>
-            <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
-        </div>
-    </div>
-</header>
-
-<main>
+{% block content %}
     <section class="jumbotron" id="home">
         <div class="jumbotron-content">
             <h1>Your voice. Real action.<br>Transparent impact.</h1>
@@ -465,7 +301,6 @@
     </section>
 
     <div class="container">
-        <!-- 1. Live Impact Counters (CountUp) -->
         <div class="stats-row">
             <div class="stat-card"><div class="stat-number" id="counter1">0</div><div class="stat-label">Issues Resolved</div></div>
             <div class="stat-card"><div class="stat-number" id="counter2">0</div><div class="stat-label">Active Citizens</div></div>
@@ -473,19 +308,16 @@
             <div class="stat-card"><div class="stat-number" id="counter4">0</div><div class="stat-label">Response Rate</div></div>
         </div>
 
-        <!-- 2. Mini Interactive Heatmap (using Leaflet) -->
         <div class="map-teaser">
             <div id="miniMap"></div>
         </div>
 
-        <!-- 3. How it Works Stepper -->
         <div class="steps-container">
             <div class="step"><div class="step-icon">📸</div><div class="step-title">1. Snap & Report</div><div style="font-size:0.85rem;">Take a photo, add location, describe issue.</div></div>
             <div class="step"><div class="step-icon">🤖</div><div class="step-title">2. Verify & Route</div><div style="font-size:0.85rem;">AI + community votes to validate & assign agency.</div></div>
             <div class="step"><div class="step-icon">✅</div><div class="step-title">3. Resolve & Notify</div><div style="font-size:0.85rem;">Government fixes, you get a "Job Done" alert.</div></div>
         </div>
 
-        <!-- 4. Community Leaderboard -->
         <div class="leaderboard">
             <h3>🏆 Top Civic Heroes – This Month</h3>
             <ul class="leaderboard-list">
@@ -498,7 +330,6 @@
             <div style="margin-top:1rem; text-align:right;"><a href="#" style="color:var(--brand-cyan);">See full leaderboard →</a></div>
         </div>
 
-        <!-- Weather Panel (existing GPS + 2-day forecast, glassmorphism applied) -->
         <div class="weather-panel" id="weatherPanel">
             <div class="location-header" style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
                 <div class="location-name">📍 <span id="locationDisplay">Detecting...</span></div>
@@ -509,7 +340,6 @@
             </div>
         </div>
 
-        <!-- Civic Updates (original content) -->
         <section id="updates">
             <h2 class="section-title" style="font-family:'Space Grotesk'; font-size:2rem; margin-bottom:0.5rem;">Live civic pulse</h2>
             <p class="section-subtitle" style="margin-bottom:2rem;">Recent community reports, government responses & impact metrics</p>
@@ -521,118 +351,107 @@
             </div>
         </section>
     </div>
-</main>
+{% endblock %}
 
-<footer>
-    <div class="footer-content">
-        <div class="footer-section"><h4>CivicPulse</h4><p>Radical transparency. Real-time civic engagement. Built for resilient communities.</p><div class="social-links"><a href="#">𝕏</a><a href="#">f</a><a href="#">📷</a><a href="#">▶</a></div></div>
-        <div class="footer-section"><h4>Navigate</h4><ul><li><a href="{% url 'about' %}">About</a></li><li><a href="{% url 'contact' %}">Contact</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Use</a></li></ul></div>
-        <div class="footer-section"><h4>Government partners</h4><ul><li><a href="{% url 'login' %}">Agency Login</a></li><li><a href="#">Request Demo</a></li><li><a href="#">API for Agencies</a></li></ul></div>
-    </div>
-    <div class="footer-bottom"><p>© 2026 CivicPulse — Mapping issues, powering solutions. Weather by Open‑Meteo | GPS location | Interactive map demo</p></div>
-</footer>
+{% block extra_js %}
+    <script>
+        function animateNumber(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.innerText = Math.floor(progress * (end - start) + start);
+                if (progress < 1) window.requestAnimationFrame(step);
+                else element.innerText = end;
+            };
+            window.requestAnimationFrame(step);
+        }
 
-<script>
-    // ---------- COUNT-UP ANIMATION ----------
-    function animateNumber(element, start, end, duration) {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            element.innerText = Math.floor(progress * (end - start) + start);
-            if (progress < 1) window.requestAnimationFrame(step);
-            else element.innerText = end;
-        };
-        window.requestAnimationFrame(step);
-    }
+        var resolved = Number("{{ resolved_issues|default:0 }}");
+        var citizens = Number("{{ active_citizens|default:0 }}");
+        var saved = Number("{{ value_saved|default:0 }}");
+        var rate = Number("{{ response_rate|default:0 }}");
 
-    // Trigger counters when in viewport
-    const counters = [
-        { id: 'counter1', target: 1243 },
-        { id: 'counter2', target: 8756 },
-        { id: 'counter3', target: 4200000 },
-        { id: 'counter4', target: 82 }
-    ];
-    function startCounters() {
-        counters.forEach(c => {
-            const el = document.getElementById(c.id);
-            if (el && el.innerText == '0') animateNumber(el, 0, c.target, 2000);
+        const counters = [
+            { id: 'counter1', target: resolved },
+            { id: 'counter2', target: citizens },
+            { id: 'counter3', target: saved },
+            { id: 'counter4', target: rate }
+        ];
+        function startCounters() {
+            counters.forEach(c => {
+                const el = document.getElementById(c.id);
+                if (el && el.innerText == '0') animateNumber(el, 0, c.target, 2000);
+            });
+        }
+        const statsSection = document.querySelector('.stats-row');
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) startCounters();
+        }, { threshold: 0.3 });
+        if (statsSection) observer.observe(statsSection);
+
+        const map = L.map('miniMap').setView([9.0765, 7.3986], 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 18,
+            minZoom: 10
+        }).addTo(map);
+        const reports = [
+            { lat: 9.072, lng: 7.495, title: "Sinkhole - Wuse Market", desc: "Open drain, urgent repair needed", category: "Drainage" },
+            { lat: 9.080, lng: 7.410, title: "Broken streetlight", desc: "Complete darkness on Ahmadu Bello Way", category: "Lighting" },
+            { lat: 9.065, lng: 7.380, title: "Pothole cluster", desc: "3 large potholes near City Gate", category: "Roads" },
+            { lat: 9.090, lng: 7.430, title: "Waste overflow", desc: "Illegal dump site, health hazard", category: "Sanitation" }
+        ];
+        reports.forEach(r => {
+            const marker = L.marker([r.lat, r.lng]).addTo(map);
+            marker.bindPopup(`<b>${r.title}</b><br>${r.desc}<br><span style="color:#00D4FF;">${r.category}</span><br><i>Reported via CivicPulse</i>`);
+            marker.on('mouseover', function() { this.openPopup(); });
+            marker.on('mouseout', function() { this.closePopup(); });
         });
-    }
-    // Intersection Observer
-    const statsSection = document.querySelector('.stats-row');
-    const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) startCounters();
-    }, { threshold: 0.3 });
-    if (statsSection) observer.observe(statsSection);
+        const pulseCircle = L.circleMarker([9.0765, 7.3986], { radius: 12, color: '#00D4FF', weight: 2, opacity: 0.8, fillOpacity: 0.3 }).addTo(map);
+        setInterval(() => {
+            pulseCircle.setStyle({ radius: 12 + Math.random() * 4 });
+        }, 800);
 
-    // ---------- MINI INTERACTIVE HEATMAP (Leaflet) ----------
-    const map = L.map('miniMap').setView([9.0765, 7.3986], 13); // Abuja
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
-        subdomains: 'abcd',
-        maxZoom: 18,
-        minZoom: 10
-    }).addTo(map);
-    // Sample report markers with hover popups
-    const reports = [
-        { lat: 9.072, lng: 7.495, title: "Sinkhole - Wuse Market", desc: "Open drain, urgent repair needed", category: "Drainage" },
-        { lat: 9.080, lng: 7.410, title: "Broken streetlight", desc: "Complete darkness on Ahmadu Bello Way", category: "Lighting" },
-        { lat: 9.065, lng: 7.380, title: "Pothole cluster", desc: "3 large potholes near City Gate", category: "Roads" },
-        { lat: 9.090, lng: 7.430, title: "Waste overflow", desc: "Illegal dump site, health hazard", category: "Sanitation" }
-    ];
-    reports.forEach(r => {
-        const marker = L.marker([r.lat, r.lng]).addTo(map);
-        marker.bindPopup(`<b>${r.title}</b><br>${r.desc}<br><span style="color:#00D4FF;">${r.category}</span><br><i>Reported via CivicPulse</i>`);
-        marker.on('mouseover', function() { this.openPopup(); });
-        marker.on('mouseout', function() { this.closePopup(); });
-    });
-    // Add a pulsating circle effect for "active issues"
-    const pulseCircle = L.circleMarker([9.0765, 7.3986], { radius: 12, color: '#00D4FF', weight: 2, opacity: 0.8, fillOpacity: 0.3 }).addTo(map);
-    setInterval(() => {
-        pulseCircle.setStyle({ radius: 12 + Math.random() * 4 });
-    }, 800);
-
-    // ---------- WEATHER (GPS + 2-day forecast, unchanged from previous) ----------
-    function getWeatherIconAndDesc(code) {
-        const map = { 0: ['☀️','Clear'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],51:['🌦️','Light drizzle'],53:['🌧️','Moderate drizzle'],61:['🌧️','Slight rain'],63:['🌧️','Moderate rain'],65:['🌧️','Heavy rain'],71:['❄️','Slight snow'],80:['🌧️','Rain showers'],95:['⛈️','Thunderstorm']};
-        return map[code] || ['🌤️','Unknown'];
-    }
-    function getDayName(dateStr) { return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long' }); }
-    async function fetchWeatherForLocation(lat, lon, locationName) {
-        try {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=2`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            const current = data.current;
-            const [iconCur, descCur] = getWeatherIconAndDesc(current.weather_code);
-            let fcHtml = '';
-            for (let i=0; i<data.daily.time.length; i++) {
-                const [icon, desc] = getWeatherIconAndDesc(data.daily.weather_code[i]);
-                fcHtml += `<div class="forecast-card"><div class="forecast-day">${getDayName(data.daily.time[i])}</div><div class="forecast-icon">${icon}</div><div class="forecast-temp">${Math.round(data.daily.temperature_2m_max[i])}°<span> / ${Math.round(data.daily.temperature_2m_min[i])}°</span></div><div style="font-size:0.8rem;">${desc}</div></div>`;
-            }
-            document.getElementById('weatherContent').innerHTML = `
-                <div class="weather-grid">
-                    <div class="weather-current"><div class="weather-icon">${iconCur}</div><div class="weather-temp">${Math.round(current.temperature_2m)}°C</div><div class="weather-condition">${descCur}</div><div class="weather-details"><div class="weather-detail-item">💧 ${current.relative_humidity_2m}%</div><div class="weather-detail-item">💨 ${Math.round(current.wind_speed_10m)} km/h</div></div></div>
-                    <div class="forecast-container"><h3>📅 2‑Day forecast</h3><div class="forecast-cards">${fcHtml}</div></div>
-                </div>`;
-            document.getElementById('locationDisplay').innerHTML = locationName || `Lat: ${lat.toFixed(2)}`;
-        } catch(e) { console.warn(e); document.getElementById('weatherContent').innerHTML = '<div style="text-align:center;">⚠️ Weather unavailable</div>'; }
-    }
-    function getGPSAndWeather() {
-        if (!navigator.geolocation) return fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
-        navigator.geolocation.getCurrentPosition(pos => {
-            const { latitude, longitude } = pos.coords;
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
-                .then(r => r.json()).then(data => {
-                    const city = data.address?.city || data.address?.town || 'Your location';
-                    fetchWeatherForLocation(latitude, longitude, city);
-                }).catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
-        }, () => fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria'));
-    }
-    window.addEventListener('load', getGPSAndWeather);
-    document.getElementById('refreshLocationBtn')?.addEventListener('click', getGPSAndWeather);
-</script>
-</body>
-</html>
+        function getWeatherIconAndDesc(code) {
+            const map = { 0: ['☀️','Clear'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],51:['🌦️','Light drizzle'],53:['🌧️','Moderate drizzle'],61:['🌧️','Slight rain'],63:['🌧️','Moderate rain'],65:['🌧️','Heavy rain'],71:['❄️','Slight snow'],80:['🌧️','Rain showers'],95:['⛈️','Thunderstorm']};
+            return map[code] || ['🌤️','Unknown'];
+        }
+        function getDayName(dateStr) { return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long' }); }
+        async function fetchWeatherForLocation(lat, lon, locationName) {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=2`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                const current = data.current;
+                const [iconCur, descCur] = getWeatherIconAndDesc(current.weather_code);
+                let fcHtml = '';
+                for (let i=0; i<data.daily.time.length; i++) {
+                    const [icon, desc] = getWeatherIconAndDesc(data.daily.weather_code[i]);
+                    fcHtml += `<div class="forecast-card"><div class="forecast-day">${getDayName(data.daily.time[i])}</div><div class="forecast-icon">${icon}</div><div class="forecast-temp">${Math.round(data.daily.temperature_2m_max[i])}°<span> / ${Math.round(data.daily.temperature_2m_min[i])}°</span></div><div style="font-size:0.8rem;">${desc}</div></div>`;
+                }
+                document.getElementById('weatherContent').innerHTML = `
+                    <div class="weather-grid">
+                        <div class="weather-current"><div class="weather-icon">${iconCur}</div><div class="weather-temp">${Math.round(current.temperature_2m)}°C</div><div class="weather-condition">${descCur}</div><div class="weather-details"><div class="weather-detail-item">💧 ${current.relative_humidity_2m}%</div><div class="weather-detail-item">💨 ${Math.round(current.wind_speed_10m)} km/h</div></div></div>
+                        <div class="forecast-container"><h3>📅 2‑Day forecast</h3><div class="forecast-cards">${fcHtml}</div></div>
+                    </div>`;
+                document.getElementById('locationDisplay').innerHTML = locationName || `Lat: ${lat.toFixed(2)}`;
+            } catch(e) { console.warn(e); document.getElementById('weatherContent').innerHTML = '<div style="text-align:center;">⚠️ Weather unavailable</div>'; }
+        }
+        function getGPSAndWeather() {
+            if (!navigator.geolocation) return fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
+            navigator.geolocation.getCurrentPosition(pos => {
+                const { latitude, longitude } = pos.coords;
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
+                    .then(r => r.json()).then(data => {
+                        const city = data.address?.city || data.address?.town || 'Your location';
+                        fetchWeatherForLocation(latitude, longitude, city);
+                    }).catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
+            }, () => fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria'));
+        }
+        window.addEventListener('load', getGPSAndWeather);
+        document.getElementById('refreshLocationBtn')?.addEventListener('click', getGPSAndWeather);
+    </script>
+{% endblock %}

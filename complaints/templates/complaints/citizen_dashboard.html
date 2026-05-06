@@ -1,27 +1,83 @@
 {% extends 'complaints/base.html' %}
 {% block content %}
-<h2>My Complaints</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Date Reported</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for complaint in complaints %}
-        <tr>
-            <td>{{ complaint.get_category_display }}</td>
-            <td>{{ complaint.description|truncatechars:60 }}</td>
-            <td>{{ complaint.get_status_display }}</td>
-            <td>{{ complaint.created_at|date:"Y-m-d H:i" }}</td>
-        </tr>
-    {% empty %}
-        <tr><td colspan="4">You haven't reported any issues yet. <a href="{% url 'report_complaint' %}">Report one now</a>.</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'report_complaint' %}" class="btn btn-primary">+ New Complaint</a>
+<div class="container py-4">
+    <h2 class="mb-4" style="color: var(--brand-cyan);">📋 My Complaints</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-hover" style="color: var(--text-primary);">
+            <thead>
+                <tr>
+                    <th style="color: var(--brand-cyan);">Category</th>
+                    <th style="color: var(--brand-cyan);">Description</th>
+                    <th style="color: var(--brand-cyan);">Status</th>
+                    <th style="color: var(--brand-cyan);">Reported On</th>
+                    <th style="color: var(--brand-cyan);">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                <tr>
+                    <td>{{ complaint.get_category_display }}</td>
+                    <td>{{ complaint.description|truncatechars:60 }}</td>
+                    <td>
+                        <span class="status-badge status-{{ complaint.status }}">
+                            {{ complaint.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ complaint.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">
+                        You haven't reported any issues yet. 
+                        <a href="{% url 'report_complaint' %}" style="color: var(--brand-cyan);">Report one now</a>.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'report_complaint' %}" class="btn-cyan">+ New Complaint</a>
+    </div>
+</div>
+
+<style>
+    .btn-cyan-sm {
+        background: transparent;
+        border: 1px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+        border-radius: 40px;
+        padding: 0.2rem 1rem;
+        text-decoration: none;
+        font-size: 0.8rem;
+        transition: 0.2s;
+    }
+    .btn-cyan-sm:hover {
+        background: var(--brand-cyan);
+        color: #0B0F1A;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .status-pending { background: #ffc107; color: #1a1a1a; }
+    .status-acknowledged { background: #17a2b8; color: white; }
+    .status-in_progress { background: #fd7e14; color: white; }
+    .status-resolved { background: #28a745; color: white; }
+    .table tbody td {
+        color: var(--text-secondary);
+        vertical-align: middle;
+    }
+    .table tbody tr:hover {
+        background-color: rgba(0,212,255,0.05);
+    }
+</style>
 {% endblock %}

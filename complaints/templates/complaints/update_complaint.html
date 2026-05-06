@@ -1,25 +1,107 @@
 {% extends 'complaints/base.html' %}
-{% block content %}
-<h2>Update Complaint #{{ complaint.id }}</h2>
-<p><strong>Category:</strong> {{ complaint.get_category_display }}</p>
-<p><strong>Original Description:</strong> {{ complaint.description }}</p>
-<p><strong>Current Status:</strong> {{ complaint.get_status_display }}</p>
 
-<form method="post">
-    {% csrf_token %}
-    <div class="mb-3">
-        <label for="status" class="form-label">Change Status</label>
-        <select name="status" id="status" class="form-select">
-            {% for value, label in complaint.STATUS_CHOICES %}
-                <option value="{{ value }}" {% if complaint.status == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="mb-3">
-        <label for="response" class="form-label">Government Response (optional)</label>
-        <textarea name="response" id="response" rows="4" class="form-control">{{ complaint.government_response }}</textarea>
-    </div>
-    <button type="submit" class="btn btn-success">Save Changes</button>
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
-</form>
+{% block extra_css %}
+<style>
+    .btn-cyan:hover {
+        background: #00D4FF;
+        color: #0B0F1A;
+        box-shadow: 0 0 12px rgba(0,212,255,0.5);
+        transform: translateY(-2px);
+    }
+    .btn-outline:hover {
+        background: rgba(108, 117, 125, 0.2);
+        color: #fff;
+        border-color: #adb5bd;
+        transform: translateY(-2px);
+    }
+    /* Override any Bootstrap default styles */
+    .form-text {
+        color: #A0D6FF !important;
+        opacity: 1;
+    }
+    label, strong[style*="color: #00D4FF"] {
+        color: #00D4FF !important;
+    }
+</style>
 {% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card glass-card p-4" style="background: rgba(18, 25, 45, 0.8); backdrop-filter: blur(12px); border: 1px solid #00D4FF; border-radius: 24px;">
+        <h2 class="mb-4" style="color: #00D4FF; font-weight: 700;">✏️ Update Complaint #{{ complaint.id }}</h2>
+        
+        <!-- Complaint summary labels (all forced cyan) -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p><strong style="color: #00D4FF;">📂 Category:</strong> {{ complaint.get_category_display }}</p>
+                <p><strong style="color: #00D4FF;">📝 Original Description:</strong> {{ complaint.description }}</p>
+                <p><strong style="color: #00D4FF;">👤 Citizen:</strong> {{ complaint.citizen.username }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong style="color: #00D4FF;">📍 Location:</strong> 
+                    {% if complaint.latitude and complaint.longitude %}
+                        {{ complaint.latitude }}, {{ complaint.longitude }}
+                    {% else %}
+                        <span style="color: #A0D6FF;">Not provided</span>
+                    {% endif %}
+                </p>
+                <p><strong style="color: #00D4FF;">📅 Reported on:</strong> {{ complaint.created_at|date:"F j, Y" }}</p>
+                {% if complaint.photo %}
+                    <p><strong style="color: #00D4FF;">📸 Original photo:</strong><br>
+                    <img src="{{ complaint.photo.url }}" style="max-width: 150px; border-radius: 12px; border: 1px solid #00D4FF;"></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Change Status -->
+            <div class="mb-4">
+                <label for="status" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">🔧 Change Status</label>
+                <select name="status" id="status" class="form-select" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">
+                    <option value="pending" {% if complaint.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="acknowledged" {% if complaint.status == 'acknowledged' %}selected{% endif %}>Acknowledged</option>
+                    <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                </select>
+                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Update the progress of this complaint.</div>
+            </div>
+
+            <!-- Government Response -->
+            <div class="mb-4">
+                <label for="response" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">💬 Government Response</label>
+                <textarea name="response" id="response" rows="4" class="form-control" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">{{ complaint.government_response|default:'' }}</textarea>
+                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Add official remarks, action plan, or resolution details.</div>
+            </div>
+
+            <!-- Contractor / Agency -->
+            <div class="mb-4">
+                <label for="contractor" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">👷 Contractor / Agency</label>
+                <input type="text" name="contractor" id="contractor" class="form-control" value="{{ complaint.contractor|default:'' }}" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">
+                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Who carried out the work (e.g., "FCDA", "Julius Berger")</div>
+            </div>
+
+            <!-- After/Resolved Photo -->
+            <div class="mb-4">
+                <label for="resolved_photo" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">📷 After/Resolved Photo</label>
+                <input type="file" name="resolved_photo" id="resolved_photo" class="form-control" accept="image/*" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">
+                {% if complaint.resolved_photo %}
+                    <div class="mt-2">
+                        <p style="color: #00D4FF; margin-bottom: 0.3rem;">Current after photo:</p>
+                        <img src="{{ complaint.resolved_photo.url }}" style="max-width: 200px; border-radius: 12px; border: 1px solid #00D4FF;">
+                    </div>
+                {% endif %}
+                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Upload a picture showing the resolved issue.</div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-4 d-flex gap-3">
+                <button type="submit" class="btn-cyan" style="background: transparent; border: 1.5px solid #00D4FF; color: #00D4FF; border-radius: 40px; padding: 0.6rem 1.8rem; font-weight: 600; transition: 0.2s; cursor: pointer;">✅ Save Changes</button>
+                <a href="{% url 'dashboard' %}" class="btn-outline" style="background: transparent; border: 1.5px solid #6c757d; color: #adb5bd; border-radius: 40px; padding: 0.6rem 1.8rem; text-decoration: none; font-weight: 600; transition: 0.2s;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

@@ -273,9 +273,16 @@
         </nav>
         <div class="nav-buttons">
             {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}" class="btn-dashboard">Dashboard</a>
+                {% if user.profile.user_type == 'govt' %}
+                    <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
+                {% else %}
+                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
+                {% endif %}
                 <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                <a href="{% url 'logout' %}" class="btn-logout">Logout ({{ user.username }})</a>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">Logout ({{ user.username }})</button>
+                </form>
             {% else %}
                 <a href="{% url 'login' %}" class="btn-login">Login</a>
                 <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>

@@ -62,3 +62,13 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.user_type}"
+    
+# code for murtiple pictures 
+class ComplaintImage(models.Model):
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='extra_images')
+    image = models.ImageField(upload_to='complaint_extra/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Image for complaint #{self.complaint.id}"
+    

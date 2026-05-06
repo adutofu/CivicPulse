@@ -1,0 +1,104 @@
+{% extends 'complaints/base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="card glass-card p-4">
+        <h2 class="mb-3" style="color: var(--brand-cyan);">🔍 Complaint #{{ complaint.id }}</h2>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <p><strong style="color: var(--brand-cyan);">Category:</strong> {{ complaint.get_category_display }}</p>
+                <p><strong style="color: var(--brand-cyan);">Description:</strong> {{ complaint.description }}</p>
+                <p><strong style="color: var(--brand-cyan);">Status:</strong> 
+                    <span class="status-badge status-{{ complaint.status }}">{{ complaint.get_status_display }}</span>
+                </p>
+                <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ complaint.created_at|date:"F j, Y, g:i a" }}</p>
+                {% if complaint.government_response %}
+                    <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{ complaint.government_response }}</p>
+                {% endif %}
+                {% if complaint.contractor %}
+                    <p><strong style="color: var(--brand-cyan);">👷 Contractor:</strong> {{ complaint.contractor }}</p>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                {% if complaint.photo %}
+                    <p><strong style="color: var(--brand-cyan);">📸 Original Photo:</strong></p>
+                    <img src="{{ complaint.photo.url }}" class="img-fluid rounded" style="border: 1px solid var(--brand-cyan);">
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Extra images uploaded by citizen -->
+        <div class="mt-4">
+            <h4 style="color: var(--brand-cyan);">📷 Additional Evidence</h4>
+            <div class="row g-3">
+                {% for img in extra_images %}
+                <div class="col-md-3">
+                    <img src="{{ img.image.url }}" class="img-fluid rounded" style="border: 1px solid var(--brand-cyan);">
+                </div>
+                {% empty %}
+                <p class="text-muted">No extra images yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Form to upload more images -->
+        <div class="mt-4 p-3" style="background: rgba(0,212,255,0.05); border-radius: 16px;">
+            <h5 style="color: var(--brand-cyan);">➕ Add more pictures</h5>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="add_image" value="1">
+                <div class="mb-2">
+                    {{ form.image }}
+                </div>
+                <button type="submit" class="btn-cyan-sm">Upload</button>
+            </form>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{% url 'citizen_dashboard' %}" class="btn-outline">← Back to My Complaints</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(18, 25, 45, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(0,212,255,0.3);
+        border-radius: 24px;
+    }
+    .btn-cyan-sm, .btn-outline {
+        background: transparent;
+        border: 1.5px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+        border-radius: 40px;
+        padding: 0.4rem 1.2rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.2s;
+    }
+    .btn-cyan-sm:hover {
+        background: var(--brand-cyan);
+        color: #0B0F1A;
+    }
+    .btn-outline {
+        border-color: #6c757d;
+        color: #adb5bd;
+    }
+    .btn-outline:hover {
+        background: rgba(108,117,125,0.2);
+        color: white;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .status-pending { background: #ffc107; color: #1a1a1a; }
+    .status-acknowledged { background: #17a2b8; color: white; }
+    .status-in_progress { background: #fd7e14; color: white; }
+    .status-resolved { background: #28a745; color: white; }
+</style>
+{% endblock %}
