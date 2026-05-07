@@ -1,6 +1,5 @@
 from django import forms
-from .models import Complaint
-from .models import ComplaintImage
+from .models import Complaint, ComplaintImage
 
 class ComplaintForm(forms.ModelForm):
     class Meta:

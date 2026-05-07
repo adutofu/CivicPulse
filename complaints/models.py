@@ -1,11 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-#just added to test if it would fix the error
-
-
-
-#to see if this would fix the issue at hand.
-
+from django.utils import timezone
+from datetime import timedelta
 
 CATEGORY_CHOICES = [
     ('roads', 'Bad Roads'),
@@ -49,6 +45,122 @@ class GovernmentUpdate(models.Model):
     def __str__(self):
         return self.title
     
+# notification model and utility functions for creating notifications based on complaint updates and new complaints
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('status_change', 'Status Change'),
+        ('govt_response', 'Government Response'),
+        ('resolved_photo', 'Resolution Photo Added'),
+        ('new_complaint', 'New Complaint (Govt Only)'),
+        ('complaint_reminder', 'Complaint Reminder (Govt Only)'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, null=True, blank=True)
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.username}: {self.title}"
+
+
+# Notification utility functions
+def create_notification(user, complaint, notification_type, title, message):
+    """Create a notification for a user"""
+    return Notification.objects.create(
+        user=user,
+        complaint=complaint,
+        notification_type=notification_type,
+        title=title,
+        message=message
+    )
+
+def notify_status_change(complaint, old_status, new_status):
+    """Notify citizen when complaint status changes"""
+    if old_status != new_status:
+        create_notification(
+            user=complaint.citizen,
+            complaint=complaint,
+            notification_type='status_change',
+            title=f'Complaint Status Updated',
+            message=f'Your complaint "{complaint.get_category_display()}" status changed from {complaint.get_status_display()} to {dict(STATUS_CHOICES)[new_status]}'
+        )
+
+def notify_govt_response(complaint):
+    """Notify citizen when government adds response"""
+    if complaint.government_response:
+        create_notification(
+            user=complaint.citizen,
+            complaint=complaint,
+            notification_type='govt_response',
+            title='Government Response Added',
+            message=f'Government has responded to your complaint: "{complaint.description[:50]}..."'
+        )
+
+def notify_resolved_photo(complaint):
+    """Notify citizen when resolution photo is added"""
+    if complaint.resolved_photo:
+        create_notification(
+            user=complaint.citizen,
+            complaint=complaint,
+            notification_type='resolved_photo',
+            title='Resolution Photo Added',
+            message=f'A resolution photo has been added to your complaint: "{complaint.description[:50]}..."'
+        )
+
+def notify_new_complaint_govt(complaint):
+    """Notify all government users of new complaint"""
+    from django.contrib.auth.models import User
+    govt_users = User.objects.filter(profile__user_type='govt')
+    for govt_user in govt_users:
+        create_notification(
+            user=govt_user,
+            complaint=complaint,
+            notification_type='new_complaint',
+            title='New Complaint Reported',
+            message=f'New complaint: {complaint.get_category_display()} - {complaint.description[:50]}...'
+        )
+
+def create_govt_reminders():
+    """Create reminder notifications for government users about pending complaints"""
+    from django.contrib.auth.models import User
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    # Get complaints pending for more than 3 days
+    three_days_ago = timezone.now() - timedelta(days=3)
+    pending_complaints = Complaint.objects.filter(
+        status__in=['reported', 'under_review'],
+        created_at__lt=three_days_ago
+    )
+    
+    govt_users = User.objects.filter(profile__user_type='govt')
+    for govt_user in govt_users:
+        for complaint in pending_complaints:
+            # Check if reminder already exists for this complaint in last 24 hours
+            recent_reminder = Notification.objects.filter(
+                user=govt_user,
+                complaint=complaint,
+                notification_type='complaint_reminder',
+                created_at__gt=timezone.now() - timedelta(hours=24)
+            ).exists()
+            
+            if not recent_reminder:
+                create_notification(
+                    user=govt_user,
+                    complaint=complaint,
+                    notification_type='complaint_reminder',
+                    title='Pending Complaint Reminder',
+                    message=f'Complaint "{complaint.description[:50]}..." has been pending for {(timezone.now() - complaint.created_at).days} days'
+                )
+
 
 #USER Profile. both for citizen and for goverment
 class Profile(models.Model):

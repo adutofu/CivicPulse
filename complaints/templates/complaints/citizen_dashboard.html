@@ -7,6 +7,7 @@
         <table class="table table-hover" style="color: var(--text-primary);">
             <thead>
                 <tr>
+                    <th style="color: var(--brand-cyan);">Image</th>
                     <th style="color: var(--brand-cyan);">Category</th>
                     <th style="color: var(--brand-cyan);">Description</th>
                     <th style="color: var(--brand-cyan);">Status</th>
@@ -17,6 +18,15 @@
             <tbody>
                 {% for complaint in complaints %}
                 <tr>
+                    <td>
+                        {% if complaint.photo %}
+                            <a href="{{ complaint.photo.url }}" target="_blank">
+                                <img src="{{ complaint.photo.url }}" alt="Complaint photo" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid var(--brand-cyan);">
+                            </a>
+                        {% else %}
+                            <span style="color: rgb(209, 184, 184);">No image</span>
+                        {% endif %}
+                    </td>
                     <td>{{ complaint.get_category_display }}</td>
                     <td>{{ complaint.description|truncatechars:60 }}</td>
                     <td>
@@ -31,7 +41,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center text-muted">
+                    <td colspan="6" class="text-center text-muted">
                         You haven't reported any issues yet. 
                         <a href="{% url 'report_complaint' %}" style="color: var(--brand-cyan);">Report one now</a>.
                     </td>

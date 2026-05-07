@@ -13,7 +13,11 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page='landing', http_method_names=['get', 'post']), name='logout'),
     path('about/', views.about, name='about'),              # About page
     path('contact/', views.contact, name='contact'),        # Contact page
-    path('my-complaints/', views.citizen_dashboard, name='citizen_dashboard'),  #citizen_dashboard
-    path('complaint/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'), # complete details in citizen_dashboard
-    path('my-complaints/', views.citizen_dashboard, name='citizen_dashboard'),
+    path('my-complaints/', views.citizen_dashboard, name='citizen_dashboard'),  # citizen view of all own complaints
+    path('complaint/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),  # detailed complaint view for citizens
+    # Notification API endpoints
+    path('api/notifications/', views.get_notifications, name='get_notifications'),
+    path('api/notifications/unread-count/', views.get_unread_count, name='get_unread_count'),
+    path('api/notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('api/notifications/mark-all-read/', views.mark_all_read, name='mark_all_read'),
 ]

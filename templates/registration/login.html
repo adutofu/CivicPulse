@@ -4,7 +4,7 @@
 {% block content %}
 <style>
     .hero-mini {
-        background: linear-gradient(135deg, var(--primary, #D42F1F) 0%, var(--secondary, #1B4B3E) 100%);
+        background: linear-gradient(135deg, var(--primary, #00D4FF) 0%, var(--secondary, #0A1428) 100%);
         color: white;
         padding: 3rem 2rem;
         border-radius: 0.5rem;
@@ -25,27 +25,28 @@
         transform: translateY(-5px);
     }
     .form-card .card-header {
-        background-color: var(--secondary, #1B4B3E);
+        background-color: var(--secondary, #0A1428);
         color: white;
         padding: 1rem;
         font-size: 1.25rem;
         font-weight: 600;
     }
     .form-card .btn-primary {
-        background-color: var(--primary, #D42F1F);
-        border-color: var(--primary, #D42F1F);
+        background-color: var(--primary, #00D4FF);
+        border-color: var(--primary, #00D4FF);
+        color: #0A1428;
         padding: 0.75rem;
         font-weight: 600;
     }
     .form-card .btn-primary:hover {
-        background-color: #a61e14;
+        background-color: #00A3CC;
     }
 </style>
 
 <div class="hero-mini">
     <div class="container">
-        <h1>Join CivicPulse</h1>
-        <p class="lead">Create a free account to report issues and track government responses.</p>
+        <h1>Welcome Back</h1>
+        <p class="lead">Sign in to access your dashboard and track your reports.</p>
     </div>
 </div>
 
@@ -54,9 +55,16 @@
         <div class="col-md-6">
             <div class="card shadow form-card">
                 <div class="card-header text-center">
-                    Sign Up
+                    Sign In
                 </div>
                 <div class="card-body p-4">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <form method="post">
                         {% csrf_token %}
                         {% for field in form %}
@@ -71,10 +79,10 @@
                                 {% endfor %}
                             </div>
                         {% endfor %}
-                        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+                        <button type="submit" class="btn btn-primary w-100">Sign In</button>
                     </form>
                     <hr>
-                    <p class="text-center mb-0">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+                    <p class="text-center mb-0">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
                 </div>
             </div>
         </div>
