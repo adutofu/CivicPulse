@@ -28,6 +28,7 @@ class Complaint(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     address_text = models.CharField(max_length=255, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='reported')
+    upvotes = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     government_response = models.TextField(blank=True, null=True)
@@ -35,6 +36,11 @@ class Complaint(models.Model):
 
     def __str__(self):
         return f"{self.category} - {self.created_at.date()}"
+
+    def has_vote_from(self, user):
+        if not user.is_authenticated:
+            return False
+        return self.votes.filter(user=user).exists()
 
 class GovernmentUpdate(models.Model):
     title = models.CharField(max_length=255)
@@ -69,6 +75,19 @@ class Notification(models.Model):
     
     def __str__(self):
         return f"{self.user.username}: {self.title}"
+
+
+class Vote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='votes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'complaint')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} upvoted complaint #{self.complaint_id}"
 
 
 # Notification utility functions

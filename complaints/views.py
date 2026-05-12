@@ -3,12 +3,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy
+from django.db.models import Count, Sum
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.db import transaction
+from django.utils import timezone
 from .models import (
     Complaint,
     Profile,
     Notification,
     ComplaintImage,
+    Vote,
     notify_status_change,
     notify_govt_response,
     notify_new_complaint_govt,
@@ -35,7 +42,26 @@ def landing_page(request):
     total_complaints = Complaint.objects.count()
     responded = Complaint.objects.filter(government_response__isnull=False).count()
     response_rate = round((responded / total_complaints) * 100) if total_complaints > 0 else 0
-    
+    total_upvotes = Complaint.objects.aggregate(total=Sum('upvotes'))['total'] or 0
+    active_voters = Vote.objects.values('user').distinct().count()
+    top_issues = Complaint.objects.order_by('-upvotes', '-created_at')[:5]
+
+    # Top Civic Heroes - This Month
+    now = timezone.now()
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    top_heroes_data = Complaint.objects.filter(
+        created_at__gte=start_of_month
+    ).values('citizen').annotate(
+        total_points=Sum('upvotes')
+    ).order_by('-total_points')[:5]
+    top_citizens = []
+    for hero in top_heroes_data:
+        user = User.objects.get(id=hero['citizen'])
+        top_citizens.append({
+            'user': user,
+            'points': hero['total_points']
+        })
+
     context = {
         'news': [
             "New road construction begins in Wuse Zone 2",
@@ -43,11 +69,14 @@ def landing_page(request):
             "Monthly town hall meeting scheduled for May 10th"
         ],
         'weather': "🌤️ Partly cloudy, 28°C",
-        # The dynamic counters
         'resolved_issues': resolved_issues,
         'active_citizens': active_citizens,
         'value_saved': total_saved,
         'response_rate': response_rate,
+        'total_upvotes': total_upvotes,
+        'active_voters': active_voters,
+        'top_issues': top_issues,
+        'top_citizens': top_citizens,
     }
     return render(request, 'complaints/landing.html', context)
 
@@ -108,6 +137,50 @@ def report_complaint(request):
         form = ComplaintForm()
     return render(request, 'complaints/report.html', {'form': form})
 
+# ---------- Community voting feed ----------
+@login_required
+def community_complaints(request):
+    complaints = Complaint.objects.order_by('-upvotes', '-created_at')
+    user_votes = []
+    if request.user.is_authenticated:
+        user_votes = list(Vote.objects.filter(user=request.user).values_list('complaint_id', flat=True))
+    return render(request, 'complaints/community_complaints.html', {
+        'complaints': complaints,
+        'user_votes': user_votes,
+    })
+
+@login_required
+def get_trending_complaints(request):
+    trending = Complaint.objects.order_by('-upvotes', '-created_at')[:5]
+    return JsonResponse({'trending': [
+        {
+            'id': complaint.id,
+            'category': complaint.get_category_display(),
+            'description': complaint.description[:120],
+            'upvotes': complaint.upvotes,
+            'status': complaint.get_status_display(),
+            'created_at': complaint.created_at.strftime('%Y-%m-%d %H:%M'),
+        }
+        for complaint in trending
+    ]})
+
+@require_POST
+@login_required
+def toggle_vote(request, complaint_id):
+    profile = request.user.profile
+    if profile.user_type != 'citizen':
+        return JsonResponse({'success': False, 'error': 'Only citizens may vote on complaints.'}, status=403)
+
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    with transaction.atomic():
+        vote, created = Vote.objects.get_or_create(user=request.user, complaint=complaint)
+        if created:
+            complaint.refresh_from_db(fields=['upvotes'])
+            return JsonResponse({'success': True, 'voted': True, 'upvotes': complaint.upvotes})
+        vote.delete()
+        complaint.refresh_from_db(fields=['upvotes'])
+        return JsonResponse({'success': True, 'voted': False, 'upvotes': complaint.upvotes})
+
 #updating views to create notifications when government updates complaint status, adds response, or adds resolution photo. Also added citizen_dashboard and complaint_detail views to display multiple images and details for citizens.
 
 @login_required
@@ -156,15 +229,20 @@ def update_complaint(request, complaint_id):
 @login_required
 def citizen_dashboard(request):
     complaints = Complaint.objects.filter(citizen=request.user).order_by('-created_at')
-    return render(request, 'complaints/citizen_dashboard.html', {'complaints': complaints})
+    top_issues = Complaint.objects.order_by('-upvotes', '-created_at')[:5]
+    return render(request, 'complaints/citizen_dashboard.html', {
+        'complaints': complaints,
+        'top_issues': top_issues,
+    })
 
 @login_required
 def complaint_detail(request, complaint_id):
-    complaint = get_object_or_404(Complaint, id=complaint_id, citizen=request.user)
+    complaint = get_object_or_404(Complaint, id=complaint_id)
     extra_images = complaint.extra_images.all()
     form = ExtraImageForm()
+    is_owner = request.user == complaint.citizen
     
-    if request.method == 'POST' and 'add_image' in request.POST:
+    if request.method == 'POST' and 'add_image' in request.POST and is_owner:
         form = ExtraImageForm(request.POST, request.FILES)
         if form.is_valid():
             extra_image = form.save(commit=False)
@@ -175,12 +253,12 @@ def complaint_detail(request, complaint_id):
     return render(request, 'complaints/complaint_detail.html', {
         'complaint': complaint,
         'extra_images': extra_images,
-        'form': form,})
+        'form': form,
+        'is_owner': is_owner,
+    })
 
 
 # ---------- Notification API Views ----------
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 
 @login_required
 def get_notifications(request):

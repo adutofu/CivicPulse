@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .models import Complaint, Notification
+from .models import Complaint, Notification, Vote
 
 
 class NotificationSystemTests(TestCase):
@@ -81,3 +81,25 @@ class NotificationSystemTests(TestCase):
         self.assertTrue(
             Notification.objects.filter(user=self.govt, notification_type='new_complaint').exists()
         )
+
+    def test_citizen_can_toggle_vote(self):
+        self.client.login(username='citizen', password='secret')
+        response = self.client.post(reverse('toggle_vote', args=[self.complaint.id]))
+        self.assertEqual(response.status_code, 200)
+        self.complaint.refresh_from_db()
+        self.assertEqual(self.complaint.upvotes, 1)
+        self.assertTrue(Vote.objects.filter(user=self.citizen, complaint=self.complaint).exists())
+
+        response = self.client.post(reverse('toggle_vote', args=[self.complaint.id]))
+        self.assertEqual(response.status_code, 200)
+        self.complaint.refresh_from_db()
+        self.assertEqual(self.complaint.upvotes, 0)
+        self.assertFalse(Vote.objects.filter(user=self.citizen, complaint=self.complaint).exists())
+
+    def test_govt_cannot_vote(self):
+        self.client.login(username='govt', password='secret')
+        response = self.client.post(reverse('toggle_vote', args=[self.complaint.id]))
+        self.assertEqual(response.status_code, 403)
+        self.complaint.refresh_from_db()
+        self.assertEqual(self.complaint.upvotes, 0)
+        self.assertFalse(Vote.objects.filter(user=self.govt, complaint=self.complaint).exists())

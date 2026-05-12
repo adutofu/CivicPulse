@@ -101,12 +101,13 @@
 
         .jumbotron {
             background: radial-gradient(ellipse at 80% 30%, #0A1428 0%, #03060C 100%);
-            padding: 7rem 2rem;
+            padding: 6.5rem 2rem;
             text-align: center;
             border-bottom: 1px solid rgba(0, 212, 255, 0.3);
         }
         .jumbotron-content {
-            max-width: 900px;
+            max-width: 1120px;
+            width: min(100%, 1120px);
             margin: 0 auto;
             animation: fadeUp 0.7s ease-out;
         }
@@ -285,6 +286,59 @@
             .steps-container { flex-direction: column; }
             .stats-row { flex-direction: column; }
         }
+        @media (max-width: 720px) {
+            .jumbotron {
+                padding: 4rem 1rem;
+            }
+            .jumbotron h1 {
+                font-size: 2.4rem;
+            }
+            .jumbotron p {
+                font-size: 1rem;
+            }
+            .stats-row {
+                gap: 1rem;
+            }
+            .stat-card {
+                padding: 1rem;
+            }
+            .map-teaser {
+                height: auto;
+            }
+            #miniMap {
+                min-height: 240px;
+            }
+            .leaderboard {
+                padding: 1.2rem;
+            }
+            .leaderboard-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            .weather-panel {
+                padding: 1.25rem;
+            }
+            .forecast-cards {
+                flex-direction: column;
+            }
+        }
+        @media (max-width: 540px) {
+            .jumbotron h1 {
+                font-size: 2rem;
+            }
+            .stats-row,
+            .steps-container,
+            .forecast-cards {
+                gap: 0.75rem;
+            }
+            .update-card {
+                padding: 1rem;
+            }
+            .leaderboard-list li {
+                padding: 0.8rem 0;
+            }
+        }
     </style>
 {% endblock %}
 
@@ -304,13 +358,36 @@
         <div class="stats-row">
             <div class="stat-card"><div class="stat-number" id="counter1">0</div><div class="stat-label">Issues Resolved</div></div>
             <div class="stat-card"><div class="stat-number" id="counter2">0</div><div class="stat-label">Active Citizens</div></div>
-            <div class="stat-card"><div class="stat-number" id="counter3">0</div><div class="stat-label">Infrastructure Value Saved (₦)</div></div>
+            <div class="stat-card"><div class="stat-number" id="counter3">0</div><div class="stat-label">Community Upvotes</div></div>
             <div class="stat-card"><div class="stat-number" id="counter4">0</div><div class="stat-label">Response Rate</div></div>
+            <div class="stat-card"><div class="stat-number" id="counter5">0</div><div class="stat-label">Citizen Voters</div></div>
         </div>
 
         <div class="map-teaser">
             <div id="miniMap"></div>
         </div>
+
+        <section class="leaderboard" style="margin-bottom: 3rem;">
+            <h3>🔥 Community Priority Issues</h3>
+            <div class="leaderboard-list">
+                {% if top_issues %}
+                    {% for issue in top_issues %}
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.9rem 0; border-bottom:1px solid rgba(0,212,255,0.15);">
+                            <div style="max-width:75%;">
+                                <div style="font-weight:700; color:var(--text-primary);">{{ issue.get_category_display }}</div>
+                                <div style="font-size:0.95rem; color:var(--text-secondary);">{{ issue.description|truncatechars:80 }}</div>
+                            </div>
+                            <div style="text-align:right; min-width:80px;">
+                                <div style="font-size:1.15rem; font-weight:700; color:var(--brand-cyan);">{{ issue.upvotes }}</div>
+                                <div style="font-size:0.7rem; color:var(--text-muted);">votes</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding:1rem; color:var(--text-muted);">No trending issues yet. Citizens will see top complaints once votes begin.</div>
+                {% endif %}
+            </div>
+        </section>
 
         <div class="steps-container">
             <div class="step"><div class="step-icon">📸</div><div class="step-title">1. Snap & Report</div><div style="font-size:0.85rem;">Take a photo, add location, describe issue.</div></div>
@@ -321,11 +398,11 @@
         <div class="leaderboard">
             <h3>🏆 Top Civic Heroes – This Month</h3>
             <ul class="leaderboard-list">
-                <li><span class="rank-badge">#1</span> <span class="user-name">Chuka Obi</span> <span class="user-points">1,247 pts</span></li>
-                <li><span class="rank-badge">#2</span> <span class="user-name">Amina Yusuf</span> <span class="user-points">982 pts</span></li>
-                <li><span class="rank-badge">#3</span> <span class="user-name">Femi Adeleke</span> <span class="user-points">804 pts</span></li>
-                <li><span class="rank-badge">#4</span> <span class="user-name">Ngozi Eze</span> <span class="user-points">712 pts</span></li>
-                <li><span class="rank-badge">#5</span> <span class="user-name">Segun Williams</span> <span class="user-points">689 pts</span></li>
+                {% for hero in top_citizens %}
+                <li><span class="rank-badge">#{{ forloop.counter }}</span> <span class="user-name">{{ hero.user.get_full_name|default:hero.user.username }}</span> <span class="user-points">{{ hero.points }} pts</span></li>
+                {% empty %}
+                <li><span class="user-name" style="text-align:center; width:100%;">No heroes this month yet!</span></li>
+                {% endfor %}
             </ul>
             <div style="margin-top:1rem; text-align:right;"><a href="#" style="color:var(--brand-cyan);">See full leaderboard →</a></div>
         </div>
@@ -369,14 +446,16 @@
 
         var resolved = Number("{{ resolved_issues|default:0 }}");
         var citizens = Number("{{ active_citizens|default:0 }}");
-        var saved = Number("{{ value_saved|default:0 }}");
+        var saved = Number("{{ total_upvotes|default:0 }}");
         var rate = Number("{{ response_rate|default:0 }}");
+        var voters = Number("{{ active_voters|default:0 }}");
 
         const counters = [
             { id: 'counter1', target: resolved },
             { id: 'counter2', target: citizens },
             { id: 'counter3', target: saved },
-            { id: 'counter4', target: rate }
+            { id: 'counter4', target: rate },
+            { id: 'counter5', target: voters }
         ];
         function startCounters() {
             counters.forEach(c => {

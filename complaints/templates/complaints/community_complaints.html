@@ -1,0 +1,196 @@
+{% extends 'complaints/base.html' %}
+
+{% block title %}Community Issues – CivicPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .community-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+    .issue-card {
+        background: rgba(18, 25, 45, 0.75);
+        border: 1px solid rgba(0,212,255,0.18);
+        border-radius: 24px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease;
+    }
+    .issue-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--brand-cyan);
+    }
+    .issue-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .issue-meta {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    .vote-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid rgba(0,212,255,0.2);
+        background: rgba(0,212,255,0.08);
+        color: var(--brand-cyan);
+        font-weight: 700;
+        min-width: 80px;
+        justify-content: center;
+    }
+    .vote-button {
+        background: transparent;
+        border: 1px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+        border-radius: 40px;
+        padding: 0.55rem 1rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .vote-button.active {
+        background: var(--brand-cyan);
+        color: var(--dark-bg);
+        box-shadow: 0 0 12px rgba(0,212,255,0.25);
+    }
+    .vote-button:hover {
+        transform: translateY(-1px);
+    }
+    .issue-description {
+        margin: 1rem 0;
+        color: var(--text-secondary);
+    }
+    .issue-status {
+        display: inline-flex;
+        padding: 0.3rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(0,212,255,0.12);
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+    @media (max-width: 860px) {
+        .issue-card {
+            padding: 1.2rem;
+        }
+    }
+    @media (max-width: 720px) {
+        .issue-top {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .issue-top > div {
+            width: 100%;
+        }
+        .issue-top .vote-pill {
+            margin-top: 0.75rem;
+        }
+        .issue-description {
+            font-size: 0.95rem;
+        }
+        .issue-card {
+            padding: 1rem;
+        }
+        .vote-button {
+            width: 100%;
+            justify-content: center;
+            min-width: 0;
+        }
+        .issue-status {
+            width: fit-content;
+            margin-top: 0.75rem;
+        }
+        .issue-card > div:last-child {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="community-header">
+        <div>
+            <h2 style="color: var(--brand-cyan);">Community Complaints</h2>
+            <p style="color: var(--text-secondary); max-width: 650px;">Browse public issue reports from other citizens and vote for the problems that matter most. Your upvote helps government prioritise action.</p>
+        </div>
+        <div>
+            <a href="{% url 'report_complaint' %}" class="btn-cyan">Report New Issue</a>
+        </div>
+    </div>
+    {% if complaints %}
+        {% for complaint in complaints %}
+            <div class="issue-card" id="issue-{{ complaint.id }}">
+                <div class="issue-top">
+                    <div>
+                        <div style="font-size:1.05rem; font-weight:700; color: var(--text-primary);">{{ complaint.get_category_display }}</div>
+                        <div class="issue-meta">Reported by {{ complaint.citizen.username }} • {{ complaint.created_at|date:"M d, Y" }}</div>
+                    </div>
+                    <div class="vote-pill">{{ complaint.upvotes }} votes</div>
+                </div>
+                <p class="issue-description">{{ complaint.description|truncatechars:140 }}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div class="issue-status">{{ complaint.get_status_display }}</div>
+                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+                        <button type="button" class="vote-button {% if complaint.id in user_votes %}active{% endif %} {% if user.profile.user_type != 'citizen' %}disabled{% endif %}" data-complaint-id="{{ complaint.id }}" {% if user.profile.user_type != 'citizen' %}disabled{% endif %}>
+                            {% if complaint.id in user_votes %}Voted{% else %}Upvote{% endif %}
+                        </button>
+                        <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="issue-card">
+            <p style="color: var(--text-secondary);">No community complaints are available yet. Submit the first one and invite others to vote.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function toggleVote(event) {
+        const button = event.currentTarget;
+        const complaintId = button.dataset.complaintId;
+        if (!complaintId) return;
+
+        try {
+            const response = await fetch(`{% url 'toggle_vote' complaint_id=0 %}`.replace('/0/', `/${complaintId}/`), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.cookie.split('; ').find(row => row.startsWith('csrftoken=')).split('=')[1],
+                    'Accept': 'application/json',
+                },
+            });
+            if (!response.ok) throw new Error('Vote request failed');
+            const data = await response.json();
+            if (data.success) {
+                button.textContent = data.voted ? 'Voted' : 'Upvote';
+                button.classList.toggle('active', data.voted);
+                const pill = button.closest('.issue-card').querySelector('.vote-pill');
+                if (pill) pill.textContent = `${data.upvotes} votes`;
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Unable to save your vote. Please try again.');
+        }
+    }
+
+    document.querySelectorAll('.vote-button').forEach(btn => {
+        btn.addEventListener('click', toggleVote);
+    });
+</script>
+{% endblock %}

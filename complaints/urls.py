@@ -14,7 +14,11 @@ urlpatterns = [
     path('about/', views.about, name='about'),              # About page
     path('contact/', views.contact, name='contact'),        # Contact page
     path('my-complaints/', views.citizen_dashboard, name='citizen_dashboard'),  # citizen view of all own complaints
+    path('community/', views.community_complaints, name='community_complaints'),
     path('complaint/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),  # detailed complaint view for citizens
+    # Community voting API endpoints
+    path('api/vote/<int:complaint_id>/', views.toggle_vote, name='toggle_vote'),
+    path('api/trending/', views.get_trending_complaints, name='get_trending_complaints'),
     # Notification API endpoints
     path('api/notifications/', views.get_notifications, name='get_notifications'),
     path('api/notifications/unread-count/', views.get_unread_count, name='get_unread_count'),
