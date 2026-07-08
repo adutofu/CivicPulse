@@ -40,3 +40,8 @@ static/
 *.swp
 *.swo
 .DS_Store
+
+
+#REACT
+node_modules/
+*.local

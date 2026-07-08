@@ -23,7 +23,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('complaints.urls')),  # all routes (landing, dashboard, login, etc.)
+    path('api/', include('complaints.api_urls')),  # REST API endpoints
+    path('', include('complaints.urls')),  # Traditional Django views (landing, dashboard, login, etc.)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
