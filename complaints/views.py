@@ -20,8 +20,10 @@ from .models import (
     notify_govt_response,
     notify_new_complaint_govt,
     notify_resolved_photo,
+    notify_govt_application_submitted,
+    notify_govt_application_reviewed,
 )
-from .forms import ComplaintForm, ExtraImageForm
+from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm
 from decimal import Decimal
 
 
@@ -224,6 +226,70 @@ def update_complaint(request, complaint_id):
             
         return redirect('dashboard')
     return render(request, 'complaints/update_complaint.html', {'complaint': complaint})
+
+# ---------- Government Officer Verification ----------
+
+@login_required
+def apply_govt_official(request):
+    profile = request.user.profile
+
+    # prevent duplicate applications while one is already pending or approved
+    if profile.verification_status == 'pending':
+        return render(request, 'complaints/govt_application_status.html', {'profile': profile})
+    if profile.is_verified_govt():
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = GovtApplicationForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.verification_status = 'pending'
+            application.applied_at = timezone.now()
+            application.save()
+
+            notify_govt_application_submitted(application)
+
+            return render(request, 'complaints/govt_application_status.html', {'profile': application})
+    else:
+        form = GovtApplicationForm(instance=profile)
+
+    return render(request, 'complaints/apply_govt_official.html', {'form': form})
+
+
+@login_required
+def govt_applications_list(request):
+    if not request.user.is_staff:
+        return redirect('dashboard')
+
+    applications = Profile.objects.filter(verification_status='pending').order_by('applied_at')
+    return render(request, 'complaints/govt_applications_list.html', {'applications': applications})
+
+
+@login_required
+def review_govt_application(request, profile_id):
+    if not request.user.is_staff:
+        return redirect('dashboard')
+
+    profile = get_object_or_404(Profile, id=profile_id)
+
+    if request.method == 'POST':
+        decision = request.POST.get('decision')  # 'approved' or 'rejected'
+
+        if decision in ('approved', 'rejected'):
+            profile.verification_status = decision
+            profile.verified_at = timezone.now()
+            profile.verified_by = request.user
+
+            if decision == 'approved':
+                profile.user_type = 'govt'
+
+            profile.save()
+
+            notify_govt_application_reviewed(profile)
+
+            return redirect('govt_applications_list')
+
+    return render(request, 'complaints/govt_application_review.html', {'profile': profile})
 
 # citizen_dashboard for multiple image and citizen display
 @login_required
