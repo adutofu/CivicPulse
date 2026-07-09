@@ -187,12 +187,33 @@ class Profile(models.Model):
         ('citizen', 'Citizen'),
         ('govt', 'Government Officer'),
     )
+
+    VERIFICATION_STATUS = (
+        ('not_applicable', 'Not Applicable'),
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_type = models.CharField(max_length=10, choices=USER_TYPES, default='citizen')
     agency = models.CharField(max_length=100, blank=True)
 
+    # --- Government official verification fields ---
+    verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='not_applicable')
+    id_card = models.ImageField(upload_to='govt_ids/', blank=True, null=True)
+    applied_at = models.DateTimeField(blank=True, null=True)
+    verified_at = models.DateTimeField(blank=True, null=True)
+    verified_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=True, null=True,
+        related_name='verified_profiles'
+    )
+
     def __str__(self):
         return f"{self.user.username} - {self.user_type}"
+
+    def is_verified_govt(self):
+        return self.user_type == 'govt' and self.verification_status == 'approved'
     
 # code for murtiple pictures 
 class ComplaintImage(models.Model):
