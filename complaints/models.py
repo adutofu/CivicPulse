@@ -147,6 +147,29 @@ def notify_new_complaint_govt(complaint):
             message=f'New complaint: {complaint.get_category_display()} - {complaint.description[:50]}...'
         )
 
+def notify_govt_application_submitted(profile):
+    """Notify all admins when a citizen applies to become a Government Officer"""
+    from django.contrib.auth.models import User
+    admins = User.objects.filter(is_staff=True)
+    for admin_user in admins:
+        create_notification(
+            user=admin_user,
+            complaint=None,
+            notification_type='new_complaint',  # reuses existing type; add 'govt_application' below if you want a dedicated one
+            title='New Government Officer Application',
+            message=f'{profile.user.username} has applied to become a Government Officer and is awaiting ID verification.'
+        )
+
+def notify_govt_application_reviewed(profile):
+    """Notify the applicant once an admin approves or rejects their application"""
+    create_notification(
+        user=profile.user,
+        complaint=None,
+        notification_type='status_change',  # reuses existing type; see note above
+        title='Government Officer Application Reviewed',
+        message=f'Your application to become a Government Officer was {profile.verification_status}.'
+    )
+
 def create_govt_reminders():
     """Create reminder notifications for government users about pending complaints"""
     from django.contrib.auth.models import User
