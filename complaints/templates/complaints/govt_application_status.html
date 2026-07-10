@@ -1,0 +1,72 @@
+{% extends 'complaints/base.html' %}
+
+{% block title %}Application Status – CivicPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-card {
+        background: var(--surface-card);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        max-width: 560px;
+        margin: 2rem auto;
+        box-shadow: var(--shadow-md);
+        text-align: center;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 1.2rem;
+        border-radius: 34px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin: 1rem 0 1.5rem;
+    }
+
+    .status-pending {
+        background: rgba(255, 193, 7, 0.15);
+        border: 1.5px solid #ffc107;
+        color: #ffc107;
+    }
+
+    .status-approved {
+        background: rgba(0, 212, 255, 0.15);
+        border: 1.5px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+    }
+
+    .status-rejected {
+        background: rgba(255, 70, 70, 0.15);
+        border: 1.5px solid #ff6b6b;
+        color: #ff6b6b;
+    }
+
+    .status-card p {
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="status-card">
+    <h1>Application Status</h1>
+
+    {% if profile.verification_status == 'pending' %}
+    <span class="status-badge status-pending">Pending Review</span>
+    <p>Your application to become a Government Official is being reviewed by an admin. You'll be notified once a
+        decision is made.</p>
+    {% elif profile.verification_status == 'approved' %}
+    <span class="status-badge status-approved">Approved</span>
+    <p>Your application was approved. You now have access to the Government Dashboard.</p>
+    {% elif profile.verification_status == 'rejected' %}
+    <span class="status-badge status-rejected">Rejected</span>
+    <p>Your application was not approved at this time.</p>
+    {% endif %}
+
+    <p style="margin-top:1.5rem;"><strong>Agency:</strong> {{ profile.agency|default:"—" }}</p>
+    {% if profile.applied_at %}
+    <p><strong>Applied:</strong> {{ profile.applied_at|date:"M d, Y" }}</p>
+    {% endif %}
+</div>
+{% endblock %}
