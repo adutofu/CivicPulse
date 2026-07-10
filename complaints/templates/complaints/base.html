@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}CivicPulse – Citizen Engagement Platform{% endblock %}</title>
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Bootstrap 5 CSS (required for grid, cards, etc. used in About page) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Leaflet CSS (optional, only if you use maps) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -28,14 +31,17 @@
             --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
             --radius-lg: 20px;
             --transition: all 0.25s ease;
-            --primary: #00D4FF;    /* for about page inline styles */
+            --primary: #00D4FF;
+            /* for about page inline styles */
             --secondary: #0A1428;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Inter', 'Space Grotesk', sans-serif;
             background-color: var(--dark-bg);
@@ -43,6 +49,7 @@
             line-height: 1.5;
             overflow-x: hidden;
         }
+
         /* Header (glassmorphism) */
         header {
             background: rgba(11, 15, 26, 0.92);
@@ -53,6 +60,7 @@
             z-index: 1000;
             padding: 0.8rem 0;
         }
+
         .header-container {
             max-width: 1280px;
             margin: 0 auto;
@@ -63,17 +71,20 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
+
         .logo-svg svg {
             height: 50px;
             width: auto;
-            filter: drop-shadow(0 2px 6px rgba(0,212,255,0.3));
+            filter: drop-shadow(0 2px 6px rgba(0, 212, 255, 0.3));
         }
+
         nav {
             display: flex;
             gap: 1.15rem;
             align-items: center;
             flex-wrap: wrap;
         }
+
         nav a {
             color: var(--text-secondary);
             text-decoration: none;
@@ -83,6 +94,7 @@
             position: relative;
             padding: 0.2rem 0;
         }
+
         nav a::after {
             content: '';
             position: absolute;
@@ -93,12 +105,15 @@
             background: var(--brand-cyan);
             transition: width 0.3s ease;
         }
+
         nav a:hover::after {
             width: 100%;
         }
+
         nav a:hover {
             color: var(--white);
         }
+
         /* Button styles */
         .nav-buttons {
             display: flex;
@@ -106,7 +121,12 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .btn-login, .btn-signup, .btn-dashboard, .btn-report, .btn-logout {
+
+        .btn-login,
+        .btn-signup,
+        .btn-dashboard,
+        .btn-report,
+        .btn-logout {
             padding: 0.45rem 1.15rem;
             border-radius: 34px;
             font-weight: 600;
@@ -116,45 +136,58 @@
             font-size: 0.88rem;
             min-width: auto;
         }
-        .btn-login, .btn-dashboard, .btn-report {
+
+        .btn-login,
+        .btn-dashboard,
+        .btn-report {
             background: transparent;
             border: 1.5px solid var(--brand-cyan);
             color: var(--brand-cyan);
         }
-        .btn-login:hover, .btn-dashboard:hover, .btn-report:hover {
+
+        .btn-login:hover,
+        .btn-dashboard:hover,
+        .btn-report:hover {
             background: var(--brand-cyan);
             color: var(--dark-bg);
             box-shadow: 0 0 12px var(--brand-cyan-glow);
         }
+
         .btn-signup {
             background: var(--brand-cyan);
             color: #0B0F1A;
             border: none;
-            box-shadow: 0 2px 8px rgba(0,212,255,0.3);
+            box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
         }
+
         .btn-signup:hover {
             background: var(--brand-cyan-deep);
             transform: translateY(-2px);
         }
+
         .btn-logout {
             background: rgba(255, 70, 70, 0.15);
             border: 1.5px solid #ff6b6b;
             color: #ff6b6b;
         }
+
         .btn-logout:hover {
             background: #ff6b6b;
             color: #0B0F1A;
             transform: translateY(-2px);
         }
+
         /* Main container */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 2rem;
         }
+
         main {
             padding: 2rem 0 4rem;
         }
+
         /* Footer */
         footer {
             background: #060A12;
@@ -162,6 +195,7 @@
             margin-top: 3rem;
             padding: 3.5rem 0 2rem;
         }
+
         .footer-content {
             max-width: 1280px;
             margin: 0 auto;
@@ -170,28 +204,33 @@
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 2.5rem;
         }
+
         .footer-section h4 {
             color: var(--brand-cyan);
             margin-bottom: 1rem;
         }
+
         .footer-section a {
             color: var(--text-secondary);
             text-decoration: none;
             transition: 0.2s;
         }
+
         .footer-section a:hover {
             color: var(--brand-cyan);
         }
+
         .social-links {
             display: flex;
             gap: 1rem;
             margin-top: 1rem;
         }
+
         .social-links a {
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: rgba(0,212,255,0.15);
+            background: rgba(0, 212, 255, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -199,50 +238,61 @@
             border: 1px solid var(--brand-cyan);
             text-decoration: none;
         }
+
         .footer-bottom {
             text-align: center;
             padding-top: 2rem;
             color: var(--text-muted);
             font-size: 0.8rem;
         }
+
         /* Bootstrap card overrides for dark theme */
         .card {
             background-color: rgba(26, 35, 50, 0.7);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(0,212,255,0.2);
+            border: 1px solid rgba(0, 212, 255, 0.2);
             color: var(--text-primary);
         }
+
         .responsive-table {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
+
         .responsive-table table {
             min-width: 100%;
         }
+
         .full-width-mobile {
             width: 100%;
             max-width: 100%;
         }
+
         .stack-on-mobile {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem;
         }
-        .stack-on-mobile > * {
+
+        .stack-on-mobile>* {
             flex: 1 1 100%;
             min-width: 0;
         }
+
         .break-long-text {
             overflow-wrap: anywhere;
             word-wrap: break-word;
         }
+
         .card.bg-light {
             background-color: rgba(18, 25, 45, 0.65) !important;
         }
+
         .text-dark {
             color: var(--text-primary) !important;
         }
+
         /* Custom classes used by About page (so they don't break) */
         .hero-mini {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -252,17 +302,21 @@
             margin-bottom: 2rem;
             text-align: center;
         }
+
         .hero-mini h1 {
             font-size: 2.5rem;
             font-weight: 800;
         }
+
         .mission-card {
             border-left: 4px solid var(--primary);
             transition: transform 0.2s;
         }
+
         .mission-card:hover {
             transform: translateY(-5px);
         }
+
         /* Responsive */
         @media (max-width: 860px) {
             .header-container {
@@ -270,19 +324,23 @@
                 text-align: center;
                 gap: 1rem;
             }
+
             nav {
                 justify-content: center;
             }
+
             .nav-buttons {
                 justify-content: center;
                 flex-wrap: wrap;
             }
+
             .notification-container {
                 width: 100%;
                 display: flex;
                 justify-content: center;
                 margin-top: 0.5rem;
             }
+
             .notification-dropdown {
                 left: 50%;
                 transform: translateX(-50%);
@@ -290,39 +348,49 @@
                 width: min(95vw, 360px);
             }
         }
+
         @media (max-width: 720px) {
             nav {
                 gap: 0.8rem;
             }
+
             nav a {
                 font-size: 0.95rem;
             }
+
             .nav-buttons {
                 gap: 0.85rem;
                 justify-content: center;
                 flex-wrap: wrap;
             }
-            .btn-login, .btn-signup, .btn-dashboard, .btn-report, .btn-logout {
+
+            .btn-login,
+            .btn-signup,
+            .btn-dashboard,
+            .btn-report,
+            .btn-logout {
                 width: auto;
                 max-width: 100%;
                 padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
+
             header {
                 padding: 0.7rem 0;
             }
+
             main {
                 padding: 1.8rem 0 3rem;
             }
         }
-        
+
         /* Notification System Styles */
         .notification-container {
             position: relative;
             display: inline-block;
             margin-left: 10px;
         }
-        
+
         .notification-btn {
             background: rgba(0, 212, 255, 0.08);
             border: 1px solid var(--brand-cyan);
@@ -338,23 +406,23 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .notification-btn:hover {
             background: rgba(0, 212, 255, 0.2);
             color: var(--dark-bg);
         }
-        
+
         .bell-icon {
             font-size: 20px;
             color: var(--brand-cyan);
             filter: drop-shadow(0 0 3px var(--brand-cyan));
         }
-        
+
         .notification-btn:hover .bell-icon {
             color: var(--dark-bg);
             filter: drop-shadow(0 0 3px var(--dark-bg));
         }
-        
+
         .notification-badge {
             position: absolute;
             top: -5px;
@@ -369,7 +437,7 @@
             text-align: center;
             font-weight: 700;
         }
-        
+
         .notification-dropdown {
             position: absolute;
             top: 100%;
@@ -383,7 +451,7 @@
             box-shadow: 0 14px 36px rgba(0, 212, 255, 0.18);
             backdrop-filter: blur(14px);
         }
-        
+
         .notification-header {
             padding: 16px 18px;
             border-bottom: 1px solid rgba(0, 212, 255, 0.18);
@@ -391,12 +459,12 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .notification-header h4 {
             margin: 0;
             color: var(--brand-cyan);
         }
-        
+
         .mark-all-read-btn {
             background: var(--brand-cyan);
             color: var(--dark-bg);
@@ -406,12 +474,12 @@
             cursor: pointer;
             font-size: 12px;
         }
-        
+
         .notification-list {
             max-height: 300px;
             overflow-y: auto;
         }
-        
+
         .notification-item {
             padding: 14px 16px;
             border-bottom: 1px solid rgba(0, 212, 255, 0.08);
@@ -420,289 +488,301 @@
             background: rgba(12, 18, 30, 0.8);
             color: var(--text-primary);
         }
-        
+
         .notification-item:hover {
             background: rgba(0, 212, 255, 0.12);
         }
-        
+
         .notification-item.unread {
             background: rgba(0, 212, 255, 0.14);
             border-left: 3px solid var(--brand-cyan);
         }
-        
+
         .notification-item .title {
             font-weight: 600;
             color: var(--white);
             margin-bottom: 5px;
         }
-        
+
         .notification-item .message {
             font-size: 14px;
             color: rgba(224, 228, 250, 0.82);
             margin-bottom: 6px;
             line-height: 1.4;
         }
-        
+
         .notification-item .time {
             font-size: 12px;
             color: var(--text-muted);
         }
-        
+
         .notification-empty {
             padding: 20px;
             text-align: center;
             color: var(--text-muted);
         }
     </style>
-    
+
     <!-- Extra CSS from child pages -->
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
-<header>
-    <div class="header-container">
-        <div class="logo-svg">
-            <svg width="200" height="60" viewBox="0 0 250 80" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 40 L30 40 L35 25 L45 55 L50 40 L70 40" stroke="#00D4FF" stroke-width="4" fill="none" stroke-linecap="round"/>
-                <rect x="33" y="25" width="4" height="15" fill="#00D4FF" opacity="0.5" />
-                <rect x="43" y="40" width="4" height="15" fill="#00D4FF" opacity="0.5" />
-                <text x="80" y="52" font-family="'Space Grotesk', Arial, sans-serif" font-weight="bold" font-size="28" fill="#FFFFFF">Civic<tspan fill="#00D4FF">Pulse</tspan></text>
-                <text x="80" y="70" font-family="'Inter', Arial, sans-serif" font-size="10" letter-spacing="2" fill="#AAAAAA" style="text-transform:uppercase;">MAPPING ISSUES • POWERING SOLUTIONS</text>
-            </svg>
-        </div>
-        <nav>
-            <a href="/">Home</a>
-            {#<a href="{% url 'update_complaint' %}">Updates</a>#}
-            <a href="{% url 'about' %}">About</a>
-            <a href="{% url 'contact' %}">Contact</a>
-            {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+    <header>
+        <div class="header-container">
+            <div class="logo-svg">
+                <svg width="200" height="60" viewBox="0 0 250 80" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 40 L30 40 L35 25 L45 55 L50 40 L70 40" stroke="#00D4FF" stroke-width="4" fill="none"
+                        stroke-linecap="round" />
+                    <rect x="33" y="25" width="4" height="15" fill="#00D4FF" opacity="0.5" />
+                    <rect x="43" y="40" width="4" height="15" fill="#00D4FF" opacity="0.5" />
+                    <text x="80" y="52" font-family="'Space Grotesk', Arial, sans-serif" font-weight="bold"
+                        font-size="28" fill="#FFFFFF">Civic<tspan fill="#00D4FF">Pulse</tspan></text>
+                    <text x="80" y="70" font-family="'Inter', Arial, sans-serif" font-size="10" letter-spacing="2"
+                        fill="#AAAAAA" style="text-transform:uppercase;">MAPPING ISSUES • POWERING SOLUTIONS</text>
+                </svg>
+            </div>
+            <nav>
+                <a href="/">Home</a>
+                <a href="{% url 'update_complaint' %}">Updates</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'contact' %}">Contact</a>
+                {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
                 <a href="{% url 'community_complaints' %}">Community</a>
-            {% endif %}
-        </nav>
-        <div class="nav-buttons">
-            {% if user.is_authenticated %}
+                {% if user.profile.verification_status == 'not_applicable' %}
+                <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
+                {% endif %}
+                {% endif %}
+                {% if user.is_staff %}
+                <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
+                {% endif %}
+            </nav>
+            <div class="nav-buttons">
+                {% if user.is_authenticated %}
                 {% if user.profile.user_type == 'govt' %}
-                    <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
+                <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
                 {% else %}
-                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
+                <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
                 {% endif %}
                 <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn-logout">Logout</button>
                 </form>
-            {% else %}
+                {% else %}
                 <a href="{% url 'login' %}" class="btn-login">Login</a>
                 <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
+                {% endif %}
+            </div>
+
+            {% if user.is_authenticated %}
+            <!-- Notification System -->
+            <div class="notification-container">
+                <button id="notification-btn" class="notification-btn" type="button" aria-expanded="false"
+                    aria-haspopup="true">
+                    <span class="bell-icon">🔔</span>
+                    <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
+                </button>
+
+                <div id="notification-dropdown" class="notification-dropdown" style="display: none;"
+                    aria-label="Notifications">
+                    <div class="notification-header">
+                        <h4>Notifications</h4>
+                        <button id="mark-all-read-btn" class="mark-all-read-btn" type="button">Mark All Read</button>
+                    </div>
+                    <div id="notification-list" class="notification-list">
+                        <div class="notification-empty">Loading notifications…</div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
         </div>
-        
-        {% if user.is_authenticated %}
-        <!-- Notification System -->
-        <div class="notification-container">
-            <button id="notification-btn" class="notification-btn" type="button" aria-expanded="false" aria-haspopup="true">
-                <span class="bell-icon">🔔</span>
-                <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
-            </button>
-            
-            <div id="notification-dropdown" class="notification-dropdown" style="display: none;" aria-label="Notifications">
-                <div class="notification-header">
-                    <h4>Notifications</h4>
-                    <button id="mark-all-read-btn" class="mark-all-read-btn" type="button">Mark All Read</button>
-                </div>
-                <div id="notification-list" class="notification-list">
-                    <div class="notification-empty">Loading notifications…</div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% block content %}
+            <!-- Child template content goes here -->
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>CivicPulse</h4>
+                <p>Radical transparency. Real-time civic engagement. Built for resilient communities.</p>
+                <div class="social-links">
+                    <a href="#">𝕏</a>
+                    <a href="#">f</a>
+                    <a href="#">📷</a>
+                    <a href="#">▶</a>
                 </div>
             </div>
-        </div>
-        {% endif %}
-    </div>
-</header>
-
-<main>
-    <div class="container">
-        {% block content %}
-        <!-- Child template content goes here -->
-        {% endblock %}
-    </div>
-</main>
-
-<footer>
-    <div class="footer-content">
-        <div class="footer-section">
-            <h4>CivicPulse</h4>
-            <p>Radical transparency. Real-time civic engagement. Built for resilient communities.</p>
-            <div class="social-links">
-                <a href="#">𝕏</a>
-                <a href="#">f</a>
-                <a href="#">📷</a>
-                <a href="#">▶</a>
+            <div class="footer-section">
+                <h4>Navigate</h4>
+                <ul>
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Government partners</h4>
+                <ul>
+                    <li><a href="{% url 'login' %}">Agency Login</a></li>
+                    <li><a href="#">Request Demo</a></li>
+                    <li><a href="#">API for Agencies</a></li>
+                </ul>
             </div>
         </div>
-        <div class="footer-section">
-            <h4>Navigate</h4>
-            <ul>
-                <li><a href="{% url 'about' %}">About</a></li>
-                <li><a href="{% url 'contact' %}">Contact</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Use</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <p>© 2026 CivicPulse — Mapping issues, powering solutions. Built for Nigerian communities</p>
         </div>
-        <div class="footer-section">
-            <h4>Government partners</h4>
-            <ul>
-                <li><a href="{% url 'login' %}">Agency Login</a></li>
-                <li><a href="#">Request Demo</a></li>
-                <li><a href="#">API for Agencies</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>© 2026 CivicPulse — Mapping issues, powering solutions. Built for Nigerian communities</p>
-    </div>
-</footer>
+    </footer>
 
-<!-- Bootstrap JS (required for Bootstrap interactive components) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Leaflet JS (only if maps are used) -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Bootstrap JS (required for Bootstrap interactive components) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS (only if maps are used) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Notification System JavaScript -->
-<script>
-// Notification System with Polling
-class NotificationManager {
-    constructor() {
-        this.unreadCount = 0;
-        this.notifications = [];
-        this.isDropdownOpen = false;
-        this.pollingInterval = null;
-        this.urls = {
-            unreadCount: '{% url "get_unread_count" %}',
-            notifications: '{% url "get_notifications" %}',
-            markAllRead: '{% url "mark_all_read" %}',
-            markReadTemplate: '{% url "mark_notification_read" notification_id=0 %}',
-        };
-        this.init();
-    }
-    
-    init() {
-        this.bindEvents();
-        this.checkUnreadCount();
-        this.startPolling();
-    }
-    
-    bindEvents() {
-        this.notificationBtn = document.getElementById('notification-btn');
-        this.notificationDropdown = document.getElementById('notification-dropdown');
-        this.notificationList = document.getElementById('notification-list');
-        const markAllBtn = document.getElementById('mark-all-read-btn');
-
-        if (this.notificationBtn) {
-            this.notificationBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                this.toggleDropdown();
-            });
-        }
-        
-        if (markAllBtn) {
-            markAllBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
-                this.markAllRead();
-            });
-        }
-
-        if (this.notificationList) {
-            this.notificationList.addEventListener('click', (event) => {
-                const item = event.target.closest('.notification-item');
-                if (!item) return;
-
-                const notificationId = Number(item.dataset.id);
-                const complaintId = item.dataset.complaintId ? Number(item.dataset.complaintId) : null;
-                this.handleNotificationClick(notificationId, complaintId);
-            });
-        }
-        
-        document.addEventListener('click', (event) => {
-            if (this.notificationDropdown && !this.notificationDropdown.contains(event.target) &&
-                this.notificationBtn && !this.notificationBtn.contains(event.target)) {
-                this.closeDropdown();
-            }
-        });
-    }
-    
-    startPolling() {
-        this.pollingInterval = setInterval(() => {
-            this.checkUnreadCount();
-        }, 30000);
-    }
-    
-    async checkUnreadCount() {
-        try {
-            const response = await fetch(this.urls.unreadCount, {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: { 'Accept': 'application/json' },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Unread count request failed (${response.status})`);
+    <!-- Notification System JavaScript -->
+    <script>
+        // Notification System with Polling
+        class NotificationManager {
+            constructor() {
+                this.unreadCount = 0;
+                this.notifications = [];
+                this.isDropdownOpen = false;
+                this.pollingInterval = null;
+                this.urls = {
+                    unreadCount: '{% url "get_unread_count" %}',
+                    notifications: '{% url "get_notifications" %}',
+                    markAllRead: '{% url "mark_all_read" %}',
+                    markReadTemplate: '{% url "mark_notification_read" notification_id=0 %}',
+                };
+                this.init();
             }
 
-            const data = await response.json();
-            if (typeof data.unread_count !== 'number') {
-                throw new Error('Unread count missing in response');
+            init() {
+                this.bindEvents();
+                this.checkUnreadCount();
+                this.startPolling();
             }
 
-            if (data.unread_count !== this.unreadCount) {
-                this.unreadCount = data.unread_count;
-                this.updateBadge();
-                if (this.isDropdownOpen) {
-                    this.loadNotifications();
+            bindEvents() {
+                this.notificationBtn = document.getElementById('notification-btn');
+                this.notificationDropdown = document.getElementById('notification-dropdown');
+                this.notificationList = document.getElementById('notification-list');
+                const markAllBtn = document.getElementById('mark-all-read-btn');
+
+                if (this.notificationBtn) {
+                    this.notificationBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        this.toggleDropdown();
+                    });
+                }
+
+                if (markAllBtn) {
+                    markAllBtn.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        this.markAllRead();
+                    });
+                }
+
+                if (this.notificationList) {
+                    this.notificationList.addEventListener('click', (event) => {
+                        const item = event.target.closest('.notification-item');
+                        if (!item) return;
+
+                        const notificationId = Number(item.dataset.id);
+                        const complaintId = item.dataset.complaintId ? Number(item.dataset.complaintId) : null;
+                        this.handleNotificationClick(notificationId, complaintId);
+                    });
+                }
+
+                document.addEventListener('click', (event) => {
+                    if (this.notificationDropdown && !this.notificationDropdown.contains(event.target) &&
+                        this.notificationBtn && !this.notificationBtn.contains(event.target)) {
+                        this.closeDropdown();
+                    }
+                });
+            }
+
+            startPolling() {
+                this.pollingInterval = setInterval(() => {
+                    this.checkUnreadCount();
+                }, 30000);
+            }
+
+            async checkUnreadCount() {
+                try {
+                    const response = await fetch(this.urls.unreadCount, {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Unread count request failed (${response.status})`);
+                    }
+
+                    const data = await response.json();
+                    if (typeof data.unread_count !== 'number') {
+                        throw new Error('Unread count missing in response');
+                    }
+
+                    if (data.unread_count !== this.unreadCount) {
+                        this.unreadCount = data.unread_count;
+                        this.updateBadge();
+                        if (this.isDropdownOpen) {
+                            this.loadNotifications();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking unread count:', error);
+                    this.displayError('Could not load unread count.');
                 }
             }
-        } catch (error) {
-            console.error('Error checking unread count:', error);
-            this.displayError('Could not load unread count.');
-        }
-    }
-    
-    async loadNotifications() {
-        try {
-            const response = await fetch(this.urls.notifications, {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: { 'Accept': 'application/json' },
-            });
 
-            if (!response.ok) {
-                throw new Error(`Notifications request failed (${response.status})`);
+            async loadNotifications() {
+                try {
+                    const response = await fetch(this.urls.notifications, {
+                        method: 'GET',
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Notifications request failed (${response.status})`);
+                    }
+
+                    const data = await response.json();
+                    if (!Array.isArray(data.notifications)) {
+                        throw new Error('Invalid notifications payload');
+                    }
+
+                    this.notifications = data.notifications;
+                    this.unreadCount = this.notifications.filter(notification => !notification.is_read).length;
+                    this.updateBadge();
+                    this.renderNotifications();
+                } catch (error) {
+                    console.error('Error loading notifications:', error);
+                    this.displayError('Could not load notifications.');
+                }
             }
 
-            const data = await response.json();
-            if (!Array.isArray(data.notifications)) {
-                throw new Error('Invalid notifications payload');
-            }
+            renderNotifications() {
+                if (!this.notificationList) return;
 
-            this.notifications = data.notifications;
-            this.unreadCount = this.notifications.filter(notification => !notification.is_read).length;
-            this.updateBadge();
-            this.renderNotifications();
-        } catch (error) {
-            console.error('Error loading notifications:', error);
-            this.displayError('Could not load notifications.');
-        }
-    }
-    
-    renderNotifications() {
-        if (!this.notificationList) return;
+                if (this.notifications.length === 0) {
+                    this.notificationList.innerHTML = '<div class="notification-empty">No notifications yet</div>';
+                    return;
+                }
 
-        if (this.notifications.length === 0) {
-            this.notificationList.innerHTML = '<div class="notification-empty">No notifications yet</div>';
-            return;
-        }
-
-        this.notificationList.innerHTML = this.notifications.map(notification => `
+                this.notificationList.innerHTML = this.notifications.map(notification => `
             <div class="notification-item ${notification.is_read ? '' : 'unread'}"
                  data-id="${notification.id}"
                  data-complaint-id="${notification.complaint_id || ''}">
@@ -711,124 +791,125 @@ class NotificationManager {
                 <div class="time">${notification.created_at}</div>
             </div>
         `).join('');
-    }
-    
-    toggleDropdown() {
-        if (!this.notificationDropdown) return;
-        this.isDropdownOpen = !this.isDropdownOpen;
-        this.notificationDropdown.style.display = this.isDropdownOpen ? 'block' : 'none';
-        if (this.isDropdownOpen) {
-            this.loadNotifications();
-        }
-    }
-    
-    closeDropdown() {
-        if (this.notificationDropdown) {
-            this.notificationDropdown.style.display = 'none';
-        }
-        this.isDropdownOpen = false;
-    }
-    
-    async handleNotificationClick(notificationId, complaintId) {
-        await this.markAsRead(notificationId);
-        if (complaintId) {
-            window.location.href = `/complaint/${complaintId}/`;
-        }
-    }
-    
-    async markAsRead(notificationId) {
-        try {
-            const url = this.urls.markReadTemplate.replace('/0/', `/${notificationId}/`);
-            const response = await fetch(url, {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken(),
-                    'Accept': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Mark read failed (${response.status})`);
             }
 
-            const notification = this.notifications.find(n => n.id === notificationId);
-            if (notification) {
-                notification.is_read = true;
-            }
-            this.unreadCount = Math.max(0, this.notifications.filter(n => !n.is_read).length);
-            this.updateBadge();
-            this.renderNotifications();
-        } catch (error) {
-            console.error('Error marking notification as read:', error);
-            this.displayError('Could not mark notification read.');
-        }
-    }
-    
-    async markAllRead() {
-        try {
-            const response = await fetch(this.urls.markAllRead, {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': this.getCSRFToken(),
-                    'Accept': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Mark all read failed (${response.status})`);
+            toggleDropdown() {
+                if (!this.notificationDropdown) return;
+                this.isDropdownOpen = !this.isDropdownOpen;
+                this.notificationDropdown.style.display = this.isDropdownOpen ? 'block' : 'none';
+                if (this.isDropdownOpen) {
+                    this.loadNotifications();
+                }
             }
 
-            this.notifications.forEach(n => n.is_read = true);
-            this.unreadCount = 0;
-            this.updateBadge();
-            this.renderNotifications();
-        } catch (error) {
-            console.error('Error marking all notifications as read:', error);
-            this.displayError('Could not mark all notifications read.');
-        }
-    }
-    
-    updateBadge() {
-        const badge = document.getElementById('notification-badge');
-        if (!badge) return;
-        if (this.unreadCount > 0) {
-            badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
-            badge.style.display = 'inline-flex';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-    
-    displayError(message) {
-        if (!this.notificationList) return;
-        this.notificationList.innerHTML = `<div class="notification-empty">${message}</div>`;
-    }
-    
-    getCSRFToken() {
-        const name = 'csrftoken';
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            const trimmed = cookie.trim();
-            if (trimmed.startsWith(name + '=')) {
-                return decodeURIComponent(trimmed.substring(name.length + 1));
+            closeDropdown() {
+                if (this.notificationDropdown) {
+                    this.notificationDropdown.style.display = 'none';
+                }
+                this.isDropdownOpen = false;
+            }
+
+            async handleNotificationClick(notificationId, complaintId) {
+                await this.markAsRead(notificationId);
+                if (complaintId) {
+                    window.location.href = `/complaint/${complaintId}/`;
+                }
+            }
+
+            async markAsRead(notificationId) {
+                try {
+                    const url = this.urls.markReadTemplate.replace('/0/', `/${notificationId}/`);
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': this.getCSRFToken(),
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Mark read failed (${response.status})`);
+                    }
+
+                    const notification = this.notifications.find(n => n.id === notificationId);
+                    if (notification) {
+                        notification.is_read = true;
+                    }
+                    this.unreadCount = Math.max(0, this.notifications.filter(n => !n.is_read).length);
+                    this.updateBadge();
+                    this.renderNotifications();
+                } catch (error) {
+                    console.error('Error marking notification as read:', error);
+                    this.displayError('Could not mark notification read.');
+                }
+            }
+
+            async markAllRead() {
+                try {
+                    const response = await fetch(this.urls.markAllRead, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': this.getCSRFToken(),
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Mark all read failed (${response.status})`);
+                    }
+
+                    this.notifications.forEach(n => n.is_read = true);
+                    this.unreadCount = 0;
+                    this.updateBadge();
+                    this.renderNotifications();
+                } catch (error) {
+                    console.error('Error marking all notifications as read:', error);
+                    this.displayError('Could not mark all notifications read.');
+                }
+            }
+
+            updateBadge() {
+                const badge = document.getElementById('notification-badge');
+                if (!badge) return;
+                if (this.unreadCount > 0) {
+                    badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
+                    badge.style.display = 'inline-flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            displayError(message) {
+                if (!this.notificationList) return;
+                this.notificationList.innerHTML = `<div class="notification-empty">${message}</div>`;
+            }
+
+            getCSRFToken() {
+                const name = 'csrftoken';
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const trimmed = cookie.trim();
+                    if (trimmed.startsWith(name + '=')) {
+                        return decodeURIComponent(trimmed.substring(name.length + 1));
+                    }
+                }
+                return '';
             }
         }
-        return '';
-    }
-}
 
-let notificationManager;
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.querySelector('.notification-container')) {
-        notificationManager = new NotificationManager();
-    }
-});
-</script>
+        let notificationManager;
+        document.addEventListener('DOMContentLoaded', function () {
+            if (document.querySelector('.notification-container')) {
+                notificationManager = new NotificationManager();
+            }
+        });
+    </script>
 
-{% block extra_js %}{% endblock %}
+    {% block extra_js %}{% endblock %}
 </body>
+
 </html>
