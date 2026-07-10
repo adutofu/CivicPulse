@@ -1,0 +1,99 @@
+{% extends 'complaints/base.html' %}
+
+{% block title %}Pending Applications – CivicPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .applications-wrapper {
+        background: var(--surface-card);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin: 2rem auto;
+        box-shadow: var(--shadow-md);
+    }
+
+    .applications-wrapper h1 {
+        color: var(--white);
+        margin-bottom: 1.5rem;
+    }
+
+    .applications-wrapper table {
+        color: var(--text-primary);
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .applications-wrapper th {
+        color: var(--brand-cyan);
+        text-align: left;
+        padding: 0.75rem;
+        border-bottom: 2px solid rgba(0, 212, 255, 0.25);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    .applications-wrapper td {
+        padding: 0.75rem;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.08);
+        font-size: 0.9rem;
+    }
+
+    .btn-review {
+        background: transparent;
+        border: 1.5px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+        border-radius: 34px;
+        padding: 0.35rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .btn-review:hover {
+        background: var(--brand-cyan);
+        color: var(--dark-bg);
+    }
+
+    .empty-state {
+        color: var(--text-muted);
+        padding: 2rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="applications-wrapper">
+    <h1>Pending Government Officer Applications</h1>
+
+    {% if applications %}
+    <div class="responsive-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Agency</th>
+                    <th>Applied</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td>{{ application.user.username }}</td>
+                    <td class="break-long-text">{{ application.agency|default:"—" }}</td>
+                    <td>{{ application.applied_at|date:"M d, Y" }}</td>
+                    <td><a href="{% url 'review_govt_application' profile_id=application.id %}"
+                            class="btn-review">Review</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No pending applications.</p>
+    {% endif %}
+</div>
+{% endblock %}
