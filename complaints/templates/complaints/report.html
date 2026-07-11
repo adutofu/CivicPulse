@@ -46,6 +46,9 @@
     }
 </style>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
     var map = L.map('map').setView([9.0765, 7.3986], 13);  // fallback center: Abuja
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -81,5 +84,4 @@
         );
     }
 </script>
-
 {% endblock %}
