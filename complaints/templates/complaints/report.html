@@ -18,6 +18,7 @@
         width: 100%;
         margin: 0 auto;
     }
+
     #map {
         height: 320px;
         width: 100%;
@@ -25,16 +26,20 @@
         border-radius: 18px;
         overflow: hidden;
     }
+
     form p {
         margin-bottom: 1rem;
     }
+
     @media (max-width: 768px) {
         #map {
             height: 240px;
         }
+
         .report-form-wrapper {
             padding: 0 0.5rem;
         }
+
         .full-width-mobile {
             width: 100%;
         }
@@ -42,14 +47,39 @@
 </style>
 
 <script>
-    var map = L.map('map').setView([9.0765, 7.3986], 13);
+    var map = L.map('map').setView([9.0765, 7.3986], 13);  // fallback center: Abuja
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     var marker;
-    map.on('click', function(e) {
+
+    // places or moves the marker + fills hidden lat/lng inputs
+    function setMarker(lat, lng) {
         if (marker) map.removeLayer(marker);
-        marker = L.marker(e.latlng).addTo(map);
-        document.getElementById('lat').value = e.latlng.lat;
-        document.getElementById('lng').value = e.latlng.lng;
+        marker = L.marker([lat, lng]).addTo(map);
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
+    }
+
+    // existing manual click-to-pin — unchanged, always available as fallback
+    map.on('click', function (e) {
+        setMarker(e.latlng.lat, e.latlng.lng);
     });
+
+    // NEW: try to auto-detect the citizen's live location on page load
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                map.setView([lat, lng], 15);   // recenter map on the citizen's real location
+                setMarker(lat, lng);            // auto-drop the pin there
+            },
+            function (error) {
+                // permission denied or unavailable — map just stays at the Abuja default,
+                // citizen falls back to clicking manually, exactly like before
+                console.log('Geolocation unavailable or denied:', error.message);
+            }
+        );
+    }
 </script>
+
 {% endblock %}
