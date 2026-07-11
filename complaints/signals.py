@@ -6,15 +6,21 @@ from .models import Profile, Vote, Complaint
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
     if created:
         Profile.objects.create(user=instance, user_type='citizen')
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
+    if kwargs.get('raw'):
+        return
     instance.profile.save()
 
 @receiver(post_save, sender=Vote)
 def increase_complaint_upvotes(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
     if created:
         Complaint.objects.filter(pk=instance.complaint_id).update(upvotes=F('upvotes') + 1)
 
