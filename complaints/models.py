@@ -31,6 +31,11 @@ class Complaint(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     address_text = models.CharField(max_length=255, blank=True)
+    # auto-detected via point-in-polygon lookup against Ward boundaries (GRID3 data).
+    # Nullable: GPS may be denied, or a point may fall outside all known ward boundaries.
+    ward = models.ForeignKey(
+        'Ward', on_delete=models.SET_NULL, blank=True, null=True, related_name='complaints'
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='reported')
     upvotes = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
