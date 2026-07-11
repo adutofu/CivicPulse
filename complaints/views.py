@@ -25,6 +25,8 @@ from .models import (
 )
 from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm
 from decimal import Decimal
+from django.contrib.gis.geos import Point
+from .models import Ward
 
 
 # ---------- Public Pages ----------
@@ -129,6 +131,13 @@ def report_complaint(request):
             lng_val = request.POST.get('longitude')
             complaint.latitude = Decimal(lat_val) if lat_val and lat_val.strip() else None
             complaint.longitude = Decimal(lng_val) if lng_val and lng_val.strip() else None
+
+            # auto-detect Ward (and via it, LGA + State) from the submitted point
+            if complaint.latitude is not None and complaint.longitude is not None:
+                point = Point(float(complaint.longitude), float(complaint.latitude), srid=4326)
+                matched_ward = Ward.objects.filter(boundary__contains=point).first()
+                complaint.ward = matched_ward  # stays None if point falls outside all known wards
+
             complaint.save()
             
             # Notify government users of new complaint
