@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
+# separate import for GIS-specific fields (MultiPolygonField etc.)
+
+from django.contrib.gis.db import models as gis_models
+
 
 CATEGORY_CHOICES = [
     ('roads', 'Bad Roads'),
@@ -246,4 +250,27 @@ class ComplaintImage(models.Model):
     
     def __str__(self):
         return f"Image for complaint #{self.complaint.id}"
+
+
+# Ward boundaries (Nigeria) — used for auto-detecting State/LGA/Ward from a
+# reported complaint's lat/long, sourced from GRID3 GeoPackage data.
+# One row per Ward; each Ward carries its parent LGA and State as plain fields.
+class Ward(models.Model):
+    country = models.CharField(max_length=10, blank=True)         # e.g. "Nigeria"
+    iso3 = models.CharField(max_length=5, blank=True)              # e.g. "NGA"
+    state = models.CharField(max_length=50)                        # e.g. "Oyo"
+    statecode = models.CharField(max_length=5, blank=True)         # e.g. state abbreviation/code
+    lga = models.CharField(max_length=50)                          # e.g. "Akinyele"
+    ward = models.CharField(max_length=50)                         # smallest admin unit, e.g. "Ojedeji"
+    area_sqkm = models.IntegerField(blank=True, null=True)         # ward area in square km (from source data)
+    boundary = gis_models.MultiPolygonField(srid=4326)             # actual polygon shape, WGS84 (same CRS as lat/long)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['state']),  # speeds up "all wards in this state" queries
+            models.Index(fields=['lga']),    # speeds up "all wards in this LGA" queries
+        ]
+
+    def __str__(self):
+        return f"{self.ward}, {self.lga}, {self.state}"
     
