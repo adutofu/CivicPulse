@@ -45,3 +45,8 @@ static/
 #REACT
 node_modules/
 *.local
+
+#Postgres
+
+data_backup.json
+db.sqlite3.backup
