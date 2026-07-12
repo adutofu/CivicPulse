@@ -4,7 +4,7 @@ from .models import Complaint, ComplaintImage, Profile
 class ComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
-        fields = ['category', 'description', 'photo']  # 'latitude', 'longitude']
+        fields = ['category', 'description', 'photo', 'address_text']
 
 # additon of multiple image
 class ExtraImageForm(forms.ModelForm):
