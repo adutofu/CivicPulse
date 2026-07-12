@@ -50,15 +50,14 @@
 
 {% block extra_js %}
 <script>
-    var map = L.map('map').setView([9.0765, 7.3986], 13);  // fallback center: Abuja
+    var map = L.map('map').setView([9.0765, 7.3986], 13);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors © CARTO',
-        maxZoom: 30
+        maxZoom: 19
     }).addTo(map);
-
     var marker;
+    var userPickedManually = false;  // NEW: tracks if citizen already chose a spot
 
-    // places or moves the marker + fills hidden lat/lng inputs
     function setMarker(lat, lng) {
         if (marker) map.removeLayer(marker);
         marker = L.marker([lat, lng]).addTo(map);
@@ -66,23 +65,22 @@
         document.getElementById('lng').value = lng;
     }
 
-    // existing manual click-to-pin — unchanged, always available as fallback
     map.on('click', function (e) {
+        userPickedManually = true;      // citizen took control — never auto-override after this
         setMarker(e.latlng.lat, e.latlng.lng);
     });
 
-    // NEW: try to auto-detect the citizen's live location on page load
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function (position) {
+                if (userPickedManually) return;  // NEW: respect the citizen's manual choice
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
-                map.setView([lat, lng], 15);   // recenter map on the citizen's real location
-                setMarker(lat, lng);            // auto-drop the pin there
+                console.log('Geolocation accuracy (meters):', position.coords.accuracy);  // diagnostic
+                map.setView([lat, lng], 15);
+                setMarker(lat, lng);
             },
             function (error) {
-                // permission denied or unavailable — map just stays at the Abuja default,
-                // citizen falls back to clicking manually, exactly like before
                 console.log('Geolocation unavailable or denied:', error.message);
             }
         );
