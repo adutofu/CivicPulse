@@ -26,6 +26,8 @@ from .models import (
 from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm
 from decimal import Decimal
 from django.contrib.gis.geos import Point
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.measure import D
 from .models import Ward
 
 
@@ -135,6 +137,7 @@ def report_complaint(request):
             # auto-detect Ward (and via it, LGA + State) from the submitted point
             if complaint.latitude is not None and complaint.longitude is not None:
                 point = Point(float(complaint.longitude), float(complaint.latitude), srid=4326)
+                complaint.location = point
                 matched_ward = Ward.objects.filter(boundary__contains=point).first()
                 complaint.ward = matched_ward  # stays None if point falls outside all known wards
 
@@ -173,6 +176,38 @@ def get_trending_complaints(request):
             'created_at': complaint.created_at.strftime('%Y-%m-%d %H:%M'),
         }
         for complaint in trending
+    ]})
+
+# ---------- Nearby complaints (landing page map) ----------
+def get_nearby_complaints(request):
+    """API endpoint: complaints within 10km of a given lat/lng, for the landing page map"""
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+    if not lat or not lng:
+        return JsonResponse({'error': 'lat and lng are required'}, status=400)
+
+    try:
+        user_point = Point(float(lng), float(lat), srid=4326)
+    except ValueError:
+        return JsonResponse({'error': 'invalid lat/lng'}, status=400)
+
+    nearby = (
+        Complaint.objects
+        .filter(location__isnull=False, location__distance_lte=(user_point, D(km=10)))
+        .annotate(distance=Distance('location', user_point))
+        .order_by('distance')[:20]
+    )
+
+    return JsonResponse({'complaints': [
+        {
+            'id': c.id,
+            'category': c.get_category_display(),
+            'description': c.description[:100],
+            'status': c.get_status_display(),
+            'lat': c.latitude,
+            'lng': c.longitude,
+        }
+        for c in nearby
     ]})
 
 @require_POST
