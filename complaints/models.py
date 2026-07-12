@@ -31,6 +31,8 @@ class Complaint(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     address_text = models.CharField(max_length=255, blank=True)
+    # GIS point mirror of latitude/longitude — enables fast PostGIS distance queries
+    location = gis_models.PointField(srid=4326, blank=True, null=True)
     # auto-detected via point-in-polygon lookup against Ward boundaries (GRID3 data).
     # Nullable: GPS may be denied, or a point may fall outside all known ward boundaries.
     ward = models.ForeignKey(
