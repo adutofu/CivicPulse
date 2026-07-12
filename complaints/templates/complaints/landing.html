@@ -4,537 +4,696 @@
 {% block title %}CivicPulse – Interactive Citizen Dashboard{% endblock %}
 
 {% block extra_css %}
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        :root {
-            --brand-cyan: #00D4FF;
-            --brand-cyan-deep: #00A3CC;
-            --brand-cyan-glow: rgba(0, 212, 255, 0.3);
-            --dark-bg: #0B0F1A;
-            --surface-dark: #111827;
-            --surface-card: rgba(26, 35, 50, 0.7);
-            --border-dim: rgba(38, 49, 69, 0.6);
-            --text-primary: #F0F4FA;
-            --text-secondary: #B0C4DE;
-            --text-muted: #7C8BA0;
-            --white: #FFFFFF;
-            --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
-            --shadow-glow: 0 4px 14px rgba(0, 212, 255, 0.25);
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
+    :root {
+        --brand-cyan: #00D4FF;
+        --brand-cyan-deep: #00A3CC;
+        --brand-cyan-glow: rgba(0, 212, 255, 0.3);
+        --dark-bg: #0B0F1A;
+        --surface-dark: #111827;
+        --surface-card: rgba(26, 35, 50, 0.7);
+        --border-dim: rgba(38, 49, 69, 0.6);
+        --text-primary: #F0F4FA;
+        --text-secondary: #B0C4DE;
+        --text-muted: #7C8BA0;
+        --white: #FFFFFF;
+        --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
+        --shadow-glow: 0 4px 14px rgba(0, 212, 255, 0.25);
+        --radius-md: 12px;
+        --radius-lg: 20px;
+        --transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
 
-        body {
-            font-family: 'Inter', 'Space Grotesk', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-primary);
-            line-height: 1.5;
-            overflow-x: hidden;
-        }
+    body {
+        font-family: 'Inter', 'Space Grotesk', sans-serif;
+        background-color: var(--dark-bg);
+        color: var(--text-primary);
+        line-height: 1.5;
+        overflow-x: hidden;
+    }
 
-        .glass-card {
-            background: rgba(18, 25, 45, 0.65);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 212, 255, 0.25);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-        }
+    .glass-card {
+        background: rgba(18, 25, 45, 0.65);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+    }
 
-        .btn-primary {
-            background: var(--brand-cyan);
-            color: #0B0F1A;
-            padding: 0.9rem 2.5rem;
-            font-weight: 700;
-            border-radius: 60px;
-            text-decoration: none;
-            display: inline-block;
-            box-shadow: 0 6px 14px rgba(0,212,255,0.4);
-            transition: 0.2s;
-            position: relative;
-        }
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            border-radius: 60px;
-            background: rgba(0,212,255,0.4);
+    .btn-primary {
+        background: var(--brand-cyan);
+        color: #0B0F1A;
+        padding: 0.9rem 2.5rem;
+        font-weight: 700;
+        border-radius: 60px;
+        text-decoration: none;
+        display: inline-block;
+        box-shadow: 0 6px 14px rgba(0, 212, 255, 0.4);
+        transition: 0.2s;
+        position: relative;
+    }
+
+    .btn-primary::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        border-radius: 60px;
+        background: rgba(0, 212, 255, 0.4);
+        transform: translate(-50%, -50%) scale(0.9);
+        opacity: 0;
+        z-index: -1;
+        transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+    }
+
+    .pulse-animation {
+        animation: pulseRing 1.5s infinite;
+    }
+
+    @keyframes pulseRing {
+        0% {
             transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0.6;
+        }
+
+        100% {
+            transform: translate(-50%, -50%) scale(1.4);
             opacity: 0;
-            z-index: -1;
-            transition: 0.3s;
         }
-        .btn-primary:hover {
-            transform: translateY(-3px);
-        }
-        .pulse-animation {
-            animation: pulseRing 1.5s infinite;
-        }
-        @keyframes pulseRing {
-            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
-            100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
-        }
-        .btn-primary:hover::after {
-            animation: pulseRing 1s infinite;
+    }
+
+    .btn-primary:hover::after {
+        animation: pulseRing 1s infinite;
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: 1.8px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+        padding: 0.85rem 2.3rem;
+        font-weight: 600;
+        border-radius: 60px;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(0, 212, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .jumbotron {
+        background: linear-gradient(rgba(11, 15, 26, 0.32), rgba(11, 15, 26, 0.32)),
+        url("{% static 'images/Landing-Image.png' %}") center/cover no-repeat;
+        background-blend-mode: overlay;
+        filter: brightness(1.05);
+        padding: 6.5rem 2rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+    }
+
+    .jumbotron-content {
+        max-width: 1120px;
+        width: min(100%, 1120px);
+        margin: 0 auto;
+        animation: fadeUp 0.7s ease-out;
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(35px);
         }
 
-        .btn-secondary {
-            background: transparent;
-            border: 1.8px solid var(--brand-cyan);
-            color: var(--brand-cyan);
-            padding: 0.85rem 2.3rem;
-            font-weight: 600;
-            border-radius: 60px;
-            text-decoration: none;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .btn-secondary:hover {
-            background: rgba(0,212,255,0.15);
-            transform: translateY(-2px);
-        }
+    }
 
-        .jumbotron {
-            background: linear-gradient(rgba(11, 15, 26, 0.32), rgba(11, 15, 26, 0.32)),
-                url("{% static 'images/Landing-Image.png' %}") center/cover no-repeat;
-            background-blend-mode: overlay;
-            filter: brightness(1.05);
-            padding: 6.5rem 2rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
-        }
-        .jumbotron-content {
-            max-width: 1120px;
-            width: min(100%, 1120px);
-            margin: 0 auto;
-            animation: fadeUp 0.7s ease-out;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(35px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .jumbotron h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3.6rem;
-            font-weight: 800;
-            margin-bottom: 1.2rem;
-            background: linear-gradient(135deg, #FFFFFF 30%, var(--brand-cyan) 80%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-        .jumbotron p {
-            font-size: 1.2rem;
-            margin-bottom: 2.5rem;
-            color: var(--text-secondary);
-        }
-        .jumbotron-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+    .jumbotron h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3.6rem;
+        font-weight: 800;
+        margin-bottom: 1.2rem;
+        background: linear-gradient(135deg, #FFFFFF 30%, var(--brand-cyan) 80%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
+    .jumbotron p {
+        font-size: 1.2rem;
+        margin-bottom: 2.5rem;
+        color: var(--text-secondary);
+    }
 
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-        .stat-card {
-            flex: 1;
-            min-width: 180px;
-            text-align: center;
-            padding: 1.5rem;
-            background: rgba(0, 212, 255, 0.05);
-            border-radius: var(--radius-lg);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(0,212,255,0.2);
-        }
-        .stat-number {
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: var(--brand-cyan);
-            font-family: 'Space Grotesk', monospace;
-        }
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-        }
+    .jumbotron-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 
-        .map-teaser {
-            margin-bottom: 3rem;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            height: 300px;
-            width: 100%;
-            border: 1px solid var(--brand-cyan);
-        }
-        #miniMap {
-            height: 100%;
-            width: 100%;
-            background: #0A0F1F;
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .stats-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        flex: 1;
+        min-width: 180px;
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(0, 212, 255, 0.05);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .stat-number {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--brand-cyan);
+        font-family: 'Space Grotesk', monospace;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+
+    .map-teaser {
+        margin-bottom: 3rem;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        height: 300px;
+        width: 100%;
+        border: 1px solid var(--brand-cyan);
+    }
+
+    #miniMap {
+        height: 100%;
+        width: 100%;
+        background: #0A0F1F;
+    }
+
+    .steps-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+    }
+
+    .step {
+        flex: 1;
+        background: rgba(18, 25, 45, 0.7);
+        backdrop-filter: blur(8px);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        transition: 0.2s;
+    }
+
+    .step:hover {
+        transform: translateY(-5px);
+        border-color: var(--brand-cyan);
+        background: rgba(0, 212, 255, 0.1);
+    }
+
+    .step-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .step-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--brand-cyan);
+    }
+
+    .leaderboard {
+        background: rgba(18, 25, 45, 0.7);
+        backdrop-filter: blur(8px);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+        border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .leaderboard h3 {
+        margin-bottom: 1rem;
+        font-size: 1.4rem;
+    }
+
+    .leaderboard-list {
+        list-style: none;
+    }
+
+    .leaderboard-list li {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .rank-badge {
+        font-weight: bold;
+        color: var(--brand-cyan);
+    }
+
+    .user-name {
+        font-weight: 500;
+    }
+
+    .user-points {
+        color: var(--text-muted);
+    }
+
+    .weather-panel {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(12px);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin-bottom: 3rem;
+        border: 1px solid rgba(0, 212, 255, 0.35);
+    }
+
+    .updates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .update-card {
+        background: rgba(26, 35, 50, 0.7);
+        backdrop-filter: blur(8px);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        transition: 0.2s;
+    }
+
+    .update-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--brand-cyan);
+    }
+
+    .weather-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 2fr;
+        gap: 2rem;
+    }
+
+    .weather-current {
+        background: rgba(0, 212, 255, 0.05);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .forecast-cards {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .forecast-card {
+        background: rgba(0, 212, 255, 0.05);
+        border-radius: var(--radius-md);
+        padding: 1.2rem;
+        flex: 1;
+        min-width: 150px;
+        text-align: center;
+    }
+
+    @media (max-width: 860px) {
+        .weather-grid {
+            grid-template-columns: 1fr;
         }
 
         .steps-container {
-            display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+        }
+
+        .stats-row {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 720px) {
+        .jumbotron {
+            padding: 4rem 1rem;
+        }
+
+        .jumbotron h1 {
+            font-size: 2.4rem;
+        }
+
+        .jumbotron p {
+            font-size: 1rem;
+        }
+
+        .stats-row {
             gap: 1rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
         }
-        .step {
-            flex: 1;
-            background: rgba(18, 25, 45, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            text-align: center;
-            border: 1px solid rgba(0,212,255,0.2);
-            transition: 0.2s;
+
+        .stat-card {
+            padding: 1rem;
         }
-        .step:hover {
-            transform: translateY(-5px);
-            border-color: var(--brand-cyan);
-            background: rgba(0,212,255,0.1);
+
+        .map-teaser {
+            height: auto;
         }
-        .step-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        .step-title {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--brand-cyan);
+
+        #miniMap {
+            min-height: 240px;
         }
 
         .leaderboard {
-            background: rgba(18, 25, 45, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(0,212,255,0.2);
+            padding: 1.2rem;
         }
-        .leaderboard h3 {
-            margin-bottom: 1rem;
-            font-size: 1.4rem;
-        }
-        .leaderboard-list {
-            list-style: none;
-        }
+
         .leaderboard-list li {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(0,212,255,0.2);
-        }
-        .rank-badge {
-            font-weight: bold;
-            color: var(--brand-cyan);
-        }
-        .user-name {
-            font-weight: 500;
-        }
-        .user-points {
-            color: var(--text-muted);
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
         }
 
         .weather-panel {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(12px);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(0, 212, 255, 0.35);
+            padding: 1.25rem;
         }
-        .updates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-        .update-card {
-            background: rgba(26, 35, 50, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            border: 1px solid rgba(0,212,255,0.2);
-            transition: 0.2s;
-        }
-        .update-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--brand-cyan);
-        }
-        .weather-grid { display: grid; grid-template-columns: 1.2fr 2fr; gap: 2rem; }
-        .weather-current { background: rgba(0,212,255,0.05); border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; }
-        .forecast-cards { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-        .forecast-card { background: rgba(0,212,255,0.05); border-radius: var(--radius-md); padding: 1.2rem; flex: 1; min-width: 150px; text-align: center; }
 
-        @media (max-width: 860px) {
-            .weather-grid { grid-template-columns: 1fr; }
-            .steps-container { flex-direction: column; }
-            .stats-row { flex-direction: column; }
+        .forecast-cards {
+            flex-direction: column;
         }
-        @media (max-width: 720px) {
-            .jumbotron {
-                padding: 4rem 1rem;
-            }
-            .jumbotron h1 {
-                font-size: 2.4rem;
-            }
-            .jumbotron p {
-                font-size: 1rem;
-            }
-            .stats-row {
-                gap: 1rem;
-            }
-            .stat-card {
-                padding: 1rem;
-            }
-            .map-teaser {
-                height: auto;
-            }
-            #miniMap {
-                min-height: 240px;
-            }
-            .leaderboard {
-                padding: 1.2rem;
-            }
-            .leaderboard-list li {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.75rem;
-            }
-            .weather-panel {
-                padding: 1.25rem;
-            }
-            .forecast-cards {
-                flex-direction: column;
-            }
+    }
+
+    @media (max-width: 540px) {
+        .jumbotron h1 {
+            font-size: 2rem;
         }
-        @media (max-width: 540px) {
-            .jumbotron h1 {
-                font-size: 2rem;
-            }
-            .stats-row,
-            .steps-container,
-            .forecast-cards {
-                gap: 0.75rem;
-            }
-            .update-card {
-                padding: 1rem;
-            }
-            .leaderboard-list li {
-                padding: 0.8rem 0;
-            }
+
+        .stats-row,
+        .steps-container,
+        .forecast-cards {
+            gap: 0.75rem;
         }
-    </style>
+
+        .update-card {
+            padding: 1rem;
+        }
+
+        .leaderboard-list li {
+            padding: 0.8rem 0;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-    <section class="jumbotron" id="home">
-        <div class="jumbotron-content">
-            <h1>Your voice. Real action.<br>Transparent impact.</h1>
-            <p>Report potholes, broken infrastructure, waste issues & corruption. Track progress live — powered by community & government collaboration.</p>
-            <div class="jumbotron-buttons">
-                <a href="{% url 'signup' %}" class="btn-primary" id="pulseBtn">Start Reporting</a>
-                <a href="{% url 'login' %}" class="btn-secondary">Government Login</a>
+<section class="jumbotron" id="home">
+    <div class="jumbotron-content">
+        <h1>Your voice. Real action.<br>Transparent impact.</h1>
+        <p>Report potholes, broken infrastructure, waste issues & corruption. Track progress live — powered by community
+            & government collaboration.</p>
+        <div class="jumbotron-buttons">
+            <a href="{% url 'signup' %}" class="btn-primary" id="pulseBtn">Start Reporting</a>
+            <a href="{% url 'login' %}" class="btn-secondary">Government Login</a>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-number" id="counter1">0</div>
+            <div class="stat-label">Issues Resolved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="counter2">0</div>
+            <div class="stat-label">Active Citizens</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="counter3">0</div>
+            <div class="stat-label">Community Upvotes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="counter4">0</div>
+            <div class="stat-label">Response Rate</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="counter5">0</div>
+            <div class="stat-label">Citizen Voters</div>
+        </div>
+    </div>
+
+    <div class="map-teaser">
+        <div id="miniMap"></div>
+    </div>
+
+    <section class="leaderboard" style="margin-bottom: 3rem;">
+        <h3>🔥 Community Priority Issues</h3>
+        <div class="leaderboard-list">
+            {% if top_issues %}
+            {% for issue in top_issues %}
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; padding:0.9rem 0; border-bottom:1px solid rgba(0,212,255,0.15);">
+                <div style="max-width:75%;">
+                    <div style="font-weight:700; color:var(--text-primary);">{{ issue.get_category_display }}</div>
+                    <div style="font-size:0.95rem; color:var(--text-secondary);">{{ issue.description|truncatechars:80
+                        }}</div>
+                </div>
+                <div style="text-align:right; min-width:80px;">
+                    <div style="font-size:1.15rem; font-weight:700; color:var(--brand-cyan);">{{ issue.upvotes }}</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted);">votes</div>
+                </div>
             </div>
+            {% endfor %}
+            {% else %}
+            <div style="padding:1rem; color:var(--text-muted);">No trending issues yet. Citizens will see top complaints
+                once votes begin.</div>
+            {% endif %}
         </div>
     </section>
 
-    <div class="container">
-        <div class="stats-row">
-            <div class="stat-card"><div class="stat-number" id="counter1">0</div><div class="stat-label">Issues Resolved</div></div>
-            <div class="stat-card"><div class="stat-number" id="counter2">0</div><div class="stat-label">Active Citizens</div></div>
-            <div class="stat-card"><div class="stat-number" id="counter3">0</div><div class="stat-label">Community Upvotes</div></div>
-            <div class="stat-card"><div class="stat-number" id="counter4">0</div><div class="stat-label">Response Rate</div></div>
-            <div class="stat-card"><div class="stat-number" id="counter5">0</div><div class="stat-label">Citizen Voters</div></div>
+    <div class="steps-container">
+        <div class="step">
+            <div class="step-icon">📸</div>
+            <div class="step-title">1. Snap & Report</div>
+            <div style="font-size:0.85rem;">Take a photo, add location, describe issue.</div>
         </div>
-
-        <div class="map-teaser">
-            <div id="miniMap"></div>
+        <div class="step">
+            <div class="step-icon">🤖</div>
+            <div class="step-title">2. Verify & Route</div>
+            <div style="font-size:0.85rem;">AI + community votes to validate & assign agency.</div>
         </div>
-
-        <section class="leaderboard" style="margin-bottom: 3rem;">
-            <h3>🔥 Community Priority Issues</h3>
-            <div class="leaderboard-list">
-                {% if top_issues %}
-                    {% for issue in top_issues %}
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:0.9rem 0; border-bottom:1px solid rgba(0,212,255,0.15);">
-                            <div style="max-width:75%;">
-                                <div style="font-weight:700; color:var(--text-primary);">{{ issue.get_category_display }}</div>
-                                <div style="font-size:0.95rem; color:var(--text-secondary);">{{ issue.description|truncatechars:80 }}</div>
-                            </div>
-                            <div style="text-align:right; min-width:80px;">
-                                <div style="font-size:1.15rem; font-weight:700; color:var(--brand-cyan);">{{ issue.upvotes }}</div>
-                                <div style="font-size:0.7rem; color:var(--text-muted);">votes</div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div style="padding:1rem; color:var(--text-muted);">No trending issues yet. Citizens will see top complaints once votes begin.</div>
-                {% endif %}
-            </div>
-        </section>
-
-        <div class="steps-container">
-            <div class="step"><div class="step-icon">📸</div><div class="step-title">1. Snap & Report</div><div style="font-size:0.85rem;">Take a photo, add location, describe issue.</div></div>
-            <div class="step"><div class="step-icon">🤖</div><div class="step-title">2. Verify & Route</div><div style="font-size:0.85rem;">AI + community votes to validate & assign agency.</div></div>
-            <div class="step"><div class="step-icon">✅</div><div class="step-title">3. Resolve & Notify</div><div style="font-size:0.85rem;">Government fixes, you get a "Job Done" alert.</div></div>
+        <div class="step">
+            <div class="step-icon">✅</div>
+            <div class="step-title">3. Resolve & Notify</div>
+            <div style="font-size:0.85rem;">Government fixes, you get a "Job Done" alert.</div>
         </div>
-
-        <div class="leaderboard">
-            <h3>🏆 Top Civic Heroes – This Month</h3>
-            <ul class="leaderboard-list">
-                {% for hero in top_citizens %}
-                <li><span class="rank-badge">#{{ forloop.counter }}</span> <span class="user-name">{{ hero.user.get_full_name|default:hero.user.username }}</span> <span class="user-points">{{ hero.points }} pts</span></li>
-                {% empty %}
-                <li><span class="user-name" style="text-align:center; width:100%;">No heroes this month yet!</span></li>
-                {% endfor %}
-            </ul>
-            <div style="margin-top:1rem; text-align:right;"><a href="#" style="color:var(--brand-cyan);">See full leaderboard →</a></div>
-        </div>
-
-        <div class="weather-panel" id="weatherPanel">
-            <div class="location-header" style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
-                <div class="location-name">📍 <span id="locationDisplay">Detecting...</span></div>
-                <button class="refresh-location" id="refreshLocationBtn" style="background:none; border:1px solid var(--brand-cyan); border-radius:40px; padding:0.3rem 1rem;">⟳ Update</button>
-            </div>
-            <div id="weatherContent">
-                <div style="text-align:center; padding:2rem;">Loading weather from your device location...</div>
-            </div>
-        </div>
-
-        <section id="updates">
-            <h2 class="section-title" style="font-family:'Space Grotesk'; font-size:2rem; margin-bottom:0.5rem;">Live civic pulse</h2>
-            <p class="section-subtitle" style="margin-bottom:2rem;">Recent community reports, government responses & impact metrics</p>
-            <div class="updates-grid">
-                <div class="update-card"><div class="update-card-icon">🛣️</div><div class="update-card-content"><span class="update-category">Infrastructure</span><div class="update-title">Wuse road reconstruction underway</div><p>189 reports triggered immediate FCDA intervention. Completion expected in 12 days.</p></div></div>
-                <div class="update-card"><div class="update-card-icon">⚡</div><div class="update-card-content"><span class="update-category">Smart Lighting</span><div class="update-title">Solar LED project: Phase 1 active</div><p>Central district now illuminated with 340 hybrid streetlights. 98% satisfaction.</p></div></div>
-                <div class="update-card"><div class="update-card-icon">🗑️</div><div class="update-card-content"><span class="update-category">Waste & Sanitation</span><div class="update-title">Smart bin sensors deployed</div><p>AI-powered waste collection reduced overflow by 57% in high-density zones.</p></div></div>
-                <div class="update-card"><div class="update-card-icon">📈</div><div class="update-card-content"><span class="update-category">Transparency Score</span><div class="update-title">Government response rate: 82%</div><p>1,243 issues resolved in Q1 — citizen trust index +21% vs last year.</p></div></div>
-            </div>
-        </section>
     </div>
+
+    <div class="leaderboard">
+        <h3>🏆 Top Civic Heroes – This Month</h3>
+        <ul class="leaderboard-list">
+            {% for hero in top_citizens %}
+            <li><span class="rank-badge">#{{ forloop.counter }}</span> <span class="user-name">{{
+                    hero.user.get_full_name|default:hero.user.username }}</span> <span class="user-points">{{
+                    hero.points }} pts</span></li>
+            {% empty %}
+            <li><span class="user-name" style="text-align:center; width:100%;">No heroes this month yet!</span></li>
+            {% endfor %}
+        </ul>
+        <div style="margin-top:1rem; text-align:right;"><a href="#" style="color:var(--brand-cyan);">See full
+                leaderboard →</a></div>
+    </div>
+
+    <div class="weather-panel" id="weatherPanel">
+        <div class="location-header" style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
+            <div class="location-name">📍 <span id="locationDisplay">Detecting...</span></div>
+            <button class="refresh-location" id="refreshLocationBtn"
+                style="background:none; border:1px solid var(--brand-cyan); border-radius:40px; padding:0.3rem 1rem;">⟳
+                Update</button>
+        </div>
+        <div id="weatherContent">
+            <div style="text-align:center; padding:2rem;">Loading weather from your device location...</div>
+        </div>
+    </div>
+
+    <section id="updates">
+        <h2 class="section-title" style="font-family:'Space Grotesk'; font-size:2rem; margin-bottom:0.5rem;">Live civic
+            pulse</h2>
+        <p class="section-subtitle" style="margin-bottom:2rem;">Recent community reports, government responses & impact
+            metrics</p>
+        <div class="updates-grid">
+            <div class="update-card">
+                <div class="update-card-icon">🛣️</div>
+                <div class="update-card-content"><span class="update-category">Infrastructure</span>
+                    <div class="update-title">Wuse road reconstruction underway</div>
+                    <p>189 reports triggered immediate FCDA intervention. Completion expected in 12 days.</p>
+                </div>
+            </div>
+            <div class="update-card">
+                <div class="update-card-icon">⚡</div>
+                <div class="update-card-content"><span class="update-category">Smart Lighting</span>
+                    <div class="update-title">Solar LED project: Phase 1 active</div>
+                    <p>Central district now illuminated with 340 hybrid streetlights. 98% satisfaction.</p>
+                </div>
+            </div>
+            <div class="update-card">
+                <div class="update-card-icon">🗑️</div>
+                <div class="update-card-content"><span class="update-category">Waste & Sanitation</span>
+                    <div class="update-title">Smart bin sensors deployed</div>
+                    <p>AI-powered waste collection reduced overflow by 57% in high-density zones.</p>
+                </div>
+            </div>
+            <div class="update-card">
+                <div class="update-card-icon">📈</div>
+                <div class="update-card-content"><span class="update-category">Transparency Score</span>
+                    <div class="update-title">Government response rate: 82%</div>
+                    <p>1,243 issues resolved in Q1 — citizen trust index +21% vs last year.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}
 
 {% block extra_js %}
-    <script>
-        function animateNumber(element, start, end, duration) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                element.innerText = Math.floor(progress * (end - start) + start);
-                if (progress < 1) window.requestAnimationFrame(step);
-                else element.innerText = end;
-            };
-            window.requestAnimationFrame(step);
-        }
+<script>
+    function animateNumber(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            element.innerText = Math.floor(progress * (end - start) + start);
+            if (progress < 1) window.requestAnimationFrame(step);
+            else element.innerText = end;
+        };
+        window.requestAnimationFrame(step);
+    }
 
-        var resolved = Number("{{ resolved_issues|default:0 }}");
-        var citizens = Number("{{ active_citizens|default:0 }}");
-        var saved = Number("{{ total_upvotes|default:0 }}");
-        var rate = Number("{{ response_rate|default:0 }}");
-        var voters = Number("{{ active_voters|default:0 }}");
+    var resolved = Number("{{ resolved_issues|default:0 }}");
+    var citizens = Number("{{ active_citizens|default:0 }}");
+    var saved = Number("{{ total_upvotes|default:0 }}");
+    var rate = Number("{{ response_rate|default:0 }}");
+    var voters = Number("{{ active_voters|default:0 }}");
 
-        const counters = [
-            { id: 'counter1', target: resolved },
-            { id: 'counter2', target: citizens },
-            { id: 'counter3', target: saved },
-            { id: 'counter4', target: rate },
-            { id: 'counter5', target: voters }
-        ];
-        function startCounters() {
-            counters.forEach(c => {
-                const el = document.getElementById(c.id);
-                if (el && el.innerText == '0') animateNumber(el, 0, c.target, 2000);
-            });
-        }
-        const statsSection = document.querySelector('.stats-row');
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) startCounters();
-        }, { threshold: 0.3 });
-        if (statsSection) observer.observe(statsSection);
-
-        const map = L.map('miniMap').setView([9.0765, 7.3986], 13);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
-            subdomains: 'abcd',
-            maxZoom: 18,
-            minZoom: 10
-        }).addTo(map);
-        const reports = [
-            { lat: 9.072, lng: 7.495, title: "Sinkhole - Wuse Market", desc: "Open drain, urgent repair needed", category: "Drainage" },
-            { lat: 9.080, lng: 7.410, title: "Broken streetlight", desc: "Complete darkness on Ahmadu Bello Way", category: "Lighting" },
-            { lat: 9.065, lng: 7.380, title: "Pothole cluster", desc: "3 large potholes near City Gate", category: "Roads" },
-            { lat: 9.090, lng: 7.430, title: "Waste overflow", desc: "Illegal dump site, health hazard", category: "Sanitation" }
-        ];
-        reports.forEach(r => {
-            const marker = L.marker([r.lat, r.lng]).addTo(map);
-            marker.bindPopup(`<b>${r.title}</b><br>${r.desc}<br><span style="color:#00D4FF;">${r.category}</span><br><i>Reported via CivicPulse</i>`);
-            marker.on('mouseover', function() { this.openPopup(); });
-            marker.on('mouseout', function() { this.closePopup(); });
+    const counters = [
+        { id: 'counter1', target: resolved },
+        { id: 'counter2', target: citizens },
+        { id: 'counter3', target: saved },
+        { id: 'counter4', target: rate },
+        { id: 'counter5', target: voters }
+    ];
+    function startCounters() {
+        counters.forEach(c => {
+            const el = document.getElementById(c.id);
+            if (el && el.innerText == '0') animateNumber(el, 0, c.target, 2000);
         });
-        const pulseCircle = L.circleMarker([9.0765, 7.3986], { radius: 12, color: '#00D4FF', weight: 2, opacity: 0.8, fillOpacity: 0.3 }).addTo(map);
-        setInterval(() => {
-            pulseCircle.setStyle({ radius: 12 + Math.random() * 4 });
-        }, 800);
+    }
+    const statsSection = document.querySelector('.stats-row');
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) startCounters();
+    }, { threshold: 0.3 });
+    if (statsSection) observer.observe(statsSection);
 
-        function getWeatherIconAndDesc(code) {
-            const map = { 0: ['☀️','Clear'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],51:['🌦️','Light drizzle'],53:['🌧️','Moderate drizzle'],61:['🌧️','Slight rain'],63:['🌧️','Moderate rain'],65:['🌧️','Heavy rain'],71:['❄️','Slight snow'],80:['🌧️','Rain showers'],95:['⛈️','Thunderstorm']};
-            return map[code] || ['🌤️','Unknown'];
-        }
-        function getDayName(dateStr) { return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long' }); }
-        async function fetchWeatherForLocation(lat, lon, locationName) {
-            try {
-                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=2`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                const current = data.current;
-                const [iconCur, descCur] = getWeatherIconAndDesc(current.weather_code);
-                let fcHtml = '';
-                for (let i=0; i<data.daily.time.length; i++) {
-                    const [icon, desc] = getWeatherIconAndDesc(data.daily.weather_code[i]);
-                    fcHtml += `<div class="forecast-card"><div class="forecast-day">${getDayName(data.daily.time[i])}</div><div class="forecast-icon">${icon}</div><div class="forecast-temp">${Math.round(data.daily.temperature_2m_max[i])}°<span> / ${Math.round(data.daily.temperature_2m_min[i])}°</span></div><div style="font-size:0.8rem;">${desc}</div></div>`;
-                }
-                document.getElementById('weatherContent').innerHTML = `
+    const map = L.map('miniMap').setView([9.0765, 7.3986], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
+        subdomains: 'abcd',
+        maxZoom: 18,
+        minZoom: 10
+    }).addTo(map);
+    var nearbyMarkers = [];
+    function loadNearbyComplaints(lat, lng) {
+        nearbyMarkers.forEach(m => map.removeLayer(m));
+        nearbyMarkers = [];
+        fetch(`/api/nearby-complaints/?lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                (data.complaints || []).forEach(c => {
+                    const marker = L.marker([c.lat, c.lng]).addTo(map);
+                    marker.bindPopup(`<b>${c.category}</b><br>${c.description}<br><span style="color:#00D4FF;">${c.status}</span>`);
+                    marker.on('mouseover', function () { this.openPopup(); });
+                    marker.on('mouseout', function () { this.closePopup(); });
+                    nearbyMarkers.push(marker);
+                });
+            })
+            .catch(err => console.warn('Nearby complaints unavailable:', err));
+    }
+    loadNearbyComplaints(9.0765, 7.3986); // initial load at default center
+    const pulseCircle = L.circleMarker([9.0765, 7.3986], { radius: 12, color: '#00D4FF', weight: 2, opacity: 0.8, fillOpacity: 0.3 }).addTo(map);
+    setInterval(() => {
+        pulseCircle.setStyle({ radius: 12 + Math.random() * 4 });
+    }, 800);
+
+    function getWeatherIconAndDesc(code) {
+        const map = { 0: ['☀️', 'Clear'], 1: ['🌤️', 'Mainly clear'], 2: ['⛅', 'Partly cloudy'], 3: ['☁️', 'Overcast'], 45: ['🌫️', 'Fog'], 51: ['🌦️', 'Light drizzle'], 53: ['🌧️', 'Moderate drizzle'], 61: ['🌧️', 'Slight rain'], 63: ['🌧️', 'Moderate rain'], 65: ['🌧️', 'Heavy rain'], 71: ['❄️', 'Slight snow'], 80: ['🌧️', 'Rain showers'], 95: ['⛈️', 'Thunderstorm'] };
+        return map[code] || ['🌤️', 'Unknown'];
+    }
+    function getDayName(dateStr) { return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long' }); }
+    async function fetchWeatherForLocation(lat, lon, locationName) {
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=2`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            const current = data.current;
+            const [iconCur, descCur] = getWeatherIconAndDesc(current.weather_code);
+            let fcHtml = '';
+            for (let i = 0; i < data.daily.time.length; i++) {
+                const [icon, desc] = getWeatherIconAndDesc(data.daily.weather_code[i]);
+                fcHtml += `<div class="forecast-card"><div class="forecast-day">${getDayName(data.daily.time[i])}</div><div class="forecast-icon">${icon}</div><div class="forecast-temp">${Math.round(data.daily.temperature_2m_max[i])}°<span> / ${Math.round(data.daily.temperature_2m_min[i])}°</span></div><div style="font-size:0.8rem;">${desc}</div></div>`;
+            }
+            document.getElementById('weatherContent').innerHTML = `
                     <div class="weather-grid">
                         <div class="weather-current"><div class="weather-icon">${iconCur}</div><div class="weather-temp">${Math.round(current.temperature_2m)}°C</div><div class="weather-condition">${descCur}</div><div class="weather-details"><div class="weather-detail-item">💧 ${current.relative_humidity_2m}%</div><div class="weather-detail-item">💨 ${Math.round(current.wind_speed_10m)} km/h</div></div></div>
                         <div class="forecast-container"><h3>📅 2‑Day forecast</h3><div class="forecast-cards">${fcHtml}</div></div>
                     </div>`;
-                document.getElementById('locationDisplay').innerHTML = locationName || `Lat: ${lat.toFixed(2)}`;
-            } catch(e) { console.warn(e); document.getElementById('weatherContent').innerHTML = '<div style="text-align:center;">⚠️ Weather unavailable</div>'; }
-        }
-        function getGPSAndWeather() {
-            if (!navigator.geolocation) return fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
-            navigator.geolocation.getCurrentPosition(pos => {
-                const { latitude, longitude } = pos.coords;
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
-                    .then(r => r.json()).then(data => {
-                        const city = data.address?.city || data.address?.town || 'Your location';
-                        fetchWeatherForLocation(latitude, longitude, city);
-                    }).catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
-            }, () => fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria'));
-        }
-        window.addEventListener('load', getGPSAndWeather);
-        document.getElementById('refreshLocationBtn')?.addEventListener('click', getGPSAndWeather);
-    </script>
+            document.getElementById('locationDisplay').innerHTML = locationName || `Lat: ${lat.toFixed(2)}`;
+        } catch (e) { console.warn(e); document.getElementById('weatherContent').innerHTML = '<div style="text-align:center;">⚠️ Weather unavailable</div>'; }
+    }
+    function getGPSAndWeather() {
+        if (!navigator.geolocation) return fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude, longitude } = pos.coords;
+            map.setView([latitude, longitude], 13);
+            loadNearbyComplaints(latitude, longitude);
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
+                .then(r => r.json()).then(data => {
+                    const city = data.address?.city || data.address?.town || 'Your location';
+                    fetchWeatherForLocation(latitude, longitude, city);
+                }).catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
+        }, () => fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria'));
+    }
+    window.addEventListener('load', getGPSAndWeather);
+    document.getElementById('refreshLocationBtn')?.addEventListener('click', getGPSAndWeather);
+</script>
 {% endblock %}
