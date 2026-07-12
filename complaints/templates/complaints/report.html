@@ -51,7 +51,11 @@
 {% block extra_js %}
 <script>
     var map = L.map('map').setView([9.0765, 7.3986], 13);  // fallback center: Abuja
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors © CARTO',
+        maxZoom: 30
+    }).addTo(map);
+
     var marker;
 
     // places or moves the marker + fills hidden lat/lng inputs

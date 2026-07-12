@@ -2,7 +2,8 @@
 {% block content %}
 <div class="container py-4">
     <div class="card glass-card p-4">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
             <h2 style="color: var(--brand-cyan); margin:0;">🔍 Complaint #{{ complaint.id }}</h2>
             <div style="display:flex; align-items:center; gap:0.75rem; color:var(--brand-cyan); font-weight:700;">
                 <span>⬆</span>
@@ -14,39 +15,52 @@
             <div class="col-md-8">
                 <p><strong style="color: var(--brand-cyan);">Category:</strong> {{ complaint.get_category_display }}</p>
                 <p><strong style="color: var(--brand-cyan);">Description:</strong> {{ complaint.description }}</p>
-                <p><strong style="color: var(--brand-cyan);">Status:</strong> 
+                <p><strong style="color: var(--brand-cyan);">Status:</strong>
                     <span class="status-badge status-{{ complaint.status }}">{{ complaint.get_status_display }}</span>
                 </p>
-                <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ complaint.created_at|date:"F j, Y, g:i a" }}</p>
+                <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ complaint.created_at|date:"F j, Y,
+                    g:i a" }}</p>
+                <p><strong style="color: var(--brand-cyan);">📍 Location:</strong>
+                    {% if complaint.ward %}
+                    {{ complaint.ward.ward }} Ward, {{ complaint.ward.lga }} LGA, {{ complaint.ward.state }} State
+                    {% elif complaint.address_text %}
+                    {{ complaint.address_text }}
+                    {% else %}
+                    <span class="text-muted">Not available</span>
+                    {% endif %}
+                </p>
                 {% if complaint.government_response %}
-                    <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{ complaint.government_response }}</p>
+                <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{
+                    complaint.government_response }}</p>
                 {% endif %}
                 {% if complaint.contractor %}
-                    <p><strong style="color: var(--brand-cyan);">👷 Contractor:</strong> {{ complaint.contractor }}</p>
+                <p><strong style="color: var(--brand-cyan);">👷 Contractor:</strong> {{ complaint.contractor }}</p>
                 {% endif %}
             </div>
             <div class="col-md-4">
                 {% if complaint.photo %}
-                    <p><strong style="color: var(--brand-cyan);">📸 Original Photo:</strong></p>
-                    <img src="{{ complaint.photo.url }}" class="img-fluid rounded" style="border: 1px solid var(--brand-cyan);">
+                <p><strong style="color: var(--brand-cyan);">📸 Original Photo:</strong></p>
+                <img src="{{ complaint.photo.url }}" class="img-fluid rounded"
+                    style="border: 1px solid var(--brand-cyan);">
                 {% endif %}
             </div>
         </div>
-        
+
         <!-- Extra images uploaded by citizen -->
         <div class="mt-4">
             <h4 style="color: var(--brand-cyan);">📷 Additional Evidence</h4>
             <div class="row g-3">
                 {% for img in extra_images %}
                 <div class="col-md-3">
-                    <img src="{{ img.image.url }}" class="img-fluid rounded" style="border: 1px solid var(--brand-cyan);">
+                    <img src="{{ img.image.url }}" class="img-fluid rounded"
+                        style="border: 1px solid var(--brand-cyan);">
                 </div>
                 {% empty %}
                 <p class="text-muted">No extra images yet.</p>
                 {% endfor %}
             </div>
         </div>
-        
+
         {% if is_owner %}
         <!-- Form to upload more images -->
         <div class="mt-4 p-3" style="background: rgba(0,212,255,0.05); border-radius: 16px;">
@@ -61,7 +75,7 @@
             </form>
         </div>
         {% endif %}
-        
+
         <div class="mt-4">
             <a href="{% url 'citizen_dashboard' %}" class="btn-outline">← Back to My Complaints</a>
         </div>
@@ -72,10 +86,12 @@
     .glass-card {
         background: rgba(18, 25, 45, 0.7);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(0,212,255,0.3);
+        border: 1px solid rgba(0, 212, 255, 0.3);
         border-radius: 24px;
     }
-    .btn-cyan-sm, .btn-outline {
+
+    .btn-cyan-sm,
+    .btn-outline {
         background: transparent;
         border: 1.5px solid var(--brand-cyan);
         color: var(--brand-cyan);
@@ -85,18 +101,22 @@
         display: inline-block;
         transition: 0.2s;
     }
+
     .btn-cyan-sm:hover {
         background: var(--brand-cyan);
         color: #0B0F1A;
     }
+
     .btn-outline {
         border-color: #6c757d;
         color: #adb5bd;
     }
+
     .btn-outline:hover {
-        background: rgba(108,117,125,0.2);
+        background: rgba(108, 117, 125, 0.2);
         color: white;
     }
+
     .status-badge {
         display: inline-block;
         padding: 0.2rem 0.6rem;
@@ -104,37 +124,59 @@
         font-size: 0.75rem;
         font-weight: 600;
     }
-    .status-pending { background: #ffc107; color: #1a1a1a; }
-    .status-acknowledged { background: #17a2b8; color: white; }
-    .status-in_progress { background: #fd7e14; color: white; }
-    .status-resolved { background: #28a745; color: white; }
-@media (max-width: 768px) {
-    .glass-card {
-        padding: 1.2rem;
+
+    .status-pending {
+        background: #ffc107;
+        color: #1a1a1a;
     }
-    .row {
-        display: flex;
-        flex-direction: column;
+
+    .status-acknowledged {
+        background: #17a2b8;
+        color: white;
     }
-    .col-md-8,
-    .col-md-4 {
-        width: 100%;
-        max-width: 100%;
+
+    .status-in_progress {
+        background: #fd7e14;
+        color: white;
     }
-    .col-md-3 {
-        flex: 0 0 50%;
-        max-width: 50%;
+
+    .status-resolved {
+        background: #28a745;
+        color: white;
     }
-    .col-md-3 img {
-        width: 100%;
-        height: auto;
+
+    @media (max-width: 768px) {
+        .glass-card {
+            padding: 1.2rem;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .col-md-8,
+        .col-md-4 {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .col-md-3 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        .col-md-3 img {
+            width: 100%;
+            height: auto;
+        }
+
+        .btn-outline,
+        .btn-cyan-sm {
+            width: 100%;
+            text-align: center;
+            padding: 0.8rem 1rem;
+        }
     }
-    .btn-outline,
-    .btn-cyan-sm {
-        width: 100%;
-        text-align: center;
-        padding: 0.8rem 1rem;
-    }
-}
 </style>
 {% endblock %}
