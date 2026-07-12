@@ -18,17 +18,15 @@
                 <p><strong style="color: var(--brand-cyan);">Status:</strong>
                     <span class="status-badge status-{{ complaint.status }}">{{ complaint.get_status_display }}</span>
                 </p>
-                <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ complaint.created_at|date:"F j, Y,
-                    g:i a" }}</p>
+                {% with report_date=complaint.created_at|date:"F j, Y, g:i a" %}
+                <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ report_date }}</p>
+                {% endwith %}
+                {% with w=complaint.ward %}
                 <p><strong style="color: var(--brand-cyan);">📍 Location:</strong>
-                    {% if complaint.ward %}
-                    {{ complaint.ward.ward }} Ward, {{ complaint.ward.lga }} LGA, {{ complaint.ward.state }} State
-                    {% elif complaint.address_text %}
-                    {{ complaint.address_text }}
-                    {% else %}
-                    <span class="text-muted">Not available</span>
-                    {% endif %}
+                    {% if w %}{{ w.ward }} Ward, {{ w.lga }} LGA, {{ w.state }} State{% elif complaint.address_text %}{{
+                    complaint.address_text }}{% else %}<span class="text-muted">Not available</span>{% endif %}
                 </p>
+                {% endwith %}
                 {% if complaint.government_response %}
                 <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{
                     complaint.government_response }}</p>
