@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container py-4">
     <h2 class="mb-4" style="color: var(--brand-cyan);">📋 My Complaints</h2>
-    
+
     <div class="table-responsive">
         <table class="table table-hover" style="color: var(--text-primary);">
             <thead>
@@ -21,11 +21,12 @@
                 <tr>
                     <td>
                         {% if complaint.photo %}
-                            <a href="{{ complaint.photo.url }}" target="_blank">
-                                <img src="{{ complaint.photo.url }}" alt="Complaint photo" style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--brand-cyan);">
-                            </a>
+                        <a href="{{ complaint.photo.url }}" target="_blank">
+                            <img src="{{ complaint.photo.url }}" alt="Complaint photo"
+                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--brand-cyan);">
+                        </a>
                         {% else %}
-                            <span style="color: rgb(209, 184, 184);">No image</span>
+                        <span style="color: rgb(209, 184, 184);">No image</span>
                         {% endif %}
                     </td>
                     <td>{{ complaint.get_category_display }}</td>
@@ -44,7 +45,7 @@
                 {% empty %}
                 <tr>
                     <td colspan="7" class="text-center text-muted">
-                        You haven't reported any issues yet. 
+                        You haven't reported any issues yet.
                         <a href="{% url 'report_complaint' %}" style="color: var(--brand-cyan);">Report one now</a>.
                     </td>
                 </tr>
@@ -52,22 +53,23 @@
             </tbody>
         </table>
     </div>
-    
+
     <div class="mt-4 d-flex flex-wrap gap-3" style="align-items:flex-start;">
         <a href="{% url 'report_complaint' %}" class="btn-cyan">+ New Complaint</a>
         <div class="top-voted-card">
             <h4 style="color: var(--brand-cyan); margin-bottom: 0.8rem;">Top Voted Issues</h4>
             {% if top_issues %}
-                <ul class="top-voted-list">
-                    {% for complaint in top_issues %}
-                        <li>
-                            <a href="{% url 'complaint_detail' complaint.id %}">{{ complaint.get_category_display }} · {{ complaint.description|truncatechars:50 }}</a>
-                            <span class="upvote-pill">⬆ {{ complaint.upvotes }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
+            <ul class="top-voted-list">
+                {% for complaint in top_issues %}
+                <li>
+                    <a href="{% url 'complaint_detail' complaint.id %}">{{ complaint.get_category_display }} · {{
+                        complaint.description|truncatechars:50 }}</a>
+                    <span class="upvote-pill">⬆ {{ complaint.upvotes }}</span>
+                </li>
+                {% endfor %}
+            </ul>
             {% else %}
-                <p class="text-muted">No upvoted complaints yet.</p>
+            <p class="text-muted">No upvoted complaints yet.</p>
             {% endif %}
         </div>
     </div>
@@ -84,10 +86,12 @@
         font-size: 0.8rem;
         transition: 0.2s;
     }
+
     .btn-cyan-sm:hover {
         background: var(--brand-cyan);
         color: #0B0F1A;
     }
+
     .status-badge {
         display: inline-block;
         padding: 0.2rem 0.6rem;
@@ -95,25 +99,45 @@
         font-size: 0.75rem;
         font-weight: 600;
     }
-    .status-pending { background: #ffc107; color: #1a1a1a; }
-    .status-acknowledged { background: #17a2b8; color: white; }
-    .status-in_progress { background: #fd7e14; color: white; }
-    .status-resolved { background: #28a745; color: white; }
+
+    .status-pending {
+        background: #ffc107;
+        color: #1a1a1a;
+    }
+
+    .status-acknowledged {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .status-in_progress {
+        background: #fd7e14;
+        color: white;
+    }
+
+    .status-resolved {
+        background: #28a745;
+        color: white;
+    }
+
     .table tbody td {
         color: var(--text-secondary);
         vertical-align: middle;
     }
+
     .table tbody tr:hover {
-        background-color: rgba(0,212,255,0.05);
+        background-color: rgba(0, 212, 255, 0.05);
     }
+
     .top-voted-card {
         min-width: 310px;
         max-width: 380px;
-        background: rgba(0,212,255,0.08);
-        border: 1px solid rgba(0,212,255,0.18);
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid rgba(0, 212, 255, 0.18);
         border-radius: 16px;
         padding: 1rem;
     }
+
     .top-voted-list {
         list-style: none;
         padding: 0;
@@ -121,6 +145,7 @@
         display: grid;
         gap: 0.9rem;
     }
+
     .top-voted-list li {
         display: flex;
         align-items: center;
@@ -130,19 +155,22 @@
         border-radius: 14px;
         padding: 0.8rem;
     }
+
     .top-voted-list a {
         color: var(--text-primary);
         text-decoration: none;
         flex: 1;
     }
+
     .top-voted-list a:hover {
         text-decoration: underline;
     }
+
     .upvote-pill {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(0,212,255,0.15);
+        background: rgba(0, 212, 255, 0.15);
         color: var(--brand-cyan);
         padding: 0.35rem 0.7rem;
         border-radius: 999px;
@@ -150,85 +178,119 @@
         font-weight: 700;
         white-space: nowrap;
     }
+
     @media (max-width: 860px) {
         .mt-4.d-flex {
             flex-direction: column;
             align-items: stretch;
         }
+
         .btn-cyan {
             width: 100%;
             max-width: none;
         }
     }
+
     @media (max-width: 720px) {
         .table-responsive {
             overflow-x: hidden;
         }
+
         .table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 0.8rem;
         }
+
         .table thead {
             display: none;
         }
+
         .table tbody,
         .table tr,
         .table td {
             display: block;
             width: 100%;
         }
+
         .table tr {
             background: rgba(11, 15, 26, 0.8);
-            border: 1px solid rgba(0,212,255,0.12);
+            border: 1px solid rgba(0, 212, 255, 0.12);
             border-radius: 18px;
             padding: 0.85rem;
             margin-bottom: 0.75rem;
         }
+
         .table td {
             display: flex;
             justify-content: space-between;
-            padding: 0.75rem 0.75rem;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
             border: none;
-            position: relative;
             color: var(--text-secondary);
         }
+
         .table td::before {
-            position: absolute;
-            left: 0.75rem;
-            top: 0.75rem;
+            flex-shrink: 0;
             width: 45%;
-            white-space: nowrap;
             font-weight: 700;
             color: var(--text-primary);
             text-align: left;
         }
-        .table td:nth-of-type(1)::before { content: "Image"; }
-        .table td:nth-of-type(2)::before { content: "Category"; }
-        .table td:nth-of-type(3)::before { content: "Description"; }
-        .table td:nth-of-type(4)::before { content: "Status"; }
-        .table td:nth-of-type(5)::before { content: "Upvotes"; }
-        .table td:nth-of-type(6)::before { content: "Reported"; }
-        .table td:nth-of-type(7)::before { content: "Action"; }
+
+        .table td:nth-of-type(1)::before {
+            content: "Image";
+        }
+
+        .table td:nth-of-type(2)::before {
+            content: "Category";
+        }
+
+        .table td:nth-of-type(3)::before {
+            content: "Description";
+        }
+
+        .table td:nth-of-type(4)::before {
+            content: "Status";
+        }
+
+        .table td:nth-of-type(5)::before {
+            content: "Upvotes";
+        }
+
+        .table td:nth-of-type(6)::before {
+            content: "Reported";
+        }
+
+        .table td:nth-of-type(7)::before {
+            content: "Action";
+        }
+
         .table td img {
             max-width: 60px;
             height: auto;
         }
+
         .table td span.status-badge {
             white-space: normal;
         }
+
         .table td a.btn-cyan-sm {
             width: 100%;
             text-align: center;
             padding: 0.6rem 0.8rem;
         }
+
         .top-voted-card {
             padding: 0.9rem;
         }
+
         .top-voted-list li {
             flex-direction: column;
             align-items: stretch;
         }
+
         .upvote-pill {
             width: fit-content;
             justify-content: center;
