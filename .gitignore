@@ -50,3 +50,5 @@ node_modules/
 
 data_backup.json
 db.sqlite3.backup
+
+settings.json

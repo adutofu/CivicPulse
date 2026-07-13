@@ -29,6 +29,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from .models import Ward
+import json
 
 
 # ---------- Public Pages ----------
@@ -212,6 +213,31 @@ def get_nearby_complaints(request):
 
 @require_POST
 @login_required
+
+
+def get_ward_boundary(request):
+    """API endpoint: returns the Ward polygon (GeoJSON) containing a given lat/lng"""
+    lat = request.GET.get('lat')
+    lng = request.GET.get('lng')
+    if not lat or not lng:
+        return JsonResponse({'error': 'lat and lng are required'}, status=400)
+
+    try:
+        point = Point(float(lng), float(lat), srid=4326)
+    except ValueError:
+        return JsonResponse({'error': 'invalid lat/lng'}, status=400)
+
+    ward = Ward.objects.filter(boundary__contains=point).first()
+    if not ward:
+        return JsonResponse({'ward': None})
+
+    return JsonResponse({
+        'ward': ward.ward,
+        'lga': ward.lga,
+        'state': ward.state,
+        'boundary': json.loads(ward.boundary.geojson),
+    })
+
 def toggle_vote(request, complaint_id):
     profile = request.user.profile
     if profile.user_type != 'citizen':

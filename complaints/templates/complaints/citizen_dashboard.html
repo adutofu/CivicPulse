@@ -18,30 +18,38 @@
             </thead>
             <tbody>
                 {% for complaint in complaints %}
+                {% with report_date=complaint.created_at|date:"Y-m-d H:i" %}
                 <tr>
                     <td>
-                        {% if complaint.photo %}
-                        <a href="{{ complaint.photo.url }}" target="_blank">
-                            <img src="{{ complaint.photo.url }}" alt="Complaint photo"
-                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--brand-cyan);">
-                        </a>
-                        {% else %}
-                        <span style="color: rgb(209, 184, 184);">No image</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ complaint.get_category_display }}</td>
-                    <td>{{ complaint.description|truncatechars:60 }}</td>
-                    <td>
-                        <span class="status-badge status-{{ complaint.status }}">
-                            {{ complaint.get_status_display }}
+                        <span class="cell-value">
+                            {% if complaint.photo %}
+                            <a href="{{ complaint.photo.url }}" target="_blank">
+                                <img src="{{ complaint.photo.url }}" alt="Complaint photo"
+                                    style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--brand-cyan);">
+                            </a>
+                            {% else %}
+                            <span style="color: rgb(209, 184, 184);">No image</span>
+                            {% endif %}
                         </span>
                     </td>
-                    <td>{{ complaint.upvotes }}</td>
-                    <td>{{ complaint.created_at|date:"Y-m-d H:i" }}</td>
+                    <td><span class="cell-value">{{ complaint.get_category_display }}</span></td>
+                    <td><span class="cell-value">{{ complaint.description|truncatechars:60 }}</span></td>
                     <td>
-                        <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
+                        <span class="cell-value">
+                            <span class="status-badge status-{{ complaint.status }}">
+                                {{ complaint.get_status_display }}
+                            </span>
+                        </span>
+                    </td>
+                    <td><span class="cell-value">{{ complaint.upvotes }}</span></td>
+                    <td><span class="cell-value">{{ report_date }}</span></td>
+                    <td>
+                        <span class="cell-value">
+                            <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
+                        </span>
                     </td>
                 </tr>
+                {% endwith %}
                 {% empty %}
                 <tr>
                     <td colspan="7" class="text-center text-muted">
@@ -61,11 +69,13 @@
             {% if top_issues %}
             <ul class="top-voted-list">
                 {% for complaint in top_issues %}
+                {% with short_desc=complaint.description|truncatechars:50 %}
                 <li>
                     <a href="{% url 'complaint_detail' complaint.id %}">{{ complaint.get_category_display }} · {{
-                        complaint.description|truncatechars:50 }}</a>
+                        short_desc }}</a>
                     <span class="upvote-pill">⬆ {{ complaint.upvotes }}</span>
                 </li>
+                {% endwith %}
                 {% endfor %}
             </ul>
             {% else %}
@@ -160,6 +170,8 @@
         color: var(--text-primary);
         text-decoration: none;
         flex: 1;
+        min-width: 0;
+        word-break: break-word;
     }
 
     .top-voted-list a:hover {
@@ -177,6 +189,7 @@
         font-size: 0.85rem;
         font-weight: 700;
         white-space: nowrap;
+        flex-shrink: 0;
     }
 
     @media (max-width: 860px) {
@@ -219,6 +232,7 @@
             border-radius: 18px;
             padding: 0.85rem;
             margin-bottom: 0.75rem;
+            overflow: hidden;
         }
 
         .table td {
@@ -229,14 +243,22 @@
             padding: 0.75rem;
             border: none;
             color: var(--text-secondary);
+            max-width: 100%;
         }
 
         .table td::before {
-            flex-shrink: 0;
-            width: 45%;
+            flex: 0 0 45%;
             font-weight: 700;
             color: var(--text-primary);
             text-align: left;
+        }
+
+        .table td .cell-value {
+            flex: 1 1 55%;
+            min-width: 0;
+            text-align: right;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .table td:nth-of-type(1)::before {
@@ -272,7 +294,7 @@
             height: auto;
         }
 
-        .table td span.status-badge {
+        .table td .status-badge {
             white-space: normal;
         }
 

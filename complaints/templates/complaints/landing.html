@@ -219,6 +219,45 @@
         background: #0A0F1F;
     }
 
+    .user-location-marker {
+        position: relative;
+    }
+
+    .user-dot {
+        width: 14px;
+        height: 14px;
+        background: var(--brand-cyan);
+        border: 2px solid #fff;
+        border-radius: 50%;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        box-shadow: 0 0 8px var(--brand-cyan-glow);
+    }
+
+    .user-dot-ring {
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--brand-cyan);
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        animation: userPulse 1.6s infinite;
+    }
+
+    @keyframes userPulse {
+        0% {
+            transform: scale(0.6);
+            opacity: 0.9;
+        }
+
+        100% {
+            transform: scale(1.8);
+            opacity: 0;
+        }
+    }
+
     .steps-container {
         display: flex;
         justify-content: space-between;
@@ -276,6 +315,8 @@
     .leaderboard-list li {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
         padding: 0.8rem 0;
         border-bottom: 1px solid rgba(0, 212, 255, 0.2);
     }
@@ -283,14 +324,41 @@
     .rank-badge {
         font-weight: bold;
         color: var(--brand-cyan);
+        flex-shrink: 0;
     }
 
     .user-name {
         font-weight: 500;
+        min-width: 0;
+        word-break: break-word;
+        flex: 1;
     }
 
     .user-points {
         color: var(--text-muted);
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .priority-issue-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.9rem 0;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    }
+
+    .priority-issue-text {
+        flex: 1;
+        min-width: 0;
+        word-break: break-word;
+    }
+
+    .priority-issue-score {
+        text-align: right;
+        flex-shrink: 0;
     }
 
     .weather-panel {
@@ -316,6 +384,7 @@
         overflow: hidden;
         border: 1px solid rgba(0, 212, 255, 0.2);
         transition: 0.2s;
+        padding: 1.25rem;
     }
 
     .update-card:hover {
@@ -378,6 +447,21 @@
             font-size: 1rem;
         }
 
+        .btn-primary,
+        .btn-secondary {
+            padding: 0.7rem 1.6rem;
+            font-size: 0.9rem;
+        }
+
+        .jumbotron-buttons {
+            gap: 1rem;
+        }
+
+
+        .container {
+            padding: 0 1rem;
+        }
+
         .stats-row {
             gap: 1rem;
         }
@@ -387,7 +471,56 @@
         }
 
         .map-teaser {
-            height: auto;
+            position: relative;
+        }
+
+        .map-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 15, 31, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            z-index: 500;
+            transition: opacity 0.3s ease;
+        }
+
+        .map-loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .map-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(0, 212, 255, 0.2);
+            border-top-color: var(--brand-cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .ward-label {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(10, 15, 31, 0.85);
+            color: var(--brand-cyan);
+            padding: 0.4rem 0.9rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 400;
+            max-width: 90%;
         }
 
         #miniMap {
@@ -404,6 +537,15 @@
             gap: 0.75rem;
         }
 
+        .priority-issue-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .priority-issue-score {
+            text-align: left;
+        }
+
         .weather-panel {
             padding: 1.25rem;
         }
@@ -416,6 +558,13 @@
     @media (max-width: 540px) {
         .jumbotron h1 {
             font-size: 2rem;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+            max-width: 280px;
+            text-align: center;
         }
 
         .stats-row,
@@ -472,8 +621,14 @@
         </div>
     </div>
 
+    <div id="wardLabel" class="ward-label" style="display:none;"></div>
+
     <div class="map-teaser">
         <div id="miniMap"></div>
+        <div id="mapLoadingOverlay" class="map-loading-overlay">
+            <div class="map-spinner"></div>
+            <div>Finding your location…</div>
+        </div>
     </div>
 
     <section class="leaderboard" style="margin-bottom: 3rem;">
@@ -481,18 +636,18 @@
         <div class="leaderboard-list">
             {% if top_issues %}
             {% for issue in top_issues %}
-            <div
-                style="display:flex; justify-content:space-between; align-items:center; padding:0.9rem 0; border-bottom:1px solid rgba(0,212,255,0.15);">
-                <div style="max-width:75%;">
+            {% with short_desc=issue.description|truncatechars:80 %}
+            <div class="priority-issue-row">
+                <div class="priority-issue-text">
                     <div style="font-weight:700; color:var(--text-primary);">{{ issue.get_category_display }}</div>
-                    <div style="font-size:0.95rem; color:var(--text-secondary);">{{ issue.description|truncatechars:80
-                        }}</div>
+                    <div style="font-size:0.95rem; color:var(--text-secondary);">{{ short_desc }}</div>
                 </div>
-                <div style="text-align:right; min-width:80px;">
+                <div class="priority-issue-score">
                     <div style="font-size:1.15rem; font-weight:700; color:var(--brand-cyan);">{{ issue.upvotes }}</div>
                     <div style="font-size:0.7rem; color:var(--text-muted);">votes</div>
                 </div>
             </div>
+            {% endwith %}
             {% endfor %}
             {% else %}
             <div style="padding:1rem; color:var(--text-muted);">No trending issues yet. Citizens will see top complaints
@@ -523,9 +678,11 @@
         <h3>🏆 Top Civic Heroes – This Month</h3>
         <ul class="leaderboard-list">
             {% for hero in top_citizens %}
-            <li><span class="rank-badge">#{{ forloop.counter }}</span> <span class="user-name">{{
-                    hero.user.get_full_name|default:hero.user.username }}</span> <span class="user-points">{{
-                    hero.points }} pts</span></li>
+            <li>
+                <span class="rank-badge">#{{ forloop.counter }}</span>
+                <span class="user-name">{{ hero.user.get_full_name|default:hero.user.username }}</span>
+                <span class="user-points">{{ hero.points }} pts</span>
+            </li>
             {% empty %}
             <li><span class="user-name" style="text-align:center; width:100%;">No heroes this month yet!</span></li>
             {% endfor %}
@@ -535,10 +692,11 @@
     </div>
 
     <div class="weather-panel" id="weatherPanel">
-        <div class="location-header" style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
+        <div class="location-header"
+            style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.5rem;">
             <div class="location-name">📍 <span id="locationDisplay">Detecting...</span></div>
             <button class="refresh-location" id="refreshLocationBtn"
-                style="background:none; border:1px solid var(--brand-cyan); border-radius:40px; padding:0.3rem 1rem;">⟳
+                style="background:none; border:1px solid var(--brand-cyan); border-radius:40px; padding:0.3rem 1rem; color: var(--brand-cyan);">⟳
                 Update</button>
         </div>
         <div id="weatherContent">
@@ -554,28 +712,32 @@
         <div class="updates-grid">
             <div class="update-card">
                 <div class="update-card-icon">🛣️</div>
-                <div class="update-card-content"><span class="update-category">Infrastructure</span>
+                <div class="update-card-content">
+                    <span class="update-category">Infrastructure</span>
                     <div class="update-title">Wuse road reconstruction underway</div>
                     <p>189 reports triggered immediate FCDA intervention. Completion expected in 12 days.</p>
                 </div>
             </div>
             <div class="update-card">
                 <div class="update-card-icon">⚡</div>
-                <div class="update-card-content"><span class="update-category">Smart Lighting</span>
+                <div class="update-card-content">
+                    <span class="update-category">Smart Lighting</span>
                     <div class="update-title">Solar LED project: Phase 1 active</div>
                     <p>Central district now illuminated with 340 hybrid streetlights. 98% satisfaction.</p>
                 </div>
             </div>
             <div class="update-card">
                 <div class="update-card-icon">🗑️</div>
-                <div class="update-card-content"><span class="update-category">Waste & Sanitation</span>
+                <div class="update-card-content">
+                    <span class="update-category">Waste & Sanitation</span>
                     <div class="update-title">Smart bin sensors deployed</div>
                     <p>AI-powered waste collection reduced overflow by 57% in high-density zones.</p>
                 </div>
             </div>
             <div class="update-card">
                 <div class="update-card-icon">📈</div>
-                <div class="update-card-content"><span class="update-category">Transparency Score</span>
+                <div class="update-card-content">
+                    <span class="update-category">Transparency Score</span>
                     <div class="update-title">Government response rate: 82%</div>
                     <p>1,243 issues resolved in Q1 — citizen trust index +21% vs last year.</p>
                 </div>
@@ -625,10 +787,10 @@
     if (statsSection) observer.observe(statsSection);
 
     const map = L.map('miniMap').setView([9.0765, 7.3986], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
         subdomains: 'abcd',
-        maxZoom: 18,
+        maxZoom: 19,
         minZoom: 10
     }).addTo(map);
     var nearbyMarkers = [];
@@ -640,19 +802,63 @@
             .then(data => {
                 (data.complaints || []).forEach(c => {
                     const marker = L.marker([c.lat, c.lng]).addTo(map);
-                    marker.bindPopup(`<b>${c.category}</b><br>${c.description}<br><span style="color:#00D4FF;">${c.status}</span>`);
+                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${c.lat},${c.lng}&travelmode=driving`;
+                    marker.bindPopup(`
+                        <b>${c.category}</b><br>
+                        ${c.description}<br>
+                        <span style="color:#00D4FF;">${c.status}</span><br>
+                        <a href="${directionsUrl}" target="_blank" rel="noopener" style="color:#00D4FF; font-weight:600;">🧭 Get Directions</a>
+                    `);
                     marker.on('mouseover', function () { this.openPopup(); });
-                    marker.on('mouseout', function () { this.closePopup(); });
                     nearbyMarkers.push(marker);
                 });
             })
             .catch(err => console.warn('Nearby complaints unavailable:', err));
     }
+
+    var wardLayer = null;
+    function loadWardBoundary(lat, lng) {
+        fetch(`/api/ward-boundary/?lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                if (wardLayer) { map.removeLayer(wardLayer); wardLayer = null; }
+                const label = document.getElementById('wardLabel');
+                if (!data.ward) {
+                    label.style.display = 'none';
+                    return;
+                }
+                wardLayer = L.geoJSON(data.boundary, {
+                    style: {
+                        color: '#00D4FF',
+                        weight: 2,
+                        fillColor: '#00D4FF',
+                        fillOpacity: 0.08
+                    }
+                }).addTo(map);
+                label.textContent = `📍 ${data.ward} Ward, ${data.lga} LGA, ${data.state} State`;
+                label.style.display = 'block';
+            })
+            .catch(err => console.warn('Ward boundary unavailable:', err));
+    }
+
     loadNearbyComplaints(9.0765, 7.3986); // initial load at default center
-    const pulseCircle = L.circleMarker([9.0765, 7.3986], { radius: 12, color: '#00D4FF', weight: 2, opacity: 0.8, fillOpacity: 0.3 }).addTo(map);
-    setInterval(() => {
-        pulseCircle.setStyle({ radius: 12 + Math.random() * 4 });
-    }, 800);
+    var userLat = 9.0765;
+    var userLng = 7.3986;
+
+    const userIcon = L.divIcon({
+        className: 'user-location-marker',
+        html: '<div class="user-dot"></div><div class="user-dot-ring"></div>',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    });
+    const userMarker = L.marker([userLat, userLng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
+    userMarker.bindPopup('<b>📍 You are here</b>');
+
+    function updateUserLocation(lat, lng) {
+        userLat = lat;
+        userLng = lng;
+        userMarker.setLatLng([lat, lng]);
+    }
 
     function getWeatherIconAndDesc(code) {
         const map = { 0: ['☀️', 'Clear'], 1: ['🌤️', 'Mainly clear'], 2: ['⛅', 'Partly cloudy'], 3: ['☁️', 'Overcast'], 45: ['🌫️', 'Fog'], 51: ['🌦️', 'Light drizzle'], 53: ['🌧️', 'Moderate drizzle'], 61: ['🌧️', 'Slight rain'], 63: ['🌧️', 'Moderate rain'], 65: ['🌧️', 'Heavy rain'], 71: ['❄️', 'Slight snow'], 80: ['🌧️', 'Rain showers'], 95: ['⛈️', 'Thunderstorm'] };
@@ -680,18 +886,32 @@
             document.getElementById('locationDisplay').innerHTML = locationName || `Lat: ${lat.toFixed(2)}`;
         } catch (e) { console.warn(e); document.getElementById('weatherContent').innerHTML = '<div style="text-align:center;">⚠️ Weather unavailable</div>'; }
     }
+    function hideMapLoadingOverlay() {
+        const overlay = document.getElementById('mapLoadingOverlay');
+        if (overlay) overlay.classList.add('hidden');
+    }
+
     function getGPSAndWeather() {
-        if (!navigator.geolocation) return fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
+        if (!navigator.geolocation) {
+            hideMapLoadingOverlay();
+            return fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
+        }
         navigator.geolocation.getCurrentPosition(pos => {
             const { latitude, longitude } = pos.coords;
-            map.setView([latitude, longitude], 13);
+            map.flyTo([latitude, longitude], 16, { duration: 1.2 });
+            updateUserLocation(latitude, longitude);
             loadNearbyComplaints(latitude, longitude);
+            loadWardBoundary(latitude, longitude);
+            hideMapLoadingOverlay();
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
                 .then(r => r.json()).then(data => {
                     const city = data.address?.city || data.address?.town || 'Your location';
                     fetchWeatherForLocation(latitude, longitude, city);
                 }).catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
-        }, () => fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria'));
+        }, () => {
+            hideMapLoadingOverlay();
+            fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
+        });
     }
     window.addEventListener('load', getGPSAndWeather);
     document.getElementById('refreshLocationBtn')?.addEventListener('click', getGPSAndWeather);

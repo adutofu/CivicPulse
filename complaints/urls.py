@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/notifications/unread-count/', views.get_unread_count, name='get_unread_count'),
     path('api/notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
     path('api/notifications/mark-all-read/', views.mark_all_read, name='mark_all_read'),
-
+    path('api/ward-boundary/', views.get_ward_boundary, name='get_ward_boundary'),
+    
 ]
 
