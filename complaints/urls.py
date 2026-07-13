@@ -21,15 +21,17 @@ urlpatterns = [
     path('my-complaints/', views.citizen_dashboard, name='citizen_dashboard'),  # citizen view of all own complaints
     path('community/', views.community_complaints, name='community_complaints'),
     path('complaint/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),  # detailed complaint view for citizens
-# Community voting API endpoints
+
+    # Community voting API endpoints
     path('api/vote/<int:complaint_id>/', views.toggle_vote, name='toggle_vote'),
     path('api/trending/', views.get_trending_complaints, name='get_trending_complaints'),
-# Notification API endpoints
+    # ---------- Map and spatial endpoints ----------
+    path('api/nearby-complaints/', views.get_nearby_complaints, name='get_nearby_complaints'),
+    # Notification API endpoints
     path('api/notifications/', views.get_notifications, name='get_notifications'),
     path('api/notifications/unread-count/', views.get_unread_count, name='get_unread_count'),
     path('api/notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
     path('api/notifications/mark-all-read/', views.mark_all_read, name='mark_all_read'),
-    # ---------- Map and spatial endpoints ----------
-    path('api/nearby-complaints/', views.get_nearby_complaints, name='get_nearby_complaints'),
+
 ]
 
