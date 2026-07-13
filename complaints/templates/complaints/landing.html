@@ -5,6 +5,8 @@
 
 {% block extra_css %}
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap');
+
     * {
         margin: 0;
         padding: 0;
@@ -12,26 +14,28 @@
     }
 
     :root {
-        --brand-cyan: #00D4FF;
-        --brand-cyan-deep: #00A3CC;
-        --brand-cyan-glow: rgba(0, 212, 255, 0.3);
-        --dark-bg: #0B0F1A;
-        --surface-dark: #111827;
-        --surface-card: rgba(26, 35, 50, 0.7);
-        --border-dim: rgba(38, 49, 69, 0.6);
-        --text-primary: #F0F4FA;
-        --text-secondary: #B0C4DE;
-        --text-muted: #7C8BA0;
+        --brand-cyan: #007AFF;
+        --brand-cyan-deep: #005FCC;
+        --brand-cyan-glow: rgba(0, 122, 255, 0.15);
+        --dark-bg: #FFFFFF;
+        --surface-dark: #F5F7FA;
+        --surface-card: #FFFFFF;
+        --border-dim: #E5E5EA;
+        --text-primary: #1A1A2E;
+        --text-secondary: #5F5E5A;
+        --text-muted: #8A8A8E;
         --white: #FFFFFF;
-        --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
-        --shadow-glow: 0 4px 14px rgba(0, 212, 255, 0.25);
+        --accent-green: #34C759;
+        --error-red: #FF3B30;
+        --shadow-md: 0 1px 6px rgba(0, 0, 0, 0.08);
+        --shadow-glow: 0 2px 10px rgba(0, 122, 255, 0.12);
         --radius-md: 12px;
         --radius-lg: 20px;
         --transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
     body {
-        font-family: 'Inter', 'Space Grotesk', sans-serif;
+        font-family: 'Inter', sans-serif;
         background-color: var(--dark-bg);
         color: var(--text-primary);
         line-height: 1.5;
@@ -39,67 +43,32 @@
     }
 
     .glass-card {
-        background: rgba(18, 25, 45, 0.65);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(0, 212, 255, 0.25);
+        background: var(--surface-card);
+        border: 1px solid var(--border-dim);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-md);
     }
 
     .btn-primary {
         background: var(--brand-cyan);
-        color: #0B0F1A;
+        color: #FFFFFF;
         padding: 0.9rem 2.5rem;
         font-weight: 700;
         border-radius: 60px;
         text-decoration: none;
         display: inline-block;
-        box-shadow: 0 6px 14px rgba(0, 212, 255, 0.4);
+        box-shadow: var(--shadow-glow);
         transition: 0.2s;
         position: relative;
     }
 
-    .btn-primary::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100%;
-        height: 100%;
-        border-radius: 60px;
-        background: rgba(0, 212, 255, 0.4);
-        transform: translate(-50%, -50%) scale(0.9);
-        opacity: 0;
-        z-index: -1;
-        transition: 0.3s;
-    }
-
     .btn-primary:hover {
         transform: translateY(-3px);
-    }
-
-    .pulse-animation {
-        animation: pulseRing 1.5s infinite;
-    }
-
-    @keyframes pulseRing {
-        0% {
-            transform: translate(-50%, -50%) scale(0.9);
-            opacity: 0.6;
-        }
-
-        100% {
-            transform: translate(-50%, -50%) scale(1.4);
-            opacity: 0;
-        }
-    }
-
-    .btn-primary:hover::after {
-        animation: pulseRing 1s infinite;
+        background: var(--brand-cyan-deep);
     }
 
     .btn-secondary {
-        background: transparent;
+        background: #FFFFFF;
         border: 1.8px solid var(--brand-cyan);
         color: var(--brand-cyan);
         padding: 0.85rem 2.3rem;
@@ -109,18 +78,16 @@
     }
 
     .btn-secondary:hover {
-        background: rgba(0, 212, 255, 0.15);
+        background: var(--surface-dark);
         transform: translateY(-2px);
     }
 
     .jumbotron {
-        background: linear-gradient(rgba(11, 15, 26, 0.32), rgba(11, 15, 26, 0.32)),
+        background: linear-gradient(rgba(26, 26, 46, 0.55), rgba(26, 26, 46, 0.55)),
         url("{% static 'images/Landing-Image.png' %}") center/cover no-repeat;
-        background-blend-mode: overlay;
-        filter: brightness(1.05);
         padding: 6.5rem 2rem;
         text-align: center;
-        border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+        border-bottom: 1px solid var(--border-dim);
     }
 
     .jumbotron-content {
@@ -143,20 +110,17 @@
     }
 
     .jumbotron h1 {
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: 3.6rem;
-        font-weight: 800;
+        font-weight: 700;
         margin-bottom: 1.2rem;
-        background: linear-gradient(135deg, #FFFFFF 30%, var(--brand-cyan) 80%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
+        color: #FFFFFF;
     }
 
     .jumbotron p {
         font-size: 1.2rem;
         margin-bottom: 2.5rem;
-        color: var(--text-secondary);
+        color: #F5F7FA;
     }
 
     .jumbotron-buttons {
@@ -185,17 +149,17 @@
         min-width: 180px;
         text-align: center;
         padding: 1.5rem;
-        background: rgba(0, 212, 255, 0.05);
+        background: var(--surface-card);
         border-radius: var(--radius-lg);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(0, 212, 255, 0.2);
+        border: 1px solid var(--border-dim);
+        box-shadow: var(--shadow-md);
     }
 
     .stat-number {
         font-size: 2.8rem;
-        font-weight: 800;
+        font-weight: 700;
         color: var(--brand-cyan);
-        font-family: 'Space Grotesk', monospace;
+        font-family: 'Poppins', sans-serif;
     }
 
     .stat-label {
@@ -205,18 +169,20 @@
     }
 
     .map-teaser {
+        position: relative;
         margin-bottom: 3rem;
         border-radius: var(--radius-lg);
         overflow: hidden;
         height: 300px;
         width: 100%;
-        border: 1px solid var(--brand-cyan);
+        border: 1px solid var(--border-dim);
+        box-shadow: var(--shadow-md);
     }
 
     #miniMap {
         height: 100%;
         width: 100%;
-        background: #0A0F1F;
+        background: var(--surface-dark);
     }
 
     .user-location-marker {
@@ -258,6 +224,57 @@
         }
     }
 
+    .map-loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        z-index: 500;
+        transition: opacity 0.3s ease;
+    }
+
+    .map-loading-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .map-spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--brand-cyan-glow);
+        border-top-color: var(--brand-cyan);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .ward-label {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: #FFFFFF;
+        border: 1px solid var(--border-dim);
+        color: var(--brand-cyan);
+        padding: 0.4rem 0.9rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        z-index: 400;
+        max-width: 90%;
+        box-shadow: var(--shadow-md);
+    }
+
     .steps-container {
         display: flex;
         justify-content: space-between;
@@ -268,19 +285,18 @@
 
     .step {
         flex: 1;
-        background: rgba(18, 25, 45, 0.7);
-        backdrop-filter: blur(8px);
+        background: var(--surface-card);
         border-radius: var(--radius-lg);
         padding: 1.5rem;
         text-align: center;
-        border: 1px solid rgba(0, 212, 255, 0.2);
+        border: 1px solid var(--border-dim);
+        box-shadow: var(--shadow-md);
         transition: 0.2s;
     }
 
     .step:hover {
         transform: translateY(-5px);
         border-color: var(--brand-cyan);
-        background: rgba(0, 212, 255, 0.1);
     }
 
     .step-icon {
@@ -289,23 +305,26 @@
     }
 
     .step-title {
+        font-family: 'Poppins', sans-serif;
         font-weight: 700;
         font-size: 1.2rem;
         color: var(--brand-cyan);
     }
 
     .leaderboard {
-        background: rgba(18, 25, 45, 0.7);
-        backdrop-filter: blur(8px);
+        background: var(--surface-card);
         border-radius: var(--radius-lg);
         padding: 1.5rem;
         margin-bottom: 3rem;
-        border: 1px solid rgba(0, 212, 255, 0.2);
+        border: 1px solid var(--border-dim);
+        box-shadow: var(--shadow-md);
     }
 
     .leaderboard h3 {
+        font-family: 'Poppins', sans-serif;
         margin-bottom: 1rem;
         font-size: 1.4rem;
+        color: var(--text-primary);
     }
 
     .leaderboard-list {
@@ -318,7 +337,7 @@
         flex-wrap: wrap;
         gap: 0.5rem;
         padding: 0.8rem 0;
-        border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        border-bottom: 1px solid var(--border-dim);
     }
 
     .rank-badge {
@@ -347,7 +366,7 @@
         flex-wrap: wrap;
         gap: 0.75rem;
         padding: 0.9rem 0;
-        border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        border-bottom: 1px solid var(--border-dim);
     }
 
     .priority-issue-text {
@@ -362,12 +381,12 @@
     }
 
     .weather-panel {
-        background: rgba(15, 23, 42, 0.7);
-        backdrop-filter: blur(12px);
+        background: var(--surface-card);
         border-radius: var(--radius-lg);
         padding: 2rem;
         margin-bottom: 3rem;
-        border: 1px solid rgba(0, 212, 255, 0.35);
+        border: 1px solid var(--border-dim);
+        box-shadow: var(--shadow-md);
     }
 
     .updates-grid {
@@ -378,11 +397,11 @@
     }
 
     .update-card {
-        background: rgba(26, 35, 50, 0.7);
-        backdrop-filter: blur(8px);
+        background: var(--surface-card);
         border-radius: var(--radius-lg);
         overflow: hidden;
-        border: 1px solid rgba(0, 212, 255, 0.2);
+        border: 1px solid var(--border-dim);
+        box-shadow: var(--shadow-md);
         transition: 0.2s;
         padding: 1.25rem;
     }
@@ -399,7 +418,7 @@
     }
 
     .weather-current {
-        background: rgba(0, 212, 255, 0.05);
+        background: var(--surface-dark);
         border-radius: var(--radius-lg);
         padding: 1.5rem;
         text-align: center;
@@ -412,7 +431,7 @@
     }
 
     .forecast-card {
-        background: rgba(0, 212, 255, 0.05);
+        background: var(--surface-dark);
         border-radius: var(--radius-md);
         padding: 1.2rem;
         flex: 1;
@@ -457,7 +476,6 @@
             gap: 1rem;
         }
 
-
         .container {
             padding: 0 1rem;
         }
@@ -471,56 +489,7 @@
         }
 
         .map-teaser {
-            position: relative;
-        }
-
-        .map-loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(10, 15, 31, 0.85);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            z-index: 500;
-            transition: opacity 0.3s ease;
-        }
-
-        .map-loading-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .map-spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid rgba(0, 212, 255, 0.2);
-            border-top-color: var(--brand-cyan);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .ward-label {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(10, 15, 31, 0.85);
-            color: var(--brand-cyan);
-            padding: 0.4rem 0.9rem;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 400;
-            max-width: 90%;
+            height: auto;
         }
 
         #miniMap {
@@ -621,14 +590,13 @@
         </div>
     </div>
 
-    <div id="wardLabel" class="ward-label" style="display:none;"></div>
-
     <div class="map-teaser">
         <div id="miniMap"></div>
         <div id="mapLoadingOverlay" class="map-loading-overlay">
             <div class="map-spinner"></div>
-            <div>Finding your location…</div>
+            <div>Finding your location — this can take a few seconds…</div>
         </div>
+        <div id="wardLabel" class="ward-label" style="display:none;"></div>
     </div>
 
     <section class="leaderboard" style="margin-bottom: 3rem;">
@@ -660,17 +628,20 @@
         <div class="step">
             <div class="step-icon">📸</div>
             <div class="step-title">1. Snap & Report</div>
-            <div style="font-size:0.85rem;">Take a photo, add location, describe issue.</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary);">Take a photo, add location, describe issue.
+            </div>
         </div>
         <div class="step">
             <div class="step-icon">🤖</div>
             <div class="step-title">2. Verify & Route</div>
-            <div style="font-size:0.85rem;">AI + community votes to validate & assign agency.</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary);">AI + community votes to validate & assign
+                agency.</div>
         </div>
         <div class="step">
             <div class="step-icon">✅</div>
             <div class="step-title">3. Resolve & Notify</div>
-            <div style="font-size:0.85rem;">Government fixes, you get a "Job Done" alert.</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary);">Government fixes, you get a "Job Done" alert.
+            </div>
         </div>
     </div>
 
@@ -696,50 +667,64 @@
             style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.5rem;">
             <div class="location-name">📍 <span id="locationDisplay">Detecting...</span></div>
             <button class="refresh-location" id="refreshLocationBtn"
-                style="background:none; border:1px solid var(--brand-cyan); border-radius:40px; padding:0.3rem 1rem; color: var(--brand-cyan);">⟳
+                style="background:#FFFFFF; border:1px solid var(--brand-cyan); border-radius:40px; padding:0.3rem 1rem; color: var(--brand-cyan);">⟳
                 Update</button>
         </div>
         <div id="weatherContent">
-            <div style="text-align:center; padding:2rem;">Loading weather from your device location...</div>
+            <div style="text-align:center; padding:2rem; color:var(--text-secondary);">Loading weather from your device
+                location...</div>
         </div>
     </div>
 
     <section id="updates">
-        <h2 class="section-title" style="font-family:'Space Grotesk'; font-size:2rem; margin-bottom:0.5rem;">Live civic
+        <h2 class="section-title"
+            style="font-family:'Poppins'; font-size:2rem; margin-bottom:0.5rem; color:var(--text-primary);">Live civic
             pulse</h2>
-        <p class="section-subtitle" style="margin-bottom:2rem;">Recent community reports, government responses & impact
-            metrics</p>
+        <p class="section-subtitle" style="margin-bottom:2rem; color:var(--text-secondary);">Recent community reports,
+            government responses & impact metrics</p>
         <div class="updates-grid">
             <div class="update-card">
                 <div class="update-card-icon">🛣️</div>
                 <div class="update-card-content">
-                    <span class="update-category">Infrastructure</span>
-                    <div class="update-title">Wuse road reconstruction underway</div>
-                    <p>189 reports triggered immediate FCDA intervention. Completion expected in 12 days.</p>
+                    <span class="update-category"
+                        style="color:var(--brand-cyan); font-weight:600; font-size:0.85rem;">Infrastructure</span>
+                    <div class="update-title" style="font-weight:700; margin:0.4rem 0; color:var(--text-primary);">Wuse
+                        road reconstruction underway</div>
+                    <p style="color:var(--text-secondary); font-size:0.9rem;">189 reports triggered immediate FCDA
+                        intervention. Completion expected in 12 days.</p>
                 </div>
             </div>
             <div class="update-card">
                 <div class="update-card-icon">⚡</div>
                 <div class="update-card-content">
-                    <span class="update-category">Smart Lighting</span>
-                    <div class="update-title">Solar LED project: Phase 1 active</div>
-                    <p>Central district now illuminated with 340 hybrid streetlights. 98% satisfaction.</p>
+                    <span class="update-category"
+                        style="color:var(--brand-cyan); font-weight:600; font-size:0.85rem;">Smart Lighting</span>
+                    <div class="update-title" style="font-weight:700; margin:0.4rem 0; color:var(--text-primary);">Solar
+                        LED project: Phase 1 active</div>
+                    <p style="color:var(--text-secondary); font-size:0.9rem;">Central district now illuminated with 340
+                        hybrid streetlights. 98% satisfaction.</p>
                 </div>
             </div>
             <div class="update-card">
                 <div class="update-card-icon">🗑️</div>
                 <div class="update-card-content">
-                    <span class="update-category">Waste & Sanitation</span>
-                    <div class="update-title">Smart bin sensors deployed</div>
-                    <p>AI-powered waste collection reduced overflow by 57% in high-density zones.</p>
+                    <span class="update-category"
+                        style="color:var(--brand-cyan); font-weight:600; font-size:0.85rem;">Waste & Sanitation</span>
+                    <div class="update-title" style="font-weight:700; margin:0.4rem 0; color:var(--text-primary);">Smart
+                        bin sensors deployed</div>
+                    <p style="color:var(--text-secondary); font-size:0.9rem;">AI-powered waste collection reduced
+                        overflow by 57% in high-density zones.</p>
                 </div>
             </div>
             <div class="update-card">
                 <div class="update-card-icon">📈</div>
                 <div class="update-card-content">
-                    <span class="update-category">Transparency Score</span>
-                    <div class="update-title">Government response rate: 82%</div>
-                    <p>1,243 issues resolved in Q1 — citizen trust index +21% vs last year.</p>
+                    <span class="update-category"
+                        style="color:var(--brand-cyan); font-weight:600; font-size:0.85rem;">Transparency Score</span>
+                    <div class="update-title" style="font-weight:700; margin:0.4rem 0; color:var(--text-primary);">
+                        Government response rate: 82%</div>
+                    <p style="color:var(--text-secondary); font-size:0.9rem;">1,243 issues resolved in Q1 — citizen
+                        trust index +21% vs last year.</p>
                 </div>
             </div>
         </div>
@@ -793,55 +778,7 @@
         maxZoom: 19,
         minZoom: 10
     }).addTo(map);
-    var nearbyMarkers = [];
-    function loadNearbyComplaints(lat, lng) {
-        nearbyMarkers.forEach(m => map.removeLayer(m));
-        nearbyMarkers = [];
-        fetch(`/api/nearby-complaints/?lat=${lat}&lng=${lng}`)
-            .then(res => res.json())
-            .then(data => {
-                (data.complaints || []).forEach(c => {
-                    const marker = L.marker([c.lat, c.lng]).addTo(map);
-                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${c.lat},${c.lng}&travelmode=driving`;
-                    marker.bindPopup(`
-                        <b>${c.category}</b><br>
-                        ${c.description}<br>
-                        <span style="color:#00D4FF;">${c.status}</span><br>
-                        <a href="${directionsUrl}" target="_blank" rel="noopener" style="color:#00D4FF; font-weight:600;">🧭 Get Directions</a>
-                    `);
-                    marker.on('mouseover', function () { this.openPopup(); });
-                    nearbyMarkers.push(marker);
-                });
-            })
-            .catch(err => console.warn('Nearby complaints unavailable:', err));
-    }
 
-    var wardLayer = null;
-    function loadWardBoundary(lat, lng) {
-        fetch(`/api/ward-boundary/?lat=${lat}&lng=${lng}`)
-            .then(res => res.json())
-            .then(data => {
-                if (wardLayer) { map.removeLayer(wardLayer); wardLayer = null; }
-                const label = document.getElementById('wardLabel');
-                if (!data.ward) {
-                    label.style.display = 'none';
-                    return;
-                }
-                wardLayer = L.geoJSON(data.boundary, {
-                    style: {
-                        color: '#00D4FF',
-                        weight: 2,
-                        fillColor: '#00D4FF',
-                        fillOpacity: 0.08
-                    }
-                }).addTo(map);
-                label.textContent = `📍 ${data.ward} Ward, ${data.lga} LGA, ${data.state} State`;
-                label.style.display = 'block';
-            })
-            .catch(err => console.warn('Ward boundary unavailable:', err));
-    }
-
-    loadNearbyComplaints(9.0765, 7.3986); // initial load at default center
     var userLat = 9.0765;
     var userLng = 7.3986;
 
@@ -858,6 +795,55 @@
         userLat = lat;
         userLng = lng;
         userMarker.setLatLng([lat, lng]);
+    }
+
+    var nearbyMarkers = [];
+    function loadNearbyComplaints(lat, lng) {
+        nearbyMarkers.forEach(m => map.removeLayer(m));
+        nearbyMarkers = [];
+        fetch(`/api/nearby-complaints/?lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                (data.complaints || []).forEach(c => {
+                    const marker = L.marker([c.lat, c.lng]).addTo(map);
+                    const directionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${c.lat},${c.lng}&travelmode=driving`;
+                    marker.bindPopup(`
+                        <b>${c.category}</b><br>
+                        ${c.description}<br>
+                        <span style="color:#007AFF;">${c.status}</span><br>
+                        <a href="${directionsUrl}" target="_blank" rel="noopener" style="color:#007AFF; font-weight:600;">🧭 Get Directions</a>
+                    `);
+                    marker.on('mouseover', function () { this.openPopup(); });
+                    nearbyMarkers.push(marker);
+                });
+            })
+            .catch(err => console.warn('Nearby complaints unavailable:', err));
+    }
+    loadNearbyComplaints(9.0765, 7.3986);
+
+    var wardLayer = null;
+    function loadWardBoundary(lat, lng) {
+        fetch(`/api/ward-boundary/?lat=${lat}&lng=${lng}`)
+            .then(res => res.json())
+            .then(data => {
+                if (wardLayer) { map.removeLayer(wardLayer); wardLayer = null; }
+                const label = document.getElementById('wardLabel');
+                if (!data.ward) {
+                    label.style.display = 'none';
+                    return;
+                }
+                wardLayer = L.geoJSON(data.boundary, {
+                    style: {
+                        color: '#007AFF',
+                        weight: 2,
+                        fillColor: '#007AFF',
+                        fillOpacity: 0.08
+                    }
+                }).addTo(map);
+                label.textContent = `📍 ${data.ward} Ward, ${data.lga} LGA, ${data.state} State`;
+                label.style.display = 'block';
+            })
+            .catch(err => console.warn('Ward boundary unavailable:', err));
     }
 
     function getWeatherIconAndDesc(code) {
@@ -886,6 +872,7 @@
             document.getElementById('locationDisplay').innerHTML = locationName || `Lat: ${lat.toFixed(2)}`;
         } catch (e) { console.warn(e); document.getElementById('weatherContent').innerHTML = '<div style="text-align:center;">⚠️ Weather unavailable</div>'; }
     }
+
     function hideMapLoadingOverlay() {
         const overlay = document.getElementById('mapLoadingOverlay');
         if (overlay) overlay.classList.add('hidden');
@@ -911,6 +898,10 @@
         }, () => {
             hideMapLoadingOverlay();
             fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
+        }, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 60000
         });
     }
     window.addEventListener('load', getGPSAndWeather);
