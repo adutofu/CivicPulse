@@ -12,18 +12,22 @@
         flex-wrap: wrap;
         margin-bottom: 1.5rem;
     }
+
     .issue-card {
-        background: rgba(18, 25, 45, 0.75);
-        border: 1px solid rgba(0,212,255,0.18);
+        background: #FFFFFF;
+        border: 1px solid var(--border-dim);
         border-radius: 24px;
         padding: 1.5rem;
         margin-bottom: 1rem;
+        box-shadow: var(--shadow-md);
         transition: transform 0.2s ease;
     }
+
     .issue-card:hover {
         transform: translateY(-3px);
         border-color: var(--brand-cyan);
     }
+
     .issue-top {
         display: flex;
         justify-content: space-between;
@@ -31,25 +35,28 @@
         gap: 1rem;
         flex-wrap: wrap;
     }
+
     .issue-meta {
         color: var(--text-secondary);
         font-size: 0.9rem;
     }
+
     .vote-pill {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         padding: 0.5rem 0.9rem;
         border-radius: 999px;
-        border: 1px solid rgba(0,212,255,0.2);
-        background: rgba(0,212,255,0.08);
+        border: 1px solid var(--border-dim);
+        background: var(--brand-cyan-glow);
         color: var(--brand-cyan);
         font-weight: 700;
         min-width: 80px;
         justify-content: center;
     }
+
     .vote-button {
-        background: transparent;
+        background: #FFFFFF;
         border: 1px solid var(--brand-cyan);
         color: var(--brand-cyan);
         border-radius: 40px;
@@ -58,59 +65,105 @@
         transition: all 0.2s ease;
         cursor: pointer;
     }
+
     .vote-button.active {
         background: var(--brand-cyan);
-        color: var(--dark-bg);
-        box-shadow: 0 0 12px rgba(0,212,255,0.25);
+        color: #FFFFFF;
+        box-shadow: 0 0 12px var(--brand-cyan-glow);
     }
+
     .vote-button:hover {
         transform: translateY(-1px);
     }
+
     .issue-description {
         margin: 1rem 0;
         color: var(--text-secondary);
     }
+
     .issue-status {
         display: inline-flex;
         padding: 0.3rem 0.8rem;
         border-radius: 999px;
-        background: rgba(0,212,255,0.12);
+        background: var(--brand-cyan-glow);
         color: var(--text-primary);
         font-size: 0.85rem;
         font-weight: 700;
     }
+
+    .btn-cyan {
+        background: var(--brand-cyan);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 40px;
+        padding: 0.6rem 1.4rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.2s;
+    }
+
+    .btn-cyan:hover {
+        background: var(--brand-cyan-deep);
+    }
+
+    .btn-cyan-sm {
+        background: #FFFFFF;
+        border: 1px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+        border-radius: 40px;
+        padding: 0.4rem 1rem;
+        font-size: 0.85rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.2s;
+    }
+
+    .btn-cyan-sm:hover {
+        background: var(--brand-cyan);
+        color: #FFFFFF;
+    }
+
     @media (max-width: 860px) {
         .issue-card {
             padding: 1.2rem;
         }
     }
+
     @media (max-width: 720px) {
         .issue-top {
             flex-direction: column;
             align-items: stretch;
         }
-        .issue-top > div {
+
+        .issue-top>div {
             width: 100%;
         }
+
         .issue-top .vote-pill {
             margin-top: 0.75rem;
         }
+
         .issue-description {
             font-size: 0.95rem;
         }
+
         .issue-card {
             padding: 1rem;
         }
+
         .vote-button {
             width: 100%;
             justify-content: center;
             min-width: 0;
         }
+
         .issue-status {
             width: fit-content;
             margin-top: 0.75rem;
         }
-        .issue-card > div:last-child {
+
+        .issue-card>div:last-child {
             flex-direction: column;
             align-items: stretch;
         }
@@ -123,38 +176,45 @@
     <div class="community-header">
         <div>
             <h2 style="color: var(--brand-cyan);">Community Complaints</h2>
-            <p style="color: var(--text-secondary); max-width: 650px;">Browse public issue reports from other citizens and vote for the problems that matter most. Your upvote helps government prioritise action.</p>
+            <p style="color: var(--text-secondary); max-width: 650px;">Browse public issue reports from other citizens
+                and vote for the problems that matter most. Your upvote helps government prioritise action.</p>
         </div>
         <div>
             <a href="{% url 'report_complaint' %}" class="btn-cyan">Report New Issue</a>
         </div>
     </div>
     {% if complaints %}
-        {% for complaint in complaints %}
-            <div class="issue-card" id="issue-{{ complaint.id }}">
-                <div class="issue-top">
-                    <div>
-                        <div style="font-size:1.05rem; font-weight:700; color: var(--text-primary);">{{ complaint.get_category_display }}</div>
-                        <div class="issue-meta">Reported by {{ complaint.citizen.username }} • {{ complaint.created_at|date:"M d, Y" }}</div>
-                    </div>
-                    <div class="vote-pill">{{ complaint.upvotes }} votes</div>
-                </div>
-                <p class="issue-description">{{ complaint.description|truncatechars:140 }}</p>
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
-                    <div class="issue-status">{{ complaint.get_status_display }}</div>
-                    <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-                        <button type="button" class="vote-button {% if complaint.id in user_votes %}active{% endif %} {% if user.profile.user_type != 'citizen' %}disabled{% endif %}" data-complaint-id="{{ complaint.id }}" {% if user.profile.user_type != 'citizen' %}disabled{% endif %}>
-                            {% if complaint.id in user_votes %}Voted{% else %}Upvote{% endif %}
-                        </button>
-                        <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
-                    </div>
-                </div>
+    {% for complaint in complaints %}
+    <div class="issue-card" id="issue-{{ complaint.id }}">
+        <div class="issue-top">
+            <div>
+                <div style="font-size:1.05rem; font-weight:700; color: var(--text-primary);">{{
+                    complaint.get_category_display }}</div>
+                <div class="issue-meta">Reported by {{ complaint.citizen.username }} • {{ complaint.created_at|date:"M
+                    d, Y" }}</div>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="issue-card">
-            <p style="color: var(--text-secondary);">No community complaints are available yet. Submit the first one and invite others to vote.</p>
+            <div class="vote-pill">{{ complaint.upvotes }} votes</div>
         </div>
+        <p class="issue-description">{{ complaint.description|truncatechars:140 }}</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+            <div class="issue-status">{{ complaint.get_status_display }}</div>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
+                <button type="button"
+                    class="vote-button {% if complaint.id in user_votes %}active{% endif %} {% if user.profile.user_type != 'citizen' %}disabled{% endif %}"
+                    data-complaint-id="{{ complaint.id }}" {% if user.profile.user_type !='citizen' %}disabled{% endif
+                    %}>
+                    {% if complaint.id in user_votes %}Voted{% else %}Upvote{% endif %}
+                </button>
+                <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="issue-card">
+        <p style="color: var(--text-secondary);">No community complaints are available yet. Submit the first one and
+            invite others to vote.</p>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

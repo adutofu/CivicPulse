@@ -1,27 +1,34 @@
 {% extends 'complaints/base.html' %}
 {% block content %}
 <style>
-    /* Only affects this page's table */
     .table tbody td {
-        color: #e0e0e0 !important;
+        color: var(--text-secondary) !important;
         font-weight: 500;
     }
+
     .table thead th {
-        color: #00D4FF !important;
+        color: var(--brand-cyan) !important;
         font-weight: 700;
     }
+
     .table a {
-        color: #00D4FF !important;
+        color: var(--brand-cyan) !important;
     }
+
     .table a:hover {
-        color: white !important;
-    
+        color: var(--brand-cyan-deep) !important;
     }
-    /* added the bootstrap theme to change theme of the button */
+
+    .table {
+        background: #FFFFFF;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+    }
+
     .btn-cyan {
-        background: transparent;
-        border: 1.5px solid #00D4FF;
-        color: #00D4FF;
+        background: #FFFFFF;
+        border: 1.5px solid var(--brand-cyan);
+        color: var(--brand-cyan);
         border-radius: 40px;
         padding: 0.3rem 1rem;
         font-weight: 500;
@@ -31,72 +38,117 @@
         text-align: center;
         font-size: 0.85rem;
     }
+
     .btn-cyan:hover {
-        background: #00D4FF;
-        color: #0B0F1A;
-        box-shadow: 0 0 8px rgba(0,212,255,0.4);
+        background: var(--brand-cyan);
+        color: #FFFFFF !important;
+        box-shadow: 0 0 8px var(--brand-cyan-glow);
         transform: translateY(-1px);
     }
+
     @media (max-width: 860px) {
         .table-responsive {
             overflow-x: auto;
         }
     }
+
     @media (max-width: 720px) {
         .table-responsive {
             overflow-x: hidden;
         }
+
         .table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 0.8rem;
+            box-shadow: none;
+            background: transparent;
         }
+
         .table thead {
             display: none;
         }
+
         .table tbody,
         .table tr,
         .table td {
             display: block;
             width: 100%;
         }
+
         .table tr {
-            background: rgba(11, 15, 26, 0.8);
-            border: 1px solid rgba(0,212,255,0.12);
+            background: #FFFFFF;
+            border: 1px solid var(--border-dim);
             border-radius: 18px;
             padding: 0.85rem;
             margin-bottom: 0.75rem;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
         }
+
         .table td {
             display: flex;
             justify-content: space-between;
-            padding: 0.75rem 0.75rem;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
             border: none;
-            position: relative;
             color: var(--text-secondary);
+            max-width: 100%;
         }
+
         .table td::before {
-            position: absolute;
-            left: 0.75rem;
-            top: 0.75rem;
-            width: 45%;
-            white-space: nowrap;
+            flex: 0 0 45%;
             font-weight: 700;
             color: var(--text-primary);
             text-align: left;
         }
-        .table td:nth-of-type(1)::before { content: "Image"; }
-        .table td:nth-of-type(2)::before { content: "Citizen"; }
-        .table td:nth-of-type(3)::before { content: "Category"; }
-        .table td:nth-of-type(4)::before { content: "Upvotes"; }
-        .table td:nth-of-type(5)::before { content: "Description"; }
-        .table td:nth-of-type(6)::before { content: "Status"; }
-        .table td:nth-of-type(7)::before { content: "Reported"; }
-        .table td:nth-of-type(8)::before { content: "Action"; }
+
+        .table td .cell-value {
+            flex: 1 1 55%;
+            min-width: 0;
+            text-align: right;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .table td:nth-of-type(1)::before {
+            content: "Image";
+        }
+
+        .table td:nth-of-type(2)::before {
+            content: "Citizen";
+        }
+
+        .table td:nth-of-type(3)::before {
+            content: "Category";
+        }
+
+        .table td:nth-of-type(4)::before {
+            content: "Upvotes";
+        }
+
+        .table td:nth-of-type(5)::before {
+            content: "Description";
+        }
+
+        .table td:nth-of-type(6)::before {
+            content: "Status";
+        }
+
+        .table td:nth-of-type(7)::before {
+            content: "Reported";
+        }
+
+        .table td:nth-of-type(8)::before {
+            content: "Action";
+        }
+
         .table td img {
             max-width: 60px;
             height: auto;
         }
+
         .table td a.btn {
             width: 100%;
             text-align: center;
@@ -104,45 +156,51 @@
     }
 </style>
 
-<h2>Government Dashboard – All Citizen Complaints</h2>
+<h2 style="color: var(--brand-cyan);">Government Dashboard – All Citizen Complaints</h2>
 <div class="table-responsive">
-<table class="table table-striped table-hover">
-    <thead>
-        <tr>
-            <th>Image</th>
-            <th>Citizen</th>
-            <th>Category</th>
-            <th>Upvotes</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Reported On</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for complaint in complaints %}
-        <tr>
-            <td>
-                {% if complaint.photo %}
-                    <a href="{{ complaint.photo.url }}" target="_blank">
-                        <img src="{{ complaint.photo.url }}" alt="Complaint photo" style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px;">
-                    </a>
-                {% else %}
-                    <span style="color: rgb(209, 184, 184);">No image</span>
-                {% endif %}
-            </td>
-            <td>{{ complaint.citizen.username }}</td>
-            <td>{{ complaint.get_category_display }}</td>
-            <td>{{ complaint.upvotes }}</td>
-            <td>{{ complaint.description|truncatechars:50 }}</td>
-            <td>{{ complaint.get_status_display }}</td>
-            <td>{{ complaint.created_at|date:"Y-m-d" }}</td>
-            <td><a href="{% url 'update_complaint' complaint.id %}" class="btn btn-sm btn-cyan">Update</a></td>
-        </tr>
-    {% empty %}
-        <tr><td colspan="8">No complaints reported yet.</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Citizen</th>
+                <th>Category</th>
+                <th>Upvotes</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Reported On</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+            <tr>
+                <td>
+                    <span class="cell-value">
+                        {% if complaint.photo %}
+                        <a href="{{ complaint.photo.url }}" target="_blank">
+                            <img src="{{ complaint.photo.url }}" alt="Complaint photo"
+                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-dim);">
+                        </a>
+                        {% else %}
+                        <span style="color: var(--text-muted);">No image</span>
+                        {% endif %}
+                    </span>
+                </td>
+                <td><span class="cell-value">{{ complaint.citizen.username }}</span></td>
+                <td><span class="cell-value">{{ complaint.get_category_display }}</span></td>
+                <td><span class="cell-value">{{ complaint.upvotes }}</span></td>
+                <td><span class="cell-value">{{ complaint.description|truncatechars:50 }}</span></td>
+                <td><span class="cell-value">{{ complaint.get_status_display }}</span></td>
+                <td><span class="cell-value">{{ complaint.created_at|date:"Y-m-d" }}</span></td>
+                <td><span class="cell-value"><a href="{% url 'update_complaint' complaint.id %}"
+                            class="btn btn-sm btn-cyan">Update</a></span></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8">No complaints reported yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

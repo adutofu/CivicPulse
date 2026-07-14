@@ -39,7 +39,7 @@
                 {% if complaint.photo %}
                 <p><strong style="color: var(--brand-cyan);">📸 Original Photo:</strong></p>
                 <img src="{{ complaint.photo.url }}" class="img-fluid rounded"
-                    style="border: 1px solid var(--brand-cyan);">
+                    style="border: 1px solid var(--border-dim);">
                 {% endif %}
             </div>
         </div>
@@ -51,7 +51,7 @@
                 {% for img in extra_images %}
                 <div class="col-md-3">
                     <img src="{{ img.image.url }}" class="img-fluid rounded"
-                        style="border: 1px solid var(--brand-cyan);">
+                        style="border: 1px solid var(--border-dim);">
                 </div>
                 {% empty %}
                 <p class="text-muted">No extra images yet.</p>
@@ -61,7 +61,7 @@
 
         {% if is_owner %}
         <!-- Form to upload more images -->
-        <div class="mt-4 p-3" style="background: rgba(0,212,255,0.05); border-radius: 16px;">
+        <div class="mt-4 p-3" style="background: var(--brand-cyan-glow); border-radius: 16px;">
             <h5 style="color: var(--brand-cyan);">➕ Add more pictures</h5>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -82,15 +82,15 @@
 
 <style>
     .glass-card {
-        background: rgba(18, 25, 45, 0.7);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(0, 212, 255, 0.3);
+        background: #FFFFFF;
+        border: 1px solid var(--border-dim);
         border-radius: 24px;
+        box-shadow: var(--shadow-md);
     }
 
     .btn-cyan-sm,
     .btn-outline {
-        background: transparent;
+        background: #FFFFFF;
         border: 1.5px solid var(--brand-cyan);
         color: var(--brand-cyan);
         border-radius: 40px;
@@ -102,17 +102,17 @@
 
     .btn-cyan-sm:hover {
         background: var(--brand-cyan);
-        color: #0B0F1A;
+        color: #FFFFFF;
     }
 
     .btn-outline {
-        border-color: #6c757d;
-        color: #adb5bd;
+        border-color: var(--text-muted);
+        color: var(--text-secondary);
     }
 
     .btn-outline:hover {
-        background: rgba(108, 117, 125, 0.2);
-        color: white;
+        background: var(--secondary);
+        color: var(--text-primary);
     }
 
     .status-badge {
@@ -124,23 +124,23 @@
     }
 
     .status-pending {
-        background: #ffc107;
-        color: #1a1a1a;
+        background: #FAEEDA;
+        color: #854F0B;
     }
 
     .status-acknowledged {
-        background: #17a2b8;
-        color: white;
+        background: #E6F1FB;
+        color: #0C447C;
     }
 
     .status-in_progress {
-        background: #fd7e14;
-        color: white;
+        background: #FAC775;
+        color: #4A1B0C;
     }
 
     .status-resolved {
-        background: #28a745;
-        color: white;
+        background: #EAF3DE;
+        color: #3B6D11;
     }
 
     @media (max-width: 768px) {

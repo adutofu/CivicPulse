@@ -1,15 +1,17 @@
 {% extends 'complaints/base.html' %}
 {% block content %}
-<h2>Report a Problem</h2>
 <div class="report-form-wrapper">
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <div id="map"></div>
-        <input type="hidden" name="latitude" id="lat">
-        <input type="hidden" name="longitude" id="lng">
-        <button type="submit" class="btn btn-primary full-width-mobile">Submit Complaint</button>
-    </form>
+    <div class="report-card">
+        <h2 style="color: var(--brand-cyan); margin-bottom: 1.5rem;">Report a Problem</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div id="map"></div>
+            <input type="hidden" name="latitude" id="lat">
+            <input type="hidden" name="longitude" id="lng">
+            <button type="submit" class="btn-submit-report full-width-mobile">Submit Complaint</button>
+        </form>
+    </div>
 </div>
 
 <style>
@@ -19,19 +21,75 @@
         margin: 0 auto;
     }
 
+    .report-card {
+        background: #FFFFFF;
+        border: 1px solid var(--border-dim);
+        border-radius: 20px;
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+    }
+
     #map {
         height: 320px;
         width: 100%;
         margin-bottom: 1.25rem;
         border-radius: 18px;
         overflow: hidden;
+        border: 1px solid var(--border-dim);
     }
 
     form p {
         margin-bottom: 1rem;
     }
 
+    form label {
+        font-weight: 600;
+        color: var(--text-secondary);
+        display: block;
+        margin-bottom: 0.3rem;
+    }
+
+    form input[type="text"],
+    form textarea,
+    form select,
+    form input[type="file"] {
+        width: 100%;
+        border: 1px solid var(--border-dim);
+        border-radius: 10px;
+        padding: 0.6rem 0.8rem;
+        color: var(--text-primary);
+        background: #FFFFFF;
+    }
+
+    form input:focus,
+    form textarea:focus,
+    form select:focus {
+        outline: none;
+        border-color: var(--brand-cyan);
+        box-shadow: 0 0 0 3px var(--brand-cyan-glow);
+    }
+
+    .btn-submit-report {
+        background: var(--brand-cyan);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 40px;
+        padding: 0.75rem 2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-submit-report:hover {
+        background: var(--brand-cyan-deep);
+        transform: translateY(-2px);
+    }
+
     @media (max-width: 768px) {
+        .report-card {
+            padding: 1.2rem;
+        }
+
         #map {
             height: 240px;
         }
@@ -56,7 +114,7 @@
         maxZoom: 19
     }).addTo(map);
     var marker;
-    var userPickedManually = false;  // NEW: tracks if citizen already chose a spot
+    var userPickedManually = false;  // tracks if citizen already chose a spot
 
     function setMarker(lat, lng) {
         if (marker) map.removeLayer(marker);
@@ -73,10 +131,10 @@
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function (position) {
-                if (userPickedManually) return;  // NEW: respect the citizen's manual choice
+                if (userPickedManually) return;  // respect the citizen's manual choice
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
-                console.log('Geolocation accuracy (meters):', position.coords.accuracy);  // diagnostic
+                console.log('Geolocation accuracy (meters):', position.coords.accuracy);
                 map.setView([lat, lng], 15);
                 setMarker(lat, lng);
             },

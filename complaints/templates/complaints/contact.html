@@ -4,22 +4,40 @@
 {% block content %}
 <style>
     .hero-mini {
-        background: linear-gradient(135deg, var(--primary, #D42F1F) 0%, var(--secondary, #1B4B3E) 100%);
+        background: linear-gradient(135deg, var(--brand-cyan) 0%, var(--brand-cyan-deep) 100%);
         color: white;
         padding: 3rem 2rem;
         border-radius: 0.5rem;
         margin-bottom: 2rem;
         text-align: center;
     }
+
     .hero-mini h1 {
         font-size: 2.5rem;
         font-weight: 800;
     }
+
     .contact-card {
         transition: transform 0.2s;
     }
+
     .contact-card:hover {
         transform: translateY(-5px);
+    }
+
+    .btn-contact-submit {
+        background: var(--brand-cyan);
+        border: none;
+        color: #FFFFFF;
+        border-radius: 40px;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-contact-submit:hover {
+        background: var(--brand-cyan-deep);
+        color: #FFFFFF;
     }
 </style>
 
@@ -50,7 +68,6 @@
                 </div>
             </div>
         </div>
-        
     </div>
 
     <div class="row mt-4">
@@ -73,10 +90,11 @@
                             <textarea rows="5" class="form-control" required></textarea>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Send Message</button>
+                            <button type="submit" class="btn btn-contact-submit">Send Message</button>
                         </div>
                     </form>
-                    <p class="text-muted text-center mt-3 small">For government partnership inquiries, please use the same form.</p>
+                    <p class="text-muted text-center mt-3 small">For government partnership inquiries, please use the
+                        same form.</p>
                 </div>
             </div>
         </div>
