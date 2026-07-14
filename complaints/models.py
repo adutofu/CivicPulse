@@ -263,7 +263,7 @@ class ComplaintImage(models.Model):
 # reported complaint's lat/long, sourced from GRID3 GeoPackage data.
 # One row per Ward; each Ward carries its parent LGA and State as plain fields.
 class Ward(models.Model):
-    country = models.CharField(max_length=10, blank=True)         # e.g. "Nigeria"
+    country = models.CharField(max_length=10, blank=True)          #e.g. "Nigeria"
     iso3 = models.CharField(max_length=5, blank=True)              # e.g. "NGA"
     state = models.CharField(max_length=50)                        # e.g. "Oyo"
     statecode = models.CharField(max_length=5, blank=True)         # e.g. state abbreviation/code
