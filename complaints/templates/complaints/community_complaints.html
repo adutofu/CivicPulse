@@ -185,13 +185,12 @@
     </div>
     {% if complaints %}
     {% for complaint in complaints %}
+    {% with category=complaint.get_category_display report_date=complaint.created_at|date:"M d, Y" %}
     <div class="issue-card" id="issue-{{ complaint.id }}">
         <div class="issue-top">
             <div>
-                <div style="font-size:1.05rem; font-weight:700; color: var(--text-primary);">{{
-                    complaint.get_category_display }}</div>
-                <div class="issue-meta">Reported by {{ complaint.citizen.username }} • {{ complaint.created_at|date:"M
-                    d, Y" }}</div>
+                <div style="font-size:1.05rem; font-weight:700; color: var(--text-primary);">{{ category }}</div>
+                <div class="issue-meta">Reported by {{ complaint.citizen.username }} • {{ report_date }}</div>
             </div>
             <div class="vote-pill">{{ complaint.upvotes }} votes</div>
         </div>
@@ -199,21 +198,18 @@
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
             <div class="issue-status">{{ complaint.get_status_display }}</div>
             <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-                <button type="button"
-                    class="vote-button {% if complaint.id in user_votes %}active{% endif %} {% if user.profile.user_type != 'citizen' %}disabled{% endif %}"
-                    data-complaint-id="{{ complaint.id }}" {% if user.profile.user_type !='citizen' %}disabled{% endif
-                    %}>
+                <button type="button" class="vote-button {% if complaint.id in user_votes %}active{% endif %} {% if user.profile.user_type != 'citizen' %}disabled{% endif %}" data-complaint-id="{{ complaint.id }}" {% if user.profile.user_type != 'citizen' %}disabled{% endif %}>
                     {% if complaint.id in user_votes %}Voted{% else %}Upvote{% endif %}
                 </button>
                 <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
             </div>
         </div>
     </div>
+    {% endwith %}
     {% endfor %}
     {% else %}
     <div class="issue-card">
-        <p style="color: var(--text-secondary);">No community complaints are available yet. Submit the first one and
-            invite others to vote.</p>
+        <p style="color: var(--text-secondary);">No community complaints are available yet. Submit the first one and invite others to vote.</p>
     </div>
     {% endif %}
 </div>
