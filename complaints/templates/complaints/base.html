@@ -550,6 +550,7 @@
                         fill="#8A8A8E" style="text-transform:uppercase;">MAPPING ISSUES • POWERING SOLUTIONS</text>
                 </svg>
             </div>
+            {% block header_navigation %}
             <nav>
                 <a href="/">Home</a>
                 <a href="{% url 'about' %}">About</a>
@@ -581,6 +582,7 @@
                 <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
                 {% endif %}
             </div>
+            {% endblock %}
 
             {% if user.is_authenticated %}
             <!-- Notification System -->
