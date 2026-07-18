@@ -34,5 +34,9 @@ urlpatterns = [
     path('api/notifications/mark-all-read/', views.mark_all_read, name='mark_all_read'),
     path('api/ward-boundary/', views.get_ward_boundary, name='get_ward_boundary'),
     
+    # Moderation endpoints (Admin / Superuser only)
+    path('moderation/', views.moderation_queue, name='moderation_queue'),
+    path('moderation/resolve/<int:flag_id>/', views.resolve_flag, name='resolve_flag'),
+
 ]
 

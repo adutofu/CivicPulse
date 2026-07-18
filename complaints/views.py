@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
@@ -16,6 +17,8 @@ from .models import (
     Notification,
     ComplaintImage,
     Vote,
+    Comment,
+    Flag,
     notify_status_change,
     notify_govt_response,
     notify_new_complaint_govt,
@@ -29,8 +32,8 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 from .models import Ward
+from .utils import send_notification, notify_mentions
 import json
-
 
 # ---------- Public Pages ----------
 def landing_page(request):
@@ -143,6 +146,8 @@ def report_complaint(request):
                 complaint.ward = matched_ward  # stays None if point falls outside all known wards
 
             complaint.save()
+
+            notify_mentions(complaint.description, request.user, complaint)
             
             # Notify government users of new complaint
             notify_new_complaint_govt(complaint)
@@ -151,6 +156,16 @@ def report_complaint(request):
     else:
         form = ComplaintForm()
     return render(request, 'complaints/report.html', {'form': form})
+
+def notify_mentions(text, sender, complaint):
+    import re
+    usernames = re.findall(r'@(\w+)', text)
+    for username in usernames:
+        try:
+            user = User.objects.get(username=username)
+            send_notification(user, f"{sender.username} mentioned you in a comment on complaint #{complaint.id}")
+        except User.DoesNotExist:
+            pass
 
 # ---------- Community voting feed ----------
 @login_required
@@ -178,6 +193,65 @@ def get_trending_complaints(request):
         }
         for complaint in trending
     ]})
+
+#Display: Show repost count on complaint cards and a list of who reposted
+@login_required
+def repost_complaint(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    if request.method == 'POST':
+        comment = request.POST.get('comment', '')
+        Repost.objects.get_or_create(complaint=complaint, user=request.user, defaults={'comment': comment})
+        # Update repost count (cached or via signal)
+        return redirect('complaint_detail', complaint_id=complaint.id)
+
+
+
+# Flag Report features
+@login_required
+def flag_complaint(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        description = request.POST.get('description')
+        Flag.objects.create(
+            complaint=complaint,
+            reported_by=request.user,
+            reason=reason,
+            description=description
+        )
+        # Notify staff / admins (could be via email or in-app)
+        # Optionally, hide the complaint from public view until reviewed
+        return redirect('complaint_detail', complaint_id=complaint.id)
+
+
+# Escalation features
+#An “Escalate” button visible on complaint details if status hasn’t progressed.
+@login_required
+def escalate_complaint(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        target_authority = request.POST.get('target_authority')
+        Escalation.objects.create(
+            complaint=complaint,
+            escalated_by=request.user,
+            reason=reason,
+            target_authority=target_authority
+        )
+        # Change complaint status to 'escalated'
+        complaint.status = 'escalated'
+        complaint.save()
+        # Notify relevant authorities
+        return redirect('complaint_detail', complaint_id=complaint.id)
+
+@login_required
+def toggle_follow(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    follower, created = ComplaintFollower.objects.get_or_create(complaint=complaint, user=request.user)
+    if not created:
+        follower.delete()  # unfollow
+    return redirect('complaint_detail', complaint_id=complaint.id)
+
 
 # ---------- Nearby complaints (landing page map) ----------
 def get_nearby_complaints(request):
@@ -393,6 +467,39 @@ def complaint_detail(request, complaint_id):
         'is_owner': is_owner,
     })
 
+@login_required
+def add_comment(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        parent_id = request.POST.get('parent_id')
+        parent = Comment.objects.get(id=parent_id) if parent_id else None
+        comment = Comment.objects.create(
+            complaint=complaint,
+            author=request.user,
+            text=text,
+            parent=parent
+        )
+        # Notify complaint owner (if not the comment author)
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'comment_added',
+                f"New comment on your complaint #{complaint.id}"
+            )
+        # Notify parent comment author (if any)
+        if parent and parent.author != request.user:
+            send_notification(
+                parent.author,
+                complaint,
+                'comment_reply',
+                f"{request.user.username} replied to your comment"
+            )
+        notify_mentions(text, request.user, complaint)
+        
+        return redirect('complaint_detail', complaint_id=complaint.id)
+
 
 # ---------- Notification API Views ----------
 
@@ -437,3 +544,25 @@ def mark_all_read(request):
     """Mark all notifications as read"""
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     return JsonResponse({'success': True})
+
+
+
+@staff_member_required
+def moderation_queue(request):
+    flags = Flag.objects.filter(resolved=False).select_related('complaint', 'reported_by')
+    return render(request, 'admin/moderation.html', {'flags': flags})
+
+
+
+@staff_member_required
+def resolve_flag(request, flag_id):
+    flag = get_object_or_404(Flag, id=flag_id)
+    action = request.POST.get('action')  # 'hide', 'delete', 'ignore'
+    if action == 'hide':
+        flag.complaint.is_hidden = True
+        flag.complaint.save()
+    elif action == 'delete':
+        flag.complaint.delete()
+    flag.resolved = True
+    flag.save()
+    return redirect('moderation_queue')

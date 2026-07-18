@@ -44,6 +44,7 @@ class Complaint(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     government_response = models.TextField(blank=True, null=True)
     resolved_photo = models.ImageField(upload_to='resolved/', blank=True, null=True)
+    is_hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.category} - {self.created_at.date()}"
@@ -281,3 +282,73 @@ class Ward(models.Model):
     def __str__(self):
         return f"{self.ward}, {self.lga}, {self.state}"
     
+
+# comment
+
+class Comment(models.Model):
+    complaint = models.ForeignKey('Complaint', on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=True)  # auto-approve or moderate
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on complaint #{self.complaint.id}"
+
+
+    
+# Flag model for reporting complaints
+class Flag(models.Model):
+    REASONS = (
+        ('spam', 'Spam'),
+        ('fake', 'Fake / Misinformation'),
+        ('offensive', 'Offensive content'),
+        ('other', 'Other'),
+    )
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='flags')
+    reported_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    reason = models.CharField(max_length=20, choices=REASONS)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Flag for complaint #{self.complaint.id} by {self.reported_by.username}"
+
+#If a complaint isn’t resolved in a reasonable time, citizens (or officials) can escalate it to a higher authority (e.g., state governor, ombudsman).
+#Track escalation history.
+#Add an “escalated” status
+class Escalation(models.Model):
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='escalations')
+    escalated_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    target_authority = models.CharField(max_length=255)  # e.g., "Ministry of Works"
+
+
+#Repost / Share a Complaint
+#A “Share” button that lets citizens share a complaint with their network, increasing visibility.
+class Repost(models.Model):
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='reposts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.TextField(blank=True)  # optional additional comment
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('complaint', 'user')  # prevent duplicate reposts
+
+
+
+#Follow a complaint
+class ComplaintFollower(models.Model):
+    complaint = models.ForeignKey('Complaint', on_delete=models.CASCADE, related_name='followers')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('complaint', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} follows complaint #{self.complaint.id}"
+

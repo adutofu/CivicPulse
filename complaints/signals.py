@@ -3,6 +3,8 @@ from django.db.models.signals import post_save, post_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from .models import Profile, Vote, Complaint
+from .models import ComplaintFollower, Notification
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -27,3 +29,25 @@ def increase_complaint_upvotes(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=Vote)
 def decrease_complaint_upvotes(sender, instance, **kwargs):
     Complaint.objects.filter(pk=instance.complaint_id, upvotes__gt=0).update(upvotes=F('upvotes') - 1)
+
+@receiver(post_save, sender=Complaint)
+def notify_followers_on_update(sender, instance, created, **kwargs):
+    if kwargs.get('raw'):
+        return
+
+    # Only notify followers when the complaint is updated (not on creation)
+    if not created:
+        followers = ComplaintFollower.objects.filter(complaint=instance).exclude(user=instance.citizen)
+        if followers.exists():
+            message = f"Complaint #{instance.id} has been updated. Status: {instance.get_status_display()}"
+            if instance.government_response:
+                message += f" Response: {instance.government_response[:50]}..."
+            for follower in followers:
+                Notification.objects.create(
+                    recipient=follower.user,
+                    complaint=instance,
+                    notification_type='status_change',  # or a new type like 'followed_update'
+                    message=message
+                )
+
+

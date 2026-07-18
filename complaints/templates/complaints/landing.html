@@ -17,6 +17,9 @@
                 {% endif %}
                 {% if user.is_staff %}
                 <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
+                {% if user.is_superuser %}
+                <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
+                {% endif %}
                 {% endif %}
             </nav>
             <div class="nav-buttons desktop-buttons">
@@ -58,6 +61,7 @@
                     {% endif %}
                     {% if user.is_staff %}
                     <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
+                    <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
                     {% endif %}
                 </nav>
                 <div class="mobile-nav-buttons">
