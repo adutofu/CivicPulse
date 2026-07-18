@@ -22,6 +22,10 @@ urlpatterns = [
     path('community/', views.community_complaints, name='community_complaints'),
     path('complaint/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),  # detailed complaint view for citizens
 
+    path('complaint/<int:complaint_id>/comment/', views.add_comment, name='add_comment'),
+    path('complaint/<int:complaint_id>/follow/', views.toggle_follow, name='toggle_follow'),
+    path('complaint/<int:complaint_id>/flag/', views.flag_complaint, name='flag_complaint'),
+
     # Community voting API endpoints
     path('api/vote/<int:complaint_id>/', views.toggle_vote, name='toggle_vote'),
     path('api/trending/', views.get_trending_complaints, name='get_trending_complaints'),
