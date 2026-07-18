@@ -1,16 +1,151 @@
 {% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .glass-card {
+        background: #FFFFFF;
+        border: 1px solid var(--border-dim);
+        border-radius: 24px;
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+    }
+    .btn-cyan-sm,
+    .btn-outline {
+        background: transparent;
+        border: 1.5px solid var(--brand-cyan);
+        color: var(--brand-cyan);
+        border-radius: 40px;
+        padding: 0.4rem 1.2rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.2s;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    .btn-cyan-sm:hover {
+        background: var(--brand-cyan);
+        color: #FFFFFF;
+    }
+    .btn-outline {
+        border-color: var(--text-muted);
+        color: var(--text-secondary);
+    }
+    .btn-outline:hover {
+        background: var(--text-secondary);
+        color: var(--text-primary);
+    }
+    .btn-danger-outline {
+        border-color: #dc3545;
+        color: #dc3545;
+        background: transparent;
+        border-radius: 40px;
+        padding: 0.4rem 1.2rem;
+        transition: 0.2s;
+        cursor: pointer;
+    }
+    .btn-danger-outline:hover {
+        background: #dc3545;
+        color: white;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 0.2rem 0.6rem;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .status-pending { background: #FAEEDA; color: #854F0B; }
+    .status-acknowledged { background: #E6F1FB; color: #0C447C; }
+    .status-in_progress { background: #FAC775; color: #4A1B0C; }
+    .status-resolved { background: #EAF3DE; color: #3B6D11; }
+
+    .comment {
+        background: var(--surface-dark);
+        border-radius: 16px;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.75rem;
+    }
+    .comment .comment-meta {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 0.2rem;
+    }
+    .comment .comment-author {
+        font-weight: 700;
+        color: var(--brand-cyan);
+    }
+    .comment .comment-date {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+    .comment .comment-text {
+        margin: 0.2rem 0 0.3rem 0;
+        color: var(--text-primary);
+    }
+    .comment .reply-link {
+        font-size: 0.8rem;
+        color: var(--brand-cyan);
+        cursor: pointer;
+    }
+    .replies {
+        margin-left: 1.5rem;
+        border-left: 2px solid var(--brand-cyan-light);
+        padding-left: 0.8rem;
+    }
+    .modal-content {
+        background: var(--surface-card);
+        border: 1px solid var(--border-dim);
+        border-radius: 24px;
+    }
+    .modal-header {
+        border-bottom: 1px solid var(--border-dim);
+    }
+    .modal-footer {
+        border-top: 1px solid var(--border-dim);
+    }
+    .form-control, .form-select {
+        background-color: var(--surface-dark);
+        border: 1px solid var(--border-dim);
+        color: var(--text-primary);
+        border-radius: 16px;
+        padding: 0.6rem;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--brand-cyan);
+        box-shadow: 0 0 0 0.2rem rgba(0,122,255,0.1);
+    }
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin: 1.5rem 0;
+    }
+    @media (max-width: 768px) {
+        .glass-card { padding: 1rem; }
+        .replies { margin-left: 0.5rem; padding-left: 0.5rem; }
+        .action-buttons { flex-direction: column; }
+        .action-buttons .btn-cyan-sm,
+        .action-buttons .btn-danger-outline,
+        .action-buttons .btn-outline { width: 100%; text-align: center; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
-    <div class="card glass-card p-4">
-        <div
-            style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+    <div class="glass-card">
+        <!-- Header: Complaint ID + Upvotes -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
             <h2 style="color: var(--brand-cyan); margin:0;">🔍 Complaint #{{ complaint.id }}</h2>
-            <div style="display:flex; align-items:center; gap:0.75rem; color:var(--brand-cyan); font-weight:700;">
+            <div style="display:flex; align-items:center; gap:0.5rem; color:var(--brand-cyan); font-weight:700;">
                 <span>⬆</span>
                 <span>{{ complaint.upvotes }} votes</span>
             </div>
         </div>
 
+        <!-- Complaint Details -->
         <div class="row">
             <div class="col-md-8">
                 <p><strong style="color: var(--brand-cyan);">Category:</strong> {{ complaint.get_category_display }}</p>
@@ -18,18 +153,16 @@
                 <p><strong style="color: var(--brand-cyan);">Status:</strong>
                     <span class="status-badge status-{{ complaint.status }}">{{ complaint.get_status_display }}</span>
                 </p>
-                {% with report_date=complaint.created_at|date:"F j, Y, g:i a" %}
-                <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ report_date }}</p>
-                {% endwith %}
+                <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ complaint.created_at|date:"F j, Y, g:i a" }}</p>
                 {% with w=complaint.ward %}
                 <p><strong style="color: var(--brand-cyan);">📍 Location:</strong>
-                    {% if w %}{{ w.ward }} Ward, {{ w.lga }} LGA, {{ w.state }} State{% elif complaint.address_text %}{{
-                    complaint.address_text }}{% else %}<span class="text-muted">Not available</span>{% endif %}
+                    {% if w %}{{ w.ward }} Ward, {{ w.lga }} LGA, {{ w.state }} State
+                    {% elif complaint.address_text %}{{ complaint.address_text }}
+                    {% else %}<span class="text-muted">Not available</span>{% endif %}
                 </p>
                 {% endwith %}
                 {% if complaint.government_response %}
-                <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{
-                    complaint.government_response }}</p>
+                <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{ complaint.government_response }}</p>
                 {% endif %}
                 {% if complaint.contractor %}
                 <p><strong style="color: var(--brand-cyan);">👷 Contractor:</strong> {{ complaint.contractor }}</p>
@@ -38,20 +171,18 @@
             <div class="col-md-4">
                 {% if complaint.photo %}
                 <p><strong style="color: var(--brand-cyan);">📸 Original Photo:</strong></p>
-                <img src="{{ complaint.photo.url }}" class="img-fluid rounded"
-                    style="border: 1px solid var(--border-dim);">
+                <img src="{{ complaint.photo.url }}" class="img-fluid rounded" style="border: 1px solid var(--border-dim); max-width:100%;">
                 {% endif %}
             </div>
         </div>
 
-        <!-- Extra images uploaded by citizen -->
+        <!-- Extra Images -->
         <div class="mt-4">
             <h4 style="color: var(--brand-cyan);">📷 Additional Evidence</h4>
             <div class="row g-3">
                 {% for img in extra_images %}
-                <div class="col-md-3">
-                    <img src="{{ img.image.url }}" class="img-fluid rounded"
-                        style="border: 1px solid var(--border-dim);">
+                <div class="col-md-3 col-6">
+                    <img src="{{ img.image.url }}" class="img-fluid rounded" style="border: 1px solid var(--border-dim); width:100%; height:auto;">
                 </div>
                 {% empty %}
                 <p class="text-muted">No extra images yet.</p>
@@ -59,8 +190,8 @@
             </div>
         </div>
 
+        <!-- Citizen upload more images (only if owner) -->
         {% if is_owner %}
-        <!-- Form to upload more images -->
         <div class="mt-4 p-3" style="background: var(--brand-cyan-glow); border-radius: 16px;">
             <h5 style="color: var(--brand-cyan);">➕ Add more pictures</h5>
             <form method="post" enctype="multipart/form-data">
@@ -74,107 +205,128 @@
         </div>
         {% endif %}
 
+        <!-- Action Buttons: Follow & Flag -->
+        <div class="action-buttons">
+            <!-- Follow / Unfollow -->
+            <form action="{% url 'toggle_follow' complaint.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                {% if request.user in complaint.followers.all %}
+                    <button type="submit" class="btn-outline">Unfollow</button>
+                {% else %}
+                    <button type="submit" class="btn-cyan-sm">Follow</button>
+                {% endif %}
+            </form>
+
+            <!-- Flag button (opens modal) -->
+            <button type="button" class="btn-danger-outline" data-bs-toggle="modal" data-bs-target="#flagModal">
+                🚩 Flag
+            </button>
+        </div>
+
+        <!-- ========== COMMENTS SECTION ========== -->
+        <div class="mt-4">
+            <h4 style="color: var(--brand-cyan);">💬 Comments</h4>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_comment' complaint.id %}" class="mb-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_id" id="parent_id" value="">
+                    <div class="mb-2">
+                        <textarea name="text" class="form-control" rows="2" placeholder="Write a comment... (use @username to mention)"></textarea>
+                    </div>
+                    <button type="submit" class="btn-cyan-sm">Post Comment</button>
+                </form>
+            {% else %}
+                <p><a href="{% url 'login' %}">Log in</a> to comment.</p>
+            {% endif %}
+
+            <!-- List comments (top‑level) -->
+            <div class="mt-3">
+                {% for comment in complaint.comments.all %}
+                    {% if not comment.parent %}
+                        <div class="comment">
+                            <div class="comment-meta">
+                                <span class="comment-author">{{ comment.author.username }}</span>
+                                <span class="comment-date">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                            </div>
+                            <div class="comment-text">{{ comment.text }}</div>
+                            {% if user.is_authenticated %}
+                                <a href="#" class="reply-link" data-comment-id="{{ comment.id }}">↩ Reply</a>
+                            {% endif %}
+                            <!-- Replies -->
+                            <div class="replies mt-2">
+                                {% for reply in comment.comment_set.all %}
+                                    <div class="comment" style="background:var(--surface-card); border:1px solid var(--border-dim);">
+                                        <div class="comment-meta">
+                                            <span class="comment-author">{{ reply.author.username }}</span>
+                                            <span class="comment-date">{{ reply.created_at|date:"M d, Y H:i" }}</span>
+                                        </div>
+                                        <div class="comment-text">{{ reply.text }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <p class="text-muted">No comments yet. Be the first!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Back button -->
         <div class="mt-4">
             <a href="{% url 'citizen_dashboard' %}" class="btn-outline">← Back to My Complaints</a>
         </div>
     </div>
 </div>
 
-<style>
-    .glass-card {
-        background: #FFFFFF;
-        border: 1px solid var(--border-dim);
-        border-radius: 24px;
-        box-shadow: var(--shadow-md);
-    }
+<!-- ========== FLAG MODAL ========== -->
+<div class="modal fade" id="flagModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="color:var(--text-primary);">🚩 Report this complaint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'flag_complaint' complaint.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label for="reason" class="form-label">Reason</label>
+                        <select name="reason" id="reason" class="form-select" required>
+                            <option value="spam">Spam</option>
+                            <option value="fake">Fake / Misinformation</option>
+                            <option value="offensive">Offensive content</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label for="description" class="form-label">Additional details (optional)</label>
+                        <textarea name="description" id="description" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-danger-outline" style="border-color:#dc3545;color:#dc3545;">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-    .btn-cyan-sm,
-    .btn-outline {
-        background: #FFFFFF;
-        border: 1.5px solid var(--brand-cyan);
-        color: var(--brand-cyan);
-        border-radius: 40px;
-        padding: 0.4rem 1.2rem;
-        text-decoration: none;
-        display: inline-block;
-        transition: 0.2s;
-    }
-
-    .btn-cyan-sm:hover {
-        background: var(--brand-cyan);
-        color: #FFFFFF;
-    }
-
-    .btn-outline {
-        border-color: var(--text-muted);
-        color: var(--text-secondary);
-    }
-
-    .btn-outline:hover {
-        background: var(--secondary);
-        color: var(--text-primary);
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 0.2rem 0.6rem;
-        border-radius: 40px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    .status-pending {
-        background: #FAEEDA;
-        color: #854F0B;
-    }
-
-    .status-acknowledged {
-        background: #E6F1FB;
-        color: #0C447C;
-    }
-
-    .status-in_progress {
-        background: #FAC775;
-        color: #4A1B0C;
-    }
-
-    .status-resolved {
-        background: #EAF3DE;
-        color: #3B6D11;
-    }
-
-    @media (max-width: 768px) {
-        .glass-card {
-            padding: 1.2rem;
-        }
-
-        .row {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .col-md-8,
-        .col-md-4 {
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .col-md-3 {
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-
-        .col-md-3 img {
-            width: 100%;
-            height: auto;
-        }
-
-        .btn-outline,
-        .btn-cyan-sm {
-            width: 100%;
-            text-align: center;
-            padding: 0.8rem 1rem;
-        }
-    }
-</style>
+<!-- JavaScript for reply link -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.reply-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const commentId = this.dataset.commentId;
+                document.getElementById('parent_id').value = commentId;
+                const textarea = document.querySelector('textarea[name="text"]');
+                textarea.focus();
+                textarea.placeholder = 'Reply to comment...';
+                textarea.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    });
+</script>
 {% endblock %}

@@ -34,6 +34,7 @@ from django.contrib.gis.measure import D
 from .models import Ward
 from .utils import send_notification, notify_mentions
 import json
+from django.core.paginator import Paginator
 
 # ---------- Public Pages ----------
 def landing_page(request):
@@ -468,6 +469,92 @@ def complaint_detail(request, complaint_id):
     })
 
 @login_required
+def community_complaints(request):
+    complaints = Complaint.objects.filter(is_hidden=False).order_by('-created_at')
+    paginator = Paginator(complaints, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'complaints/community_complaints.html', {'page_obj': page_obj})
+
+
+@login_required
+@require_POST
+def api_upvote(request):
+    complaint_id = request.POST.get('complaint_id')
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    vote, created = Vote.objects.get_or_create(complaint=complaint, user=request.user)
+    if not created:
+        vote.delete()
+        upvoted = False
+    else:
+        upvoted = True
+    return JsonResponse({'upvotes': complaint.upvotes, 'upvoted': upvoted})
+
+@login_required
+@require_POST
+def api_follow(request):
+    complaint_id = request.POST.get('complaint_id')
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    follower, created = ComplaintFollower.objects.get_or_create(complaint=complaint, user=request.user)
+    if not created:
+        follower.delete()
+        following = False
+    else:
+        following = True
+    return JsonResponse({'following': following})
+
+@login_required
+@require_POST
+def api_comment(request):
+    complaint_id = request.POST.get('complaint_id')
+    text = request.POST.get('text')
+    parent_id = request.POST.get('parent_id')
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    parent = Comment.objects.get(id=parent_id) if parent_id else None
+    comment = Comment.objects.create(
+        complaint=complaint,
+        author=request.user,
+        text=text,
+        parent=parent
+    )
+    # Notify owner, parent, mentions
+    if complaint.citizen != request.user:
+        send_notification(complaint.citizen, complaint, 'comment_added',
+                          f"New comment on {complaint.id} from {request.user.username}")
+    if parent and parent.author != request.user:
+        send_notification(parent.author, complaint, 'comment_reply',
+                          f"{request.user.username} replied to your comment")
+    notify_mentions(text, request.user, complaint)
+    return JsonResponse({
+        'id': comment.id,
+        'author': comment.author.username,
+        'text': comment.text,
+        'created_at': comment.created_at.strftime('%b %d, %Y %H:%M'),
+        'parent_id': comment.parent.id if comment.parent else None
+    })
+
+@login_required
+@require_POST
+def api_flag_complaint(request):
+    complaint_id = request.POST.get('complaint_id')
+    reason = request.POST.get('reason')
+    description = request.POST.get('description', '')
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    Flag.objects.create(complaint=complaint, reported_by=request.user,reason=reason, description=description)
+    return JsonResponse({'status': 'flagged'})
+
+@login_required
+@require_POST
+def api_flag_comment(request):
+    comment_id = request.POST.get('comment_id')
+    reason = request.POST.get('reason')
+    description = request.POST.get('description', '')
+    comment = get_object_or_404(Comment, id=comment_id)
+    CommentFlag.objects.create(comment=comment, reported_by=request.user,reason=reason, description=description)
+    return JsonResponse({'status': 'flagged'})
+
+
+@login_required
 def add_comment(request, complaint_id):
     complaint = get_object_or_404(Complaint, id=complaint_id)
     if request.method == 'POST':
@@ -549,8 +636,9 @@ def mark_all_read(request):
 
 @staff_member_required
 def moderation_queue(request):
-    flags = Flag.objects.filter(resolved=False).select_related('complaint', 'reported_by')
-    return render(request, 'admin/moderation.html', {'flags': flags})
+    complaint_flags = Flag.objects.filter(resolved=False).select_related('complaint', 'reported_by')
+    comment_flags = Flag.objects.filter(resolved=False, comment__isnull=False).select_related('comment', 'reported_by')
+    return render(request, 'admin/moderation.html', {'complaints_flags': complaint_flags, 'comment_flags': comment_flags})
 
 
 
@@ -563,6 +651,19 @@ def resolve_flag(request, flag_id):
         flag.complaint.save()
     elif action == 'delete':
         flag.complaint.delete()
+    flag.resolved = True
+    flag.save()
+    return redirect('moderation_queue')
+
+
+
+@staff_member_required
+def resolve_comment_flag(request, flag_id):
+    flag = get_object_or_404(Flag, id=flag_id)
+    action = request.POST.get('action')  # 'delete' or 'ignore'
+    if action == 'delete':
+        flag.comment.delete()  # remove the offensive comment
+    # 'ignore' just resolves the flag without deleting
     flag.resolved = True
     flag.save()
     return redirect('moderation_queue')

@@ -312,6 +312,7 @@ class Flag(models.Model):
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     resolved = models.BooleanField(default=False)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='flags', null=True, blank=True)
 
     def __str__(self):
         return f"Flag for complaint #{self.complaint.id} by {self.reported_by.username}"

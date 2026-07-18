@@ -1,252 +1,495 @@
 {% extends 'complaints/base.html' %}
-
-{% block title %}Community Issues – CivicPulse{% endblock %}
+{% load static %}
 
 {% block extra_css %}
 <style>
-    .community-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-        margin-bottom: 1.5rem;
-    }
-
-    .issue-card {
-        background: #FFFFFF;
+    .community-card {
+        background: var(--surface-card);
         border: 1px solid var(--border-dim);
         border-radius: 24px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
+        box-shadow: var(--shadow-sm);
+        transition: 0.2s;
+        margin-bottom: 1.5rem;
+        padding: 1.2rem;
+    }
+    .community-card:hover {
         box-shadow: var(--shadow-md);
-        transition: transform 0.2s ease;
     }
-
-    .issue-card:hover {
-        transform: translateY(-3px);
-        border-color: var(--brand-cyan);
-    }
-
-    .issue-top {
+    .card-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        gap: 1rem;
-        flex-wrap: wrap;
+        align-items: start;
     }
-
-    .issue-meta {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-    }
-
-    .vote-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0.9rem;
-        border-radius: 999px;
-        border: 1px solid var(--border-dim);
-        background: var(--brand-cyan-glow);
+    .card-header .category {
+        font-weight: 600;
         color: var(--brand-cyan);
-        font-weight: 700;
-        min-width: 80px;
-        justify-content: center;
     }
-
-    .vote-button {
-        background: #FFFFFF;
+    .card-header .date {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    .card-body .description {
+        margin: 0.5rem 0;
+        color: var(--text-secondary);
+    }
+    .card-body .photo-thumb {
+        max-width: 100%;
+        max-height: 200px;
+        border-radius: 12px;
+        border: 1px solid var(--border-dim);
+        margin: 0.5rem 0;
+        object-fit: cover;
+    }
+    .action-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        align-items: center;
+        margin: 0.8rem 0;
+    }
+    .action-bar .btn-outline-cyan {
+        background: transparent;
         border: 1px solid var(--brand-cyan);
         color: var(--brand-cyan);
         border-radius: 40px;
-        padding: 0.55rem 1rem;
-        font-weight: 600;
-        transition: all 0.2s ease;
+        padding: 0.2rem 0.8rem;
+        font-size: 0.85rem;
+        transition: 0.2s;
         cursor: pointer;
     }
-
-    .vote-button.active {
+    .action-bar .btn-outline-cyan:hover {
         background: var(--brand-cyan);
-        color: #FFFFFF;
-        box-shadow: 0 0 12px var(--brand-cyan-glow);
+        color: white;
     }
-
-    .vote-button:hover {
-        transform: translateY(-1px);
-    }
-
-    .issue-description {
-        margin: 1rem 0;
-        color: var(--text-secondary);
-    }
-
-    .issue-status {
-        display: inline-flex;
-        padding: 0.3rem 0.8rem;
-        border-radius: 999px;
-        background: var(--brand-cyan-glow);
-        color: var(--text-primary);
-        font-size: 0.85rem;
-        font-weight: 700;
-    }
-
-    .btn-cyan {
-        background: var(--brand-cyan);
-        color: #FFFFFF;
-        border: none;
+    .action-bar .btn-outline-danger {
+        background: transparent;
+        border: 1px solid #dc3545;
+        color: #dc3545;
         border-radius: 40px;
-        padding: 0.6rem 1.4rem;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
+        padding: 0.2rem 0.8rem;
+        font-size: 0.85rem;
         transition: 0.2s;
+        cursor: pointer;
     }
-
-    .btn-cyan:hover {
-        background: var(--brand-cyan-deep);
+    .action-bar .btn-outline-danger:hover {
+        background: #dc3545;
+        color: white;
     }
-
-    .btn-cyan-sm {
-        background: #FFFFFF;
-        border: 1px solid var(--brand-cyan);
+    .comment-section {
+        margin-top: 0.8rem;
+        border-top: 1px solid var(--border-dim);
+        padding-top: 0.8rem;
+    }
+    .comment-item {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background: var(--surface-dark);
+        border-radius: 16px;
+    }
+    .comment-item .meta {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .comment-item .meta .author { font-weight: 600; color: var(--brand-cyan); }
+    .comment-item .meta .time { font-size: 0.7rem; color: var(--text-muted); }
+    .comment-item .text { margin: 0.2rem 0; }
+    .comment-item .flag-comment-btn {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        text-decoration: underline;
+    }
+    .comment-item .flag-comment-btn:hover {
+        color: #dc3545;
+    }
+    .reply-form {
+        margin-left: 1.5rem;
+        display: none;
+    }
+    .reply-form textarea {
+        width: 100%;
+        border-radius: 16px;
+        padding: 0.4rem;
+        border: 1px solid var(--border-dim);
+        background: var(--surface-dark);
+        color: var(--text-primary);
+        margin-bottom: 0.3rem;
+    }
+    .badge-upvotes {
+        background: var(--brand-cyan-glow);
         color: var(--brand-cyan);
         border-radius: 40px;
-        padding: 0.4rem 1rem;
-        font-size: 0.85rem;
-        text-decoration: none;
-        display: inline-block;
-        transition: 0.2s;
-    }
-
-    .btn-cyan-sm:hover {
-        background: var(--brand-cyan);
-        color: #FFFFFF;
-    }
-
-    @media (max-width: 860px) {
-        .issue-card {
-            padding: 1.2rem;
-        }
-    }
-
-    @media (max-width: 720px) {
-        .issue-top {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .issue-top>div {
-            width: 100%;
-        }
-
-        .issue-top .vote-pill {
-            margin-top: 0.75rem;
-        }
-
-        .issue-description {
-            font-size: 0.95rem;
-        }
-
-        .issue-card {
-            padding: 1rem;
-        }
-
-        .vote-button {
-            width: 100%;
-            justify-content: center;
-            min-width: 0;
-        }
-
-        .issue-status {
-            width: fit-content;
-            margin-top: 0.75rem;
-        }
-
-        .issue-card>div:last-child {
-            flex-direction: column;
-            align-items: stretch;
-        }
+        padding: 0.2rem 0.6rem;
+        font-weight: 600;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="community-header">
-        <div>
-            <h2 style="color: var(--brand-cyan);">Community Complaints</h2>
-            <p style="color: var(--text-secondary); max-width: 650px;">Browse public issue reports from other citizens
-                and vote for the problems that matter most. Your upvote helps government prioritise action.</p>
+    <h2 class="section-headline">Community Feed</h2>
+    <p class="section-desc">Connect with fellow citizens – upvote, comment, follow, and flag.</p>
+
+    {% for complaint in page_obj %}
+    <div class="community-card" data-complaint-id="{{ complaint.id }}">
+        <!-- Header -->
+        <div class="card-header">
+            <span class="category">{{ complaint.get_category_display }}</span>
+            <span class="date">{{ complaint.created_at|date:"M d, Y" }}</span>
         </div>
-        <div>
-            <a href="{% url 'report_complaint' %}" class="btn-cyan">Report New Issue</a>
-        </div>
-    </div>
-    {% if complaints %}
-    {% for complaint in complaints %}
-    {% with category=complaint.get_category_display report_date=complaint.created_at|date:"M d, Y" %}
-    <div class="issue-card" id="issue-{{ complaint.id }}">
-        <div class="issue-top">
-            <div>
-                <div style="font-size:1.05rem; font-weight:700; color: var(--text-primary);">{{ category }}</div>
-                <div class="issue-meta">Reported by {{ complaint.citizen.username }} • {{ report_date }}</div>
-            </div>
-            <div class="vote-pill">{{ complaint.upvotes }} votes</div>
-        </div>
-        <p class="issue-description">{{ complaint.description|truncatechars:140 }}</p>
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
-            <div class="issue-status">{{ complaint.get_status_display }}</div>
-            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-                <button type="button" class="vote-button {% if complaint.id in user_votes %}active{% endif %} {% if user.profile.user_type != 'citizen' %}disabled{% endif %}" data-complaint-id="{{ complaint.id }}" {% if user.profile.user_type != 'citizen' %}disabled{% endif %}>
-                    {% if complaint.id in user_votes %}Voted{% else %}Upvote{% endif %}
+        <!-- Body -->
+        <div class="card-body">
+            <div class="description">{{ complaint.description|truncatechars:120 }}</div>
+            {% if complaint.photo %}
+                <img src="{{ complaint.photo.url }}" class="photo-thumb" alt="Complaint photo">
+            {% endif %}
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <button class="btn-outline-cyan upvote-btn" data-complaint-id="{{ complaint.id }}">
+                    👍 <span class="upvote-count">{{ complaint.upvotes }}</span>
                 </button>
-                <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
+                <button class="btn-outline-cyan follow-btn" data-complaint-id="{{ complaint.id }}">
+                    {% if request.user in complaint.followers.all %}
+                        Unfollow
+                    {% else %}
+                        Follow
+                    {% endif %}
+                </button>
+                <button class="btn-outline-danger flag-complaint-btn" data-complaint-id="{{ complaint.id }}" data-bs-toggle="modal" data-bs-target="#flagComplaintModal">
+                    🚩 Report
+                </button>
+                <span class="badge-upvotes"><i class="fas fa-comment"></i> {{ complaint.comments.count }}</span>
+            </div>
+            <!-- Comments section -->
+            <div class="comment-section">
+                <div class="comments-list">
+                    {% for comment in complaint.comments.all %}
+                        {% if not comment.parent %}
+                        <div class="comment-item" data-comment-id="{{ comment.id }}">
+                            <div class="meta">
+                                <span class="author">{{ comment.author.username }}</span>
+                                <span class="time">{{ comment.created_at|date:"M d, H:i" }}</span>
+                            </div>
+                            <div class="text">{{ comment.text }}</div>
+                            <div class="actions">
+                                <button class="reply-btn" data-comment-id="{{ comment.id }}">Reply</button>
+                                <button class="flag-comment-btn" data-comment-id="{{ comment.id }}" data-bs-toggle="modal" data-bs-target="#flagCommentModal">
+                                    Flag
+                                </button>
+                            </div>
+                            <!-- Replies -->
+                            <div class="replies-list ms-4">
+                                {% for reply in comment.comment_set.all %}
+                                <div class="comment-item" data-comment-id="{{ reply.id }}">
+                                    <div class="meta">
+                                        <span class="author">{{ reply.author.username }}</span>
+                                        <span class="time">{{ reply.created_at|date:"M d, H:i" }}</span>
+                                    </div>
+                                    <div class="text">{{ reply.text }}</div>
+                                    <button class="flag-comment-btn" data-comment-id="{{ reply.id }}" data-bs-toggle="modal" data-bs-target="#flagCommentModal">Flag</button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <!-- Reply form (hidden) -->
+                            <div class="reply-form" data-parent-id="{{ comment.id }}">
+                                <textarea class="reply-text" rows="1" placeholder="Write a reply..."></textarea>
+                                <button class="btn-outline-cyan submit-reply" data-complaint-id="{{ complaint.id }}" data-parent-id="{{ comment.id }}">Post reply</button>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                        <p class="text-muted">No comments yet.</p>
+                    {% endfor %}
+                </div>
+                <!-- New comment form -->
+                <div class="new-comment-form mt-2">
+                    <textarea class="comment-textarea form-control" rows="1" placeholder="Write a comment... (use @username)"></textarea>
+                    <button class="btn-cyan-sm submit-comment mt-1" data-complaint-id="{{ complaint.id }}">Post comment</button>
+                </div>
             </div>
         </div>
     </div>
-    {% endwith %}
+    {% empty %}
+    <p>No complaints yet. Be the first to report!</p>
     {% endfor %}
-    {% else %}
-    <div class="issue-card">
-        <p style="color: var(--text-secondary);">No community complaints are available yet. Submit the first one and invite others to vote.</p>
+
+    <!-- Pagination -->
+    <div class="pagination mt-4">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
     </div>
-    {% endif %}
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<!-- Flag Complaint Modal -->
+<div class="modal fade" id="flagComplaintModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Report Complaint</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <input type="hidden" id="flagComplaintId">
+                <select id="flagComplaintReason" class="form-select">
+                    <option value="spam">Spam</option><option value="fake">Fake</option><option value="offensive">Offensive</option><option value="other">Other</option>
+                </select>
+                <textarea id="flagComplaintDesc" class="form-control mt-2" placeholder="Additional details"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn-danger-outline" id="submitFlagComplaint">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Flag Comment Modal -->
+<div class="modal fade" id="flagCommentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"><h5>Report Comment</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <input type="hidden" id="flagCommentId">
+                <select id="flagCommentReason" class="form-select">
+                    <option value="spam">Spam</option><option value="offensive">Offensive</option><option value="harassment">Harassment</option><option value="other">Other</option>
+                </select>
+                <textarea id="flagCommentDesc" class="form-control mt-2" placeholder="Additional details"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn-danger-outline" id="submitFlagComment">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    async function toggleVote(event) {
-        const button = event.currentTarget;
-        const complaintId = button.dataset.complaintId;
-        if (!complaintId) return;
-
-        try {
-            const response = await fetch(`{% url 'toggle_vote' complaint_id=0 %}`.replace('/0/', `/${complaintId}/`), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.cookie.split('; ').find(row => row.startsWith('csrftoken=')).split('=')[1],
-                    'Accept': 'application/json',
-                },
-            });
-            if (!response.ok) throw new Error('Vote request failed');
-            const data = await response.json();
-            if (data.success) {
-                button.textContent = data.voted ? 'Voted' : 'Upvote';
-                button.classList.toggle('active', data.voted);
-                const pill = button.closest('.issue-card').querySelector('.vote-pill');
-                if (pill) pill.textContent = `${data.upvotes} votes`;
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Unable to save your vote. Please try again.');
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Helper: get CSRF token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+               document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
     }
 
-    document.querySelectorAll('.vote-button').forEach(btn => {
-        btn.addEventListener('click', toggleVote);
+    // ---------- Upvote ----------
+    document.querySelectorAll('.upvote-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const complaintId = this.dataset.complaintId;
+            fetch('/api/upvote/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: `complaint_id=${complaintId}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                const countSpan = this.querySelector('.upvote-count');
+                countSpan.textContent = data.upvotes;
+                // Toggle button style (optional)
+                if (data.upvoted) {
+                    this.style.background = 'var(--brand-cyan)';
+                    this.style.color = 'white';
+                } else {
+                    this.style.background = 'transparent';
+                    this.style.color = 'var(--brand-cyan)';
+                }
+            });
+        });
     });
+
+    // ---------- Follow ----------
+    document.querySelectorAll('.follow-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const complaintId = this.dataset.complaintId;
+            fetch('/api/follow/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: `complaint_id=${complaintId}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                this.textContent = data.following ? 'Unfollow' : 'Follow';
+            });
+        });
+    });
+
+    // ---------- Submit Comment ----------
+    document.querySelectorAll('.submit-comment').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const complaintId = this.dataset.complaintId;
+            const textarea = this.parentElement.querySelector('.comment-textarea');
+            const text = textarea.value.trim();
+            if (!text) return;
+            fetch('/api/comment/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: `complaint_id=${complaintId}&text=${encodeURIComponent(text)}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Append the new comment to the list
+                const card = this.closest('.community-card');
+                const list = card.querySelector('.comments-list');
+                const newComment = document.createElement('div');
+                newComment.className = 'comment-item';
+                newComment.dataset.commentId = data.id;
+                newComment.innerHTML = `
+                    <div class="meta">
+                        <span class="author">${data.author}</span>
+                        <span class="time">${data.created_at}</span>
+                    </div>
+                    <div class="text">${data.text}</div>
+                    <div class="actions">
+                        <button class="reply-btn" data-comment-id="${data.id}">Reply</button>
+                        <button class="flag-comment-btn" data-comment-id="${data.id}" data-bs-toggle="modal" data-bs-target="#flagCommentModal">Flag</button>
+                    </div>
+                    <div class="replies-list ms-4"></div>
+                    <div class="reply-form" data-parent-id="${data.id}" style="display:none;">
+                        <textarea class="reply-text" rows="1" placeholder="Write a reply..."></textarea>
+                        <button class="btn-outline-cyan submit-reply" data-complaint-id="${complaintId}" data-parent-id="${data.id}">Post reply</button>
+                    </div>
+                `;
+                list.appendChild(newComment);
+                textarea.value = '';
+                // Re‑bind events for the new elements...
+                bindReplyEvents();
+                bindFlagCommentEvents();
+            });
+        });
+    });
+
+    // ---------- Submit Reply ----------
+    function bindReplyEvents() {
+        document.querySelectorAll('.submit-reply').forEach(btn => {
+            btn.removeEventListener('click', handleReply); // prevent duplicates
+            btn.addEventListener('click', handleReply);
+        });
+    }
+
+    function handleReply(e) {
+        const btn = e.currentTarget;
+        const complaintId = btn.dataset.complaintId;
+        const parentId = btn.dataset.parentId;
+        const textarea = btn.closest('.reply-form').querySelector('.reply-text');
+        const text = textarea.value.trim();
+        if (!text) return;
+        fetch('/api/comment/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: `complaint_id=${complaintId}&text=${encodeURIComponent(text)}&parent_id=${parentId}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            const replyContainer = btn.closest('.comment-item').querySelector('.replies-list');
+            const newReply = document.createElement('div');
+            newReply.className = 'comment-item';
+            newReply.dataset.commentId = data.id;
+            newReply.innerHTML = `
+                <div class="meta">
+                    <span class="author">${data.author}</span>
+                    <span class="time">${data.created_at}</span>
+                </div>
+                <div class="text">${data.text}</div>
+                <button class="flag-comment-btn" data-comment-id="${data.id}" data-bs-toggle="modal" data-bs-target="#flagCommentModal">Flag</button>
+            `;
+            replyContainer.appendChild(newReply);
+            textarea.value = '';
+            btn.closest('.reply-form').style.display = 'none';
+            bindFlagCommentEvents();
+        });
+    }
+
+    // ---------- Toggle Reply Form ----------
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = this.closest('.comment-item').querySelector('.reply-form');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            form.querySelector('.reply-text').focus();
+        });
+    });
+
+    // ---------- Flag Complaint ----------
+    document.querySelectorAll('.flag-complaint-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('flagComplaintId').value = this.dataset.complaintId;
+        });
+    });
+    document.getElementById('submitFlagComplaint').addEventListener('click', function() {
+        const complaintId = document.getElementById('flagComplaintId').value;
+        const reason = document.getElementById('flagComplaintReason').value;
+        const description = document.getElementById('flagComplaintDesc').value;
+        fetch('/api/flag-complaint/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: `complaint_id=${complaintId}&reason=${reason}&description=${encodeURIComponent(description)}`
+        })
+        .then(res => res.json())
+        .then(() => {
+            alert('Complaint flagged successfully.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('flagComplaintModal'));
+            modal.hide();
+        });
+    });
+
+    // ---------- Flag Comment ----------
+    function bindFlagCommentEvents() {
+        document.querySelectorAll('.flag-comment-btn').forEach(btn => {
+            btn.removeEventListener('click', flagCommentClick);
+            btn.addEventListener('click', flagCommentClick);
+        });
+    }
+    function flagCommentClick(e) {
+        document.getElementById('flagCommentId').value = this.dataset.commentId;
+    }
+    document.getElementById('submitFlagComment').addEventListener('click', function() {
+        const commentId = document.getElementById('flagCommentId').value;
+        const reason = document.getElementById('flagCommentReason').value;
+        const description = document.getElementById('flagCommentDesc').value;
+        fetch('/api/flag-comment/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: `comment_id=${commentId}&reason=${reason}&description=${encodeURIComponent(description)}`
+        })
+        .then(res => res.json())
+        .then(() => {
+            alert('Comment flagged successfully.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('flagCommentModal'));
+            modal.hide();
+        });
+    });
+
+    // Initial binding
+    bindReplyEvents();
+    bindFlagCommentEvents();
+});
 </script>
 {% endblock %}

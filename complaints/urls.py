@@ -29,6 +29,12 @@ urlpatterns = [
     # Community voting API endpoints
     path('api/vote/<int:complaint_id>/', views.toggle_vote, name='toggle_vote'),
     path('api/trending/', views.get_trending_complaints, name='get_trending_complaints'),
+    path('api/upvote/', views.api_upvote, name='api_upvote'),
+    path('api/follow/', views.api_follow, name='api_follow'),
+    path('api/comment/', views.api_comment, name='api_comment'),
+    path('api/flag-complaint/', views.api_flag_complaint, name='api_flag_complaint'),
+    path('api/flag-comment/', views.api_flag_comment, name='api_flag_comment'),
+
     # ---------- Map and spatial endpoints ----------
     path('api/nearby-complaints/', views.get_nearby_complaints, name='get_nearby_complaints'),
     # Notification API endpoints
@@ -41,6 +47,8 @@ urlpatterns = [
     # Moderation endpoints (Admin / Superuser only)
     path('moderation/', views.moderation_queue, name='moderation_queue'),
     path('moderation/resolve/<int:flag_id>/', views.resolve_flag, name='resolve_flag'),
-
+    path('moderation/resolve-comment/<int:flag_id>/', views.resolve_comment_flag, name='resolve_comment_flag'),
+    path('community/', views.community_complaints, name='community_complaints'),
+   
 ]
 
