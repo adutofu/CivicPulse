@@ -155,7 +155,7 @@
         transform: translateY(-2px);
     }
 
-    /* ----- HERO SECTION (FULL WIDTH, BREAKS OUT OF CONTAINER) ----- */
+    /* ----- HERO SECTION (FULL WIDTH) ----- */
     .hero-section {
         width: 100vw;
         margin-left: calc(-50vw + 50%);
@@ -223,7 +223,6 @@
         flex-wrap: wrap;
     }
 
-    /* Hero stats card (glass effect) */
     .hero-card {
         background: rgba(255,255,255,0.15);
         backdrop-filter: blur(16px);
@@ -259,14 +258,20 @@
         background: var(--white);
     }
     .section-full-alt {
-        padding: 4rem 0;
+        padding: 2.5rem 0;
         background: var(--dark-bg);
     }
     .container-wide {
-    max-width: 1400px;   /* wider max-width */
-    margin: 0 auto;
-    padding: 0 1.5rem;   /* reduced side padding */
-}
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .container-full-wide {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
 
     .section-label {
         display: inline-block;
@@ -291,37 +296,35 @@
         margin-bottom: 2rem;
     }
 
-  
-    /* ----- STATS GRID (4 columns) with depth & gradient border ----- */
+    /* ----- STATS GRID (4 columns) – Reduced size, uniform ----- */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 2rem;
+        gap: 1.5rem;
     }
     .stat-block {
         position: relative;
         text-align: center;
-        padding: 1.8rem 1rem;
+        padding: 1.2rem 0.8rem;
         background: linear-gradient(145deg, #ffffff, #f5f9ff);
-        border-radius: 24px;
-        box-shadow: 0 8px 24px rgba(0,122,255,0.06), 0 2px 8px rgba(0,0,0,0.02);
+        border-radius: 20px;
+        box-shadow: 0 6px 18px rgba(0,122,255,0.05), 0 2px 6px rgba(0,0,0,0.02);
         transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         border: none;
         overflow: hidden;
     }
-/* Glowing gradient border (on hover) using a pseudo-element */
     .stat-block::before {
         content: '';
         position: absolute;
         inset: -2px;
-        border-radius: 26px;
+        border-radius: 22px;
         background: linear-gradient(135deg, rgba(0,122,255,0.0), rgba(0,122,255,0.0), rgba(0,122,255,0.0));
         z-index: -1;
         transition: background 0.4s ease;
     }
     .stat-block:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 16px 40px rgba(0,122,255,0.12), 0 6px 16px rgba(0,0,0,0.04);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,122,255,0.12), 0 4px 12px rgba(0,0,0,0.04);
     }
     .stat-block:hover::before {
         background: linear-gradient(135deg, #007AFF, #34C759, #007AFF);
@@ -333,14 +336,13 @@
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-    /* Small accent dot at top (optional) */
     .stat-block::after {
         content: '';
         position: absolute;
         top: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 40px;
+        width: 30px;
         height: 3px;
         border-radius: 4px;
         background: linear-gradient(90deg, #007AFF, #34C759);
@@ -354,7 +356,7 @@
         position: relative;
         z-index: 2;
         font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 3rem;
+        font-size: 2.4rem;
         font-weight: 900;
         color: var(--brand-cyan);
         line-height: 1.1;
@@ -363,7 +365,7 @@
     .stat-block .stat-label {
         position: relative;
         z-index: 2;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: var(--text-secondary);
         letter-spacing: 0.02em;
@@ -373,16 +375,22 @@
         position: relative;
         z-index: 2;
         display: block;
-        font-size: 2rem;
-        margin-bottom: 0.4rem;
+        font-size: 1.6rem;
+        margin-bottom: 0.2rem;
     }
 
-    /* ----- MAP & WEATHER (Two Columns) ----- */
-    .two-col-grid {
+    /* ----- THREE COLUMN LAYOUT: How It Works | Map+Weather | Trending Now ----- */
+    .three-col-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        align-items: stretch;
+        grid-template-columns: 1fr 2.6fr 1fr;
+        gap: 3.5rem;
+        align-items: start;
+        width: 100%;
+    }
+    .how-it-works-side {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
     }
     .map-card {
         background: var(--surface-card);
@@ -390,11 +398,12 @@
         overflow: hidden;
         border: 1px solid var(--border-dim);
         box-shadow: var(--shadow-sm);
-        min-height: 320px;
+        flex: 1;
+        min-height: 450px;
         position: relative;
     }
     #miniMap {
-        height: 100%;
+        height: 450px;
         width: 100%;
         min-height: 320px;
         background: var(--dark-bg);
@@ -443,16 +452,40 @@
         justify-content: center;
     }
 
-    /* ----- STEPS (Horizontal) ----- */
-    .steps-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
+    /* ----- TRENDING NOW (Priority Issues) ----- */
+    .priority-sidebar {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        border: 1px solid var(--border-dim);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        height: 100%;
     }
+    .priority-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border-dim);
+    }
+    .priority-item .priority-text { flex: 1; padding-right: 1rem; min-width: 0; word-break: break-word; }
+    .priority-item .priority-text .category { font-weight: 700; color: var(--text-primary); }
+    .priority-item .priority-text .desc { font-size: 0.85rem; color: var(--text-secondary); }
+    .priority-item .priority-votes {
+        font-weight: 700;
+        color: var(--brand-cyan);
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    /* ----- STEPS (Vertical, sidebar) ----- */
     .step-card {
         background: var(--white);
         border-radius: var(--radius-lg);
-        padding: 2rem;
+        padding: 1.5rem;
         border: 1px solid var(--border-dim);
         text-align: left;
         transition: var(--transition);
@@ -466,40 +499,37 @@
     .step-number {
         display: inline-block;
         font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 900;
         color: var(--brand-cyan);
         opacity: 0.15;
         line-height: 1;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.4rem;
     }
-    .step-card .step-icon { font-size: 2.2rem; display: block; margin-bottom: 0.8rem; }
+    .step-card .step-icon { font-size: 1.8rem; display: block; margin-bottom: 0.6rem; }
     .step-card .step-title {
         font-family: 'Plus Jakarta Sans', sans-serif;
         font-weight: 700;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: var(--text-primary);
         margin-bottom: 0.3rem;
     }
     .step-card .step-desc {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         color: var(--text-secondary);
     }
 
-    /* ----- LEADERBOARD & UPDATES (Two columns) ----- */
-    .two-col-wide {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 2rem;
-        align-items: start;
-    }
+    /* ----- LEADERBOARD (standalone section) ----- */
     .leaderboard-side {
         background: var(--white);
         border-radius: var(--radius-lg);
         padding: 1.8rem;
         border: 1px solid var(--border-dim);
         box-shadow: var(--shadow-sm);
+        max-width: 700px;
+        margin: 0 auto;
     }
+
     .updates-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -536,21 +566,18 @@
         font-size: 0.9rem;
     }
 
-    /* Priority issues (for trending section) */
-    .priority-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.7rem 0;
-        border-bottom: 1px solid var(--border-dim);
+    /* ----- FAQ ----- */
+    .faq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
     }
-    .priority-item:last-child { border-bottom: none; }
-    .priority-item .priority-text { flex: 1; padding-right: 1rem; }
-    .priority-item .priority-votes {
-        font-weight: 700;
-        color: var(--brand-cyan);
-        text-align: right;
-        flex-shrink: 0;
+    .faq-item {
+        background: var(--white);
+        padding: 1.2rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-dim);
     }
 
     /* ----- RESPONSIVE ----- */
@@ -558,11 +585,13 @@
         .hero-grid { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
         .hero-content p { max-width: 100%; margin: 0 auto 2rem; }
         .hero-buttons { justify-content: center; }
-        .two-col-grid { grid-template-columns: 1fr; }
-        .two-col-wide { grid-template-columns: 1fr; }
+        .three-col-grid { grid-template-columns: 1fr; }
         .stats-grid { grid-template-columns: repeat(2, 1fr); }
-        .steps-grid { grid-template-columns: 1fr; }
         .updates-grid { grid-template-columns: 1fr; }
+        .faq-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+        .hero-content h1 { font-size: 2.8rem; }
     }
     @media (max-width: 720px) {
         .hero-content h1 { font-size: 2.6rem; }
@@ -573,6 +602,14 @@
         .hero-section { min-height: 480px; }
         .hero-grid { padding: 2rem 1.5rem; }
     }
+
+    @media (max-width: 860px) {
+        .heroes-emergency-grid { 
+            grid-template-columns: 1fr !important;
+        }
+    }
+    
+    
 </style>
 
 <!-- Mobile Hamburger CSS (kept from original) -->
@@ -713,23 +750,39 @@
     </div>
 </section>
 
-<!-- STATS SECTION (repeated for full-width impact) -->
+<!-- STATS SECTION (Full width, reduced size) -->
 <section class="section-full-alt">
     <div class="container-wide">
         <div class="stats-grid">
-            <div class="stat-block"><div class="stat-number" id="counter1b">0</div><div class="stat-label">Issues Resolved</div></div>
-            <div class="stat-block"><div class="stat-number" id="counter2b">0</div><div class="stat-label">Active Citizens</div></div>
-            <div class="stat-block"><div class="stat-number" id="counter3b">0</div><div class="stat-label">Community Upvotes</div></div>
-            <div class="stat-block"><div class="stat-number" id="counter4b">0</div><div class="stat-label">Response Rate</div></div>
+            <div class="stat-block">
+                <span class="stat-icon">✅</span>
+                <div class="stat-number" id="counter1b">0</div>
+                <div class="stat-label">Issues Resolved</div>
+            </div>
+            <div class="stat-block">
+                <span class="stat-icon">👥</span>
+                <div class="stat-number" id="counter2b">0</div>
+                <div class="stat-label">Active Citizens</div>
+            </div>
+            <div class="stat-block">
+                <span class="stat-icon">⬆️</span>
+                <div class="stat-number" id="counter3b">0</div>
+                <div class="stat-label">Community Upvotes</div>
+            </div>
+            <div class="stat-block">
+                <span class="stat-icon">⚡</span>
+                <div class="stat-number" id="counter4b">0</div>
+                <div class="stat-label">Response Rate</div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Trusted by / Partners -->
-<section class="section-full" style="background: var(--dark-bg); padding: 2rem 0;">
+<!-- TRUSTED BY SECTION -->
+<section class="section-full" style="background: var(--dark-bg); padding:0.5rem 0 1rem;">
     <div class="container-wide">
-        <div class="section-label">Trusted by</div>
-        <div style="display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; padding: 1rem 0;">
+        <div class="section-label" style="margin-bottom: 0.3rem;">Trusted by</div>
+        <div style="display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; padding: 0.3rem 0;">
             <span style="font-weight: 700; color: var(--text-muted); font-size: 1.2rem;">🏛️ FCDA</span>
             <span style="font-weight: 700; color: var(--text-muted); font-size: 1.2rem;">💡 Ibadan Municipal</span>
             <span style="font-weight: 700; color: var(--text-muted); font-size: 1.2rem;">🌳 Oyo State Govt</span>
@@ -738,96 +791,154 @@
     </div>
 </section>
 
-<!-- MAP + WEATHER (Two Columns) -->
+<!-- THREE COLUMN SECTION: How It Works (left) | Map + Weather (center) | Trending Now (right) -->
 <section class="section-full">
-    <div class="container-wide">
-        <div class="two-col-grid">
-            <div class="map-card">
-                <div id="miniMap"></div>
-                <div id="mapLoadingOverlay" class="map-loading-overlay">
-                    <div style="width:34px;height:34px;border:3px solid var(--brand-cyan-light);border-top-color:var(--brand-cyan);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
-                    <div style="margin-top:0.5rem;">Loading map…</div>
-                </div>
-                <div id="wardLabel" class="ward-label"></div>
-            </div>
-            <div class="weather-card">
-                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.2rem;">
-                    <span style="font-weight:600;font-size:1.1rem;">📍 <span id="locationDisplay">Detecting...</span></span>
-                    <button id="refreshLocationBtn" style="background:transparent;border:1px solid var(--border-dim);border-radius:40px;padding:0.3rem 1rem;color:var(--text-secondary);cursor:pointer;">⟳ Update</button>
-                </div>
-                <div id="weatherContent"><div style="text-align:center;padding:2rem;color:var(--text-secondary);">Loading weather...</div></div>
-            </div>
-        </div>
-    </div>
-</section>
+    <div class="container-full-wide">
+        <div class="three-col-grid">
 
-<!-- HOW IT WORKS + LEADERBOARD -->
-<section class="section-full-alt">
-    <div class="container-wide">
-        <div class="two-col-wide">
-            <!-- Steps -->
-            <div>
+            <!-- LEFT COLUMN: How It Works -->
+            <div class="how-it-works-side">
                 <span class="section-label">How It Works</span>
-                <h2 class="section-headline">Report, Track, Transform</h2>
-                <div class="steps-grid" style="grid-template-columns:1fr; gap:1rem;">
-                    <div class="step-card">
-                        <span class="step-number">01</span>
-                        <span class="step-icon">📸</span>
-                        <div class="step-title">Snap & Report</div>
-                        <div class="step-desc">Take a photo, add location, describe the issue.</div>
-                    </div>
-                    <div class="step-card">
-                        <span class="step-number">02</span>
-                        <span class="step-icon">🤖</span>
-                        <div class="step-title">Verify & Route</div>
-                        <div class="step-desc">AI + community votes validate & assign the right agency.</div>
-                    </div>
-                    <div class="step-card">
-                        <span class="step-number">03</span>
-                        <span class="step-icon">✅</span>
-                        <div class="step-title">Resolve & Notify</div>
-                        <div class="step-desc">Government fixes, you get a "Job Done" alert.</div>
-                    </div>
+                <h2 class="section-headline" style="font-size: 1.6rem;">Report, Track, Transform</h2>
+                <div class="step-card">
+                    <span class="step-number">01</span>
+                    <span class="step-icon">📸</span>
+                    <div class="step-title">Snap & Report</div>
+                    <div class="step-desc">Take a photo, add location, describe the issue.</div>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">02</span>
+                    <span class="step-icon">🤖</span>
+                    <div class="step-title">Verify & Route</div>
+                    <div class="step-desc">AI + community votes validate & assign the right agency.</div>
+                </div>
+                <div class="step-card">
+                    <span class="step-number">03</span>
+                    <span class="step-icon">✅</span>
+                    <div class="step-title">Resolve & Notify</div>
+                    <div class="step-desc">Government fixes, you get a "Job Done" alert.</div>
                 </div>
             </div>
-            <!-- Leaderboard -->
-            <div>
-                <span class="section-label">This Month</span>
-                <h2 class="section-headline">🏆 Top Civic Heroes</h2>
-                <div class="leaderboard-side">
-                    <ul style="list-style:none;padding:0;">
-                        {% for hero in top_citizens %}
-                        <li style="display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border-dim);">
-                            <span style="font-weight:700;color:var(--brand-cyan);width:2.5rem;">#{{ forloop.counter }}</span>
-                            <span style="flex:1;padding:0 0.5rem;">{{ hero.user.get_full_name|default:hero.user.username }}</span>
-                            <span style="color:var(--text-muted);font-weight:600;">{{ hero.points }} pts</span>
-                        </li>
-                        {% empty %}
-                        <li style="text-align:center;padding:1rem;color:var(--text-muted);">No heroes this month yet!</li>
+
+            <!-- CENTER COLUMN: Map + Weather -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Map -->
+                <div class="map-card">
+                    <div id="miniMap"></div>
+                    <div id="mapLoadingOverlay" class="map-loading-overlay">
+                        <div style="width:34px;height:34px;border:3px solid var(--brand-cyan-light);border-top-color:var(--brand-cyan);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+                        <div style="margin-top:0.5rem;">Loading map…</div>
+                    </div>
+                    <div id="wardLabel" class="ward-label"></div>
+                </div>
+                <!-- Weather -->
+                <div class="weather-card">
+                    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.2rem;">
+                        <span style="font-weight:600;font-size:1.1rem;">📍 <span id="locationDisplay">Detecting...</span></span>
+                        <button id="refreshLocationBtn" style="background:transparent;border:1px solid var(--border-dim);border-radius:40px;padding:0.3rem 1rem;color:var(--text-secondary);cursor:pointer;">⟳ Update</button>
+                    </div>
+                    <div id="weatherContent"><div style="text-align:center;padding:2rem;color:var(--text-secondary);">Loading weather...</div></div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Trending Now -->
+            <div class="priority-sidebar">
+                <div class="section-label">Trending Now</div>
+                <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; margin-bottom: 1rem;">🔥 Community Priority Issues</h3>
+                <div style="flex:1;">
+                    {% if top_issues %}
+                        {% for issue in top_issues %}
+                        {% with short_desc=issue.description|truncatechars:60 %}
+                        <div class="priority-item">
+                            <div class="priority-text">
+                                <div class="category">{{ issue.get_category_display }}</div>
+                                <div class="desc">{{ short_desc }}</div>
+                            </div>
+                            <div class="priority-votes">{{ issue.upvotes }} votes</div>
+                        </div>
+                        {% endwith %}
                         {% endfor %}
-                    </ul>
-                    <div style="margin-top:1rem;text-align:right;"><a href="#" style="color:var(--brand-cyan);font-weight:600;text-decoration:none;">See full leaderboard →</a></div>
+                    {% else %}
+                        <div style="padding:1rem;color:var(--text-muted);text-align:center;">No trending issues yet.</div>
+                    {% endif %}
+                </div>
+                <div style="margin-top:1rem;text-align:right;">
+                    <a href="{% url 'community_complaints' %}" style="color:var(--brand-cyan);font-weight:600;text-decoration:none;">View all →</a>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
 
-<!-- Testimonials -->
+<!-- LEADERBOARD (standalone section) -->
 <section class="section-full-alt">
+    <!-- Top Civic Heroes + Emergency Contacts (Two columns) -->
+<div class="container-wide" style="padding: 0 1.5rem; margin-bottom: 3rem;">
+    <div class="heroes-emergency-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: stretch;">
+        <!-- Left column: Top Civic Heroes -->
+        <div class="leaderboard" style="background: var(--white); border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-dim); box-shadow: var(--shadow-sm);">
+            <div class="section-eyebrow">This Month</div>
+            <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 0.8rem;">🏆 Top Civic Heroes</h3>
+            <ul class="leaderboard-list" style="list-style: none; padding: 0;">
+                {% for hero in top_citizens %}
+                <li style="display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--border-dim);">
+                    <span class="rank-badge" style="font-weight: 700; color: var(--brand-cyan); width: 2.5rem; flex-shrink: 0;">#{{ forloop.counter }}</span>
+                    <span class="user-name" style="flex: 1; padding: 0 0.5rem;">{{ hero.user.get_full_name|default:hero.user.username }}</span>
+                    <span class="user-points" style="color: var(--text-muted); font-weight: 600; flex-shrink: 0;">{{ hero.points }} pts</span>
+                </li>
+                {% empty %}
+                <li style="text-align: center; padding: 1rem; color: var(--text-muted);">No heroes this month yet!</li>
+                {% endfor %}
+            </ul>
+            <div style="margin-top: 1rem; text-align: right;">
+                <a href="#" style="color: var(--brand-cyan); font-weight: 600; text-decoration: none;">See full leaderboard →</a>
+            </div>
+        </div>
+
+        <!-- Right column: Emergency Contacts -->
+        <div class="leaderboard" style="background: var(--white); border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-dim); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: flex-start;">
+            <div class="section-eyebrow">🚨 Emergency</div>
+            <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 1rem; font-size: 1.1rem;">Call for help</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="background: var(--dark-bg); padding: 0.8rem; border-radius: var(--radius-md); text-align: center;">
+                    <div style="font-weight:600; font-size:0.8rem; color: var(--text-secondary);">Police</div>
+                    <div style="color: var(--brand-cyan); font-weight:900; font-size:2rem; line-height:1.2;">199</div>
+                </div>
+                <div style="background: var(--dark-bg); padding: 0.8rem; border-radius: var(--radius-md); text-align: center;">
+                    <div style="font-weight:600; font-size:0.8rem; color: var(--text-secondary);">Fire</div>
+                    <div style="color: var(--brand-cyan); font-weight:900; font-size:2rem; line-height:1.2;">112</div>
+                </div>
+                <div style="background: var(--dark-bg); padding: 0.8rem; border-radius: var(--radius-md); text-align: center;">
+                    <div style="font-weight:600; font-size:0.8rem; color: var(--text-secondary);">FRSC</div>
+                    <div style="color: var(--brand-cyan); font-weight:900; font-size:2rem; line-height:1.2;">122</div>
+                </div>
+                <div style="background: var(--dark-bg); padding: 0.8rem; border-radius: var(--radius-md); text-align: center;">
+                    <div style="font-weight:600; font-size:0.8rem; color: var(--text-secondary);">Ambulance</div>
+                    <div style="color: var(--brand-cyan); font-weight:900; font-size:2rem; line-height:1.2;">911</div>
+                </div>
+            </div>
+            <div style="margin-top: 0.8rem; font-size:0.75rem; color: var(--text-muted); text-align: center;">For emergencies only</div>
+        </div>
+    </div>
+</div>    
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section-full">
     <div class="container-wide">
         <span class="section-label">What Citizens Say</span>
         <h2 class="section-headline">Real stories, real impact</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-            <div style="background: var(--white); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="background: var(--white); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-dim);">
                 <p style="font-style: italic; color: var(--text-secondary);">“I reported a broken drain, and it was fixed in 3 days – incredible!”</p>
                 <div style="margin-top: 0.5rem; font-weight: 600;">— Amina, Ibadan</div>
             </div>
-            <div style="background: var(--white); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="background: var(--white); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-dim);">
                 <p style="font-style: italic; color: var(--text-secondary);">“The transparency score motivates the government to act faster.”</p>
                 <div style="margin-top: 0.5rem; font-weight: 600;">— Chuka, Lagos</div>
             </div>
-            <div style="background: var(--white); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+            <div style="background: var(--white); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-dim);">
                 <p style="font-style: italic; color: var(--text-secondary);">“I love the upvote system – it pushes urgent issues to the top.”</p>
                 <div style="margin-top: 0.5rem; font-weight: 600;">— Funmi, Abuja</div>
             </div>
@@ -836,7 +947,7 @@
 </section>
 
 <!-- LIVE UPDATES -->
-<section class="section-full">
+<section class="section-full-alt">
     <div class="container-wide">
         <span class="section-label">Live Civic Pulse</span>
         <h2 class="section-headline">Recent Community Reports</h2>
@@ -875,46 +986,23 @@
     <div class="container-wide">
         <span class="section-label">Got questions?</span>
         <h2 class="section-headline">Frequently Asked</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-            <div style="background: var(--white); padding: 1.2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+        <div class="faq-grid">
+            <div class="faq-item">
                 <strong>How do I report an issue?</strong>
                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">Click “Start Reporting”, fill in the details, and submit.</p>
             </div>
-            <div style="background: var(--white); padding: 1.2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+            <div class="faq-item">
                 <strong>Who sees my reports?</strong>
                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">Reports are visible to the public and the relevant government agencies.</p>
             </div>
-            <div style="background: var(--white); padding: 1.2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+            <div class="faq-item">
                 <strong>How long does resolution take?</strong>
                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">Depends on the category – we track average response times in the dashboard.</p>
             </div>
-            <div style="background: var(--white); padding: 1.2rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+            <div class="faq-item">
                 <strong>Is my data safe?</strong>
                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem;">Yes, we follow strict privacy policies and never share personal data.</p>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- PRIORITY ISSUES (Full width) -->
-<section class="section-full-alt">
-    <div class="container-wide">
-        <span class="section-label">Trending Now</span>
-        <h2 class="section-headline">🔥 Community Priority Issues</h2>
-        <div style="background:var(--white);border-radius:var(--radius-lg);padding:1.5rem;border:1px solid var(--border-dim);">
-            {% if top_issues %}
-                {% for issue in top_issues %}
-                <div class="priority-item">
-                    <div class="priority-text">
-                        <div style="font-weight:700;color:var(--text-primary);">{{ issue.get_category_display }}</div>
-                        <div style="font-size:0.9rem;color:var(--text-secondary);">{{ issue.description|truncatechars:80 }}</div>
-                    </div>
-                    <div class="priority-votes">{{ issue.upvotes }} votes</div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div style="padding:1rem;color:var(--text-muted);text-align:center;">No trending issues yet. Once votes begin, they'll appear here.</div>
-            {% endif %}
         </div>
     </div>
 </section>
