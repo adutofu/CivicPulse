@@ -10,6 +10,7 @@
                 <a href="{% url 'about' %}">About</a>
                 <a href="{% url 'contact' %}">Contact</a>
                 {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                <a href="{% url 'activity_feed' %}">Feed</a>
                 <a href="{% url 'community_complaints' %}">Community</a>
                 {% if user.profile.verification_status == 'not_applicable' %}
                 <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
@@ -26,6 +27,7 @@
                 {% if user.is_authenticated %}
                 {% if user.profile.user_type == 'govt' %}
                 <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
+                <a href="{% url 'activity_feed' %}">Feed</a>
                 {% else %}
                 <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
                 {% endif %}

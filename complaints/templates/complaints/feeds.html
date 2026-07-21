@@ -1,0 +1,71 @@
+{% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .feed-item {
+        padding: 1rem;
+        background: var(--surface-card);
+        border: 1px solid var(--border-dim);
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        transition: 0.2s;
+    }
+    .feed-item:hover {
+        box-shadow: var(--shadow-md);
+    }
+    .feed-item .timestamp {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        float: right;
+    }
+    .feed-item .user {
+        font-weight: 600;
+        color: var(--brand-cyan);
+    }
+    .feed-item .message {
+        color: var(--text-primary);
+    }
+    .feed-item .action-link {
+        color: var(--brand-cyan);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .feed-item .action-link:hover {
+        text-decoration: underline;
+    }
+    .feed-icon {
+        font-size: 1.2rem;
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="section-headline">📡 Activity Feed</h2>
+    <p class="section-desc">See what's happening in your community – recent reports, comments, upvotes, and follows.</p>
+
+    {% if activities %}
+        {% for activity in activities %}
+        <div class="feed-item">
+            <span class="timestamp">{{ activity.created_at|timesince }} ago</span>
+            <div>
+                <span class="feed-icon">
+                    {% if activity.type == 'complaint' %}📢
+                    {% elif activity.type == 'comment' %}💬
+                    {% elif activity.type == 'upvote' %}👍
+                    {% elif activity.type == 'follow' %}🔔
+                    {% endif %}
+                </span>
+                <span class="user">{{ activity.user.username }}</span>
+                <span class="message">{{ activity.message }}</span>
+                <a href="{{ activity.url }}" class="action-link">View →</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No activity yet. Be the first to report an issue!</p>
+    {% endif %}
+</div>
+{% endblock %}

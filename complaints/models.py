@@ -21,6 +21,7 @@ STATUS_CHOICES = [
     ('under_review', 'Under Review'),
     ('in_progress', 'In Progress'),
     ('resolved', 'Resolved'),
+    ('escalated', 'Escalated')
 ]
 
 class Complaint(models.Model):
@@ -45,6 +46,15 @@ class Complaint(models.Model):
     government_response = models.TextField(blank=True, null=True)
     resolved_photo = models.ImageField(upload_to='resolved/', blank=True, null=True)
     is_hidden = models.BooleanField(default=False)
+    escalation_reason = models.TextField(blank=True, null=True)
+    escalated_at = models.DateTimeField(blank=True, null=True)
+    escalated_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='escalated_complaints'
+    )
 
     def __str__(self):
         return f"{self.category} - {self.created_at.date()}"

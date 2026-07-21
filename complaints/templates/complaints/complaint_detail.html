@@ -10,6 +10,7 @@
         box-shadow: var(--shadow-md);
         padding: 1.5rem;
     }
+
     .btn-cyan-sm,
     .btn-outline {
         background: transparent;
@@ -23,31 +24,55 @@
         font-weight: 500;
         cursor: pointer;
     }
+
     .btn-cyan-sm:hover {
         background: var(--brand-cyan);
         color: #FFFFFF;
     }
+
     .btn-outline {
         border-color: var(--text-muted);
         color: var(--text-secondary);
     }
+
     .btn-outline:hover {
         background: var(--text-secondary);
         color: var(--text-primary);
     }
+
     .btn-danger-outline {
-        border-color: #dc3545;
+        border: 1.5px solid #dc3545;
         color: #dc3545;
         background: transparent;
         border-radius: 40px;
         padding: 0.4rem 1.2rem;
         transition: 0.2s;
         cursor: pointer;
+        font-weight: 500;
     }
+
     .btn-danger-outline:hover {
         background: #dc3545;
         color: white;
     }
+
+    /* Custom pill-outline warning button for Escalate */
+    .btn-warning-outline {
+        border: 1.5px solid #f59e0b;
+        color: #d97706;
+        background: transparent;
+        border-radius: 40px;
+        padding: 0.4rem 1.2rem;
+        transition: 0.2s;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .btn-warning-outline:hover {
+        background: #f59e0b;
+        color: #ffffff;
+    }
+
     .status-badge {
         display: inline-block;
         padding: 0.2rem 0.6rem;
@@ -55,6 +80,7 @@
         font-size: 0.75rem;
         font-weight: 600;
     }
+
     .status-pending { background: #FAEEDA; color: #854F0B; }
     .status-acknowledged { background: #E6F1FB; color: #0C447C; }
     .status-in_progress { background: #FAC775; color: #4A1B0C; }
@@ -66,45 +92,55 @@
         padding: 0.8rem 1rem;
         margin-bottom: 0.75rem;
     }
+
     .comment .comment-meta {
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
         margin-bottom: 0.2rem;
     }
+
     .comment .comment-author {
         font-weight: 700;
         color: var(--brand-cyan);
     }
+
     .comment .comment-date {
         font-size: 0.75rem;
         color: var(--text-muted);
     }
+
     .comment .comment-text {
         margin: 0.2rem 0 0.3rem 0;
         color: var(--text-primary);
     }
+
     .comment .reply-link {
         font-size: 0.8rem;
         color: var(--brand-cyan);
         cursor: pointer;
     }
+
     .replies {
         margin-left: 1.5rem;
         border-left: 2px solid var(--brand-cyan-light);
         padding-left: 0.8rem;
     }
+
     .modal-content {
         background: var(--surface-card);
         border: 1px solid var(--border-dim);
         border-radius: 24px;
     }
+
     .modal-header {
         border-bottom: 1px solid var(--border-dim);
     }
+
     .modal-footer {
         border-top: 1px solid var(--border-dim);
     }
+
     .form-control, .form-select {
         background-color: var(--surface-dark);
         border: 1px solid var(--border-dim);
@@ -112,22 +148,26 @@
         border-radius: 16px;
         padding: 0.6rem;
     }
+
     .form-control:focus, .form-select:focus {
         border-color: var(--brand-cyan);
-        box-shadow: 0 0 0 0.2rem rgba(0,122,255,0.1);
+        box-shadow: 0 0 0 0.2rem rgba(0, 122, 255, 0.1);
     }
+
     .action-buttons {
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
         margin: 1.5rem 0;
     }
+
     @media (max-width: 768px) {
         .glass-card { padding: 1rem; }
         .replies { margin-left: 0.5rem; padding-left: 0.5rem; }
         .action-buttons { flex-direction: column; }
         .action-buttons .btn-cyan-sm,
         .action-buttons .btn-danger-outline,
+        .action-buttons .btn-warning-outline,
         .action-buttons .btn-outline { width: 100%; text-align: center; }
     }
 </style>
@@ -155,23 +195,27 @@
                 </p>
                 <p><strong style="color: var(--brand-cyan);">Reported on:</strong> {{ complaint.created_at|date:"F j, Y, g:i a" }}</p>
                 {% with w=complaint.ward %}
-                <p><strong style="color: var(--brand-cyan);">📍 Location:</strong>
-                    {% if w %}{{ w.ward }} Ward, {{ w.lga }} LGA, {{ w.state }} State
-                    {% elif complaint.address_text %}{{ complaint.address_text }}
-                    {% else %}<span class="text-muted">Not available</span>{% endif %}
-                </p>
+                    <p><strong style="color: var(--brand-cyan);">📍 Location:</strong>
+                        {% if w %}
+                            {{ w.ward }} Ward, {{ w.lga }} LGA, {{ w.state }} State
+                        {% elif complaint.address_text %}
+                            {{ complaint.address_text }}
+                        {% else %}
+                            <span class="text-muted">Not available</span>
+                        {% endif %}
+                    </p>
                 {% endwith %}
                 {% if complaint.government_response %}
-                <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{ complaint.government_response }}</p>
+                    <p><strong style="color: var(--brand-cyan);">🏛️ Government Response:</strong><br>{{ complaint.government_response }}</p>
                 {% endif %}
                 {% if complaint.contractor %}
-                <p><strong style="color: var(--brand-cyan);">👷 Contractor:</strong> {{ complaint.contractor }}</p>
+                    <p><strong style="color: var(--brand-cyan);">👷 Contractor:</strong> {{ complaint.contractor }}</p>
                 {% endif %}
             </div>
             <div class="col-md-4">
                 {% if complaint.photo %}
-                <p><strong style="color: var(--brand-cyan);">📸 Original Photo:</strong></p>
-                <img src="{{ complaint.photo.url }}" class="img-fluid rounded" style="border: 1px solid var(--border-dim); max-width:100%;">
+                    <p><strong style="color: var(--brand-cyan);">📸 Original Photo:</strong></p>
+                    <img src="{{ complaint.photo.url }}" class="img-fluid rounded" style="border: 1px solid var(--border-dim); max-width:100%;">
                 {% endif %}
             </div>
         </div>
@@ -181,31 +225,31 @@
             <h4 style="color: var(--brand-cyan);">📷 Additional Evidence</h4>
             <div class="row g-3">
                 {% for img in extra_images %}
-                <div class="col-md-3 col-6">
-                    <img src="{{ img.image.url }}" class="img-fluid rounded" style="border: 1px solid var(--border-dim); width:100%; height:auto;">
-                </div>
+                    <div class="col-md-3 col-6">
+                        <img src="{{ img.image.url }}" class="img-fluid rounded" style="border: 1px solid var(--border-dim); width:100%; height:auto;">
+                    </div>
                 {% empty %}
-                <p class="text-muted">No extra images yet.</p>
+                    <p class="text-muted">No extra images yet.</p>
                 {% endfor %}
             </div>
         </div>
 
         <!-- Citizen upload more images (only if owner) -->
         {% if is_owner %}
-        <div class="mt-4 p-3" style="background: var(--brand-cyan-glow); border-radius: 16px;">
-            <h5 style="color: var(--brand-cyan);">➕ Add more pictures</h5>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="hidden" name="add_image" value="1">
-                <div class="mb-2">
-                    {{ form.image }}
-                </div>
-                <button type="submit" class="btn-cyan-sm">Upload</button>
-            </form>
-        </div>
+            <div class="mt-4 p-3" style="background: var(--brand-cyan-glow); border-radius: 16px;">
+                <h5 style="color: var(--brand-cyan);">➕ Add more pictures</h5>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="add_image" value="1">
+                    <div class="mb-2">
+                        {{ form.image }}
+                    </div>
+                    <button type="submit" class="btn-cyan-sm">Upload</button>
+                </form>
+            </div>
         {% endif %}
 
-        <!-- Action Buttons: Follow & Flag -->
+        <!-- Action Buttons: Follow, Flag & Escalate -->
         <div class="action-buttons">
             <!-- Follow / Unfollow -->
             <form action="{% url 'toggle_follow' complaint.id %}" method="post" style="display:inline;">
@@ -221,6 +265,36 @@
             <button type="button" class="btn-danger-outline" data-bs-toggle="modal" data-bs-target="#flagModal">
                 🚩 Flag
             </button>
+
+            <!-- Escalate button (opens modal) -->
+            {% if is_owner and complaint.status != 'resolved' and complaint.status != 'escalated' %}
+                <button type="button" class="btn-warning-outline" data-bs-toggle="modal" data-bs-target="#escalateModal">
+                    ⚠️ Escalate
+                </button>
+            {% endif %}
+        </div>
+
+        <!-- Escalation Modal -->
+        <div class="modal fade" id="escalateModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Escalate Complaint #{{ complaint.id }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="post" action="{% url 'escalate_complaint' complaint.id %}">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <p>You are about to escalate this complaint to higher authorities. Please explain why it needs escalation.</p>
+                            <textarea name="reason" class="form-control" rows="4" placeholder="Reason for escalation..." required></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn-warning-outline" style="background:#f59e0b; color:#ffffff;">Confirm Escalation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- ========== COMMENTS SECTION ========== -->
@@ -252,6 +326,7 @@
                             {% if user.is_authenticated %}
                                 <a href="#" class="reply-link" data-comment-id="{{ comment.id }}">↩ Reply</a>
                             {% endif %}
+                            
                             <!-- Replies -->
                             <div class="replies mt-2">
                                 {% for reply in comment.comment_set.all %}

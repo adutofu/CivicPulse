@@ -19,6 +19,7 @@ from .models import (
     Vote,
     Comment,
     Flag,
+    ComplaintFollower,
     notify_status_change,
     notify_govt_response,
     notify_new_complaint_govt,
@@ -35,7 +36,8 @@ from .models import Ward
 from .utils import send_notification, notify_mentions
 import json
 from django.core.paginator import Paginator
-
+from itertools import chain
+from django.db.models import Q
 # ---------- Public Pages ----------
 def landing_page(request):
     # Total resolved issues
@@ -288,7 +290,6 @@ def get_nearby_complaints(request):
 
 @require_POST
 @login_required
-
 
 def get_ward_boundary(request):
     """API endpoint: returns the Ward polygon (GeoJSON) containing a given lat/lng"""
@@ -631,6 +632,107 @@ def mark_all_read(request):
     """Mark all notifications as read"""
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     return JsonResponse({'success': True})
+
+
+
+@login_required
+def activity_feed(request):
+    # Get recent complaints
+    complaints = Complaint.objects.filter(is_hidden=False).order_by('-created_at')[:10]
+    # Get recent comments
+    comments = Comment.objects.order_by('-created_at')[:10]
+    # Get recent upvotes
+    votes = Vote.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
+    # Get recent follows
+    follows = ComplaintFollower.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
+    
+    activities = []
+    
+    for c in complaints:
+        activities.append({
+            'type': 'complaint',
+            'created_at': c.created_at,
+            'object': c,
+            'message': f"{c.citizen.username} reported a new issue: {c.get_category_display()}",
+            'url': f"/complaint/{c.id}/",
+            'user': c.citizen,
+        })
+    
+    for c in comments:
+        activities.append({
+            'type': 'comment',
+            'created_at': c.created_at,
+            'object': c,
+            'message': f"{c.author.username} commented on complaint #{c.complaint.id}: {c.text[:50]}...",
+            'url': f"/complaint/{c.complaint.id}/",
+            'user': c.author,
+        })
+    
+    for v in votes:
+        activities.append({
+            'type': 'upvote',
+            'created_at': v.created_at,
+            'object': v,
+            'message': f"{v.user.username} upvoted complaint #{v.complaint.id}",
+            'url': f"/complaint/{v.complaint.id}/",
+            'user': v.user,
+        })
+    
+    for f in follows:
+        activities.append({
+            'type': 'follow',
+            'created_at': f.created_at,
+            'object': f,
+            'message': f"{f.user.username} started following complaint #{f.complaint.id}",
+            'url': f"/complaint/{f.complaint.id}/",
+            'user': f.user,
+        })
+    
+    # Sort by created_at descending (most recent first)
+    activities = sorted(activities, key=lambda x: x['created_at'], reverse=True)[:30]
+    
+    return render(request, 'complaints/feeds.html', {'activities': activities})
+
+
+
+from django.utils import timezone
+
+@login_required
+def escalate_complaint(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id, citizen=request.user)  # only owner can escalate
+    if complaint.status == 'resolved':
+        # Cannot escalate a resolved complaint
+        messages.error(request, "This complaint is already resolved.")
+        return redirect('complaint_detail', complaint_id=complaint.id)
+    
+    if request.method == 'POST':
+        reason = request.POST.get('reason', '').strip()
+        if not reason:
+            messages.error(request, "Please provide a reason for escalation.")
+            return redirect('complaint_detail', complaint_id=complaint.id)
+        
+        complaint.status = 'escalated'
+        complaint.escalation_reason = reason
+        complaint.escalated_at = timezone.now()
+        complaint.escalated_by = request.user
+        complaint.save()
+        
+        # Notify all staff users (higher authority)
+        from django.contrib.auth.models import User
+        staff_users = User.objects.filter(is_staff=True)
+        for staff in staff_users:
+            send_notification(
+                staff,
+                complaint,
+                'escalation',
+                f"Complaint #{complaint.id} has been escalated by {request.user.username}. Reason: {reason[:60]}..."
+            )
+        
+        messages.success(request, "Complaint escalated successfully. Higher authorities have been notified.")
+        return redirect('complaint_detail', complaint_id=complaint.id)
+    
+    # GET request: show a simple form (or redirect to detail with modal)
+    return render(request, 'complaints/escalate_modal.html', {'complaint': complaint})
 
 
 
