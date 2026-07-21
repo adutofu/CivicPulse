@@ -622,6 +622,7 @@
                 <a href="/">Home</a>
                 <a href="{% url 'about' %}">About</a>
                 <a href="{% url 'contact' %}">Contact</a>
+                <a href="{% url 'analytics_dashboard' %}">Analytics</a>
                 {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
                 <a href="{% url 'activity_feed' %}">Feed</a>
                 <a href="{% url 'community_complaints' %}">Community</a>

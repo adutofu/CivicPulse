@@ -6,7 +6,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Count, Q, Avg, F, Sum
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db import transaction
@@ -27,6 +27,7 @@ from .models import (
     notify_govt_application_submitted,
     notify_govt_application_reviewed,
 )
+from django.contrib.auth.decorators import login_required
 from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm
 from decimal import Decimal
 from django.contrib.gis.geos import Point
@@ -37,9 +38,11 @@ from .utils import send_notification, notify_mentions
 import json
 from django.core.paginator import Paginator
 from itertools import chain
-from django.db.models import Q
 from django.conf import settings
-from .model import Repost 
+from .models import Repost, CATEGORY_CHOICES
+from datetime import timedelta
+from django.db.models.functions import TruncDate
+
 
 
 # ---------- Public Pages ----------
@@ -102,6 +105,126 @@ def about(request):
 
 def contact(request):
     return render(request, 'complaints/contact.html')
+
+
+def analytics_dashboard(request):
+    # ─── Date range filter ───
+    range_param = request.GET.get('range', '30')
+    try:
+        days = int(range_param)
+    except ValueError:
+        days = 30
+    if days <= 0:
+        days = 30
+    start_date = timezone.now() - timedelta(days=days)
+
+    # ─── Base querysets ───
+    complaints_qs = Complaint.objects.filter(created_at__gte=start_date)
+    resolved_qs = complaints_qs.filter(status='resolved')
+    pending_qs = complaints_qs.filter(status__in=['pending', 'acknowledged', 'in_progress'])
+    escalated_qs = complaints_qs.filter(status='escalated')
+
+    # ─── Total counts ───
+    total_complaints = complaints_qs.count()
+    total_resolved = resolved_qs.count()
+    total_pending = pending_qs.count()
+    total_escalated = escalated_qs.count()
+    total_upvotes = Vote.objects.filter(complaint__created_at__gte=start_date).count()
+    total_comments = Comment.objects.filter(complaint__created_at__gte=start_date).count()
+    total_reposts = Repost.objects.filter(complaint__created_at__gte=start_date).count()
+    total_follows = ComplaintFollower.objects.filter(complaint__created_at__gte=start_date).count()
+
+    # ─── Category breakdown ───
+    category_data = (
+        complaints_qs
+        .values('category')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    category_labels = []
+    category_counts = []
+    for item in category_data:
+        # get display name from CHOICES
+        label = dict(CATEGORY_CHOICES).get(item['category'], item['category'])
+        category_labels.append(label)
+        category_counts.append(item['count'])
+
+    # ─── Status breakdown ───
+    status_data = (
+        complaints_qs
+        .values('status')
+        .annotate(count=Count('id'))
+        .order_by('status')
+    )
+    status_labels = [s['status'].replace('_', ' ').title() for s in status_data]
+    status_counts = [s['count'] for s in status_data]
+
+    # ─── Daily trend (last days) ───
+    daily_data = (
+        complaints_qs
+        .annotate(date=TruncDate('created_at'))
+        .values('date')
+        .annotate(count=Count('id'))
+        .order_by('date')
+    )
+    dates = [d['date'].strftime('%Y-%m-%d') for d in daily_data]
+    daily_counts = [d['count'] for d in daily_data]
+
+    # ─── Average response time (for resolved) ───
+    avg_seconds = None
+    if resolved_qs.exists():
+        total_seconds = 0
+        for c in resolved_qs:
+            if c.updated_at and c.created_at:
+                delta = c.updated_at - c.created_at
+                total_seconds += delta.total_seconds()
+        avg_seconds = total_seconds / resolved_qs.count()
+        days_avg = avg_seconds // 86400
+        hours_avg = (avg_seconds % 86400) // 3600
+        minutes_avg = (avg_seconds % 3600) // 60
+        avg_response_time = f"{int(days_avg)}d {int(hours_avg)}h {int(minutes_avg)}m"
+    else:
+        avg_response_time = "N/A"
+
+    # ─── Top 5 upvoted complaints ───
+    top_complaints = complaints_qs.filter(is_hidden=False).order_by('-upvotes')[:5]
+
+    # ─── Most active citizens ───
+    from django.contrib.auth.models import User
+    active_citizens = (
+        User.objects
+        .filter(complaint__isnull=False)
+        .annotate(reports=Count('complaint'))
+        .order_by('-reports')[:5]
+    )
+
+    # ─── Engagement metrics ───
+    avg_comments = Comment.objects.filter(complaint__created_at__gte=start_date).count() / total_complaints if total_complaints else 0
+    avg_upvotes = Vote.objects.filter(complaint__created_at__gte=start_date).count() / total_complaints if total_complaints else 0
+
+    context = {
+        'total_complaints': total_complaints,
+        'total_resolved': total_resolved,
+        'total_pending': total_pending,
+        'total_escalated': total_escalated,
+        'total_upvotes': total_upvotes,
+        'total_comments': total_comments,
+        'total_reposts': total_reposts,
+        'total_follows': total_follows,
+        'category_labels': category_labels,
+        'category_counts': category_counts,
+        'status_labels': status_labels,
+        'status_counts': status_counts,
+        'dates': dates,
+        'daily_counts': daily_counts,
+        'avg_response_time': avg_response_time,
+        'top_complaints': top_complaints,
+        'active_citizens': active_citizens,
+        'avg_comments': round(avg_comments, 1),
+        'avg_upvotes': round(avg_upvotes, 1),
+        'selected_range': days,
+    }
+    return render(request, 'complaints/analytics_dashboard.html', context)
 
 # ---------- Authentication ----------
 def signup(request):

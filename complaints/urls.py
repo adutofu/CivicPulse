@@ -7,6 +7,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),  # User dashboard (login required)
     path('report/', views.report_complaint, name='report_complaint'), # Complaint form (login req)
     path('update/<int:complaint_id>/', views.update_complaint, name='update_complaint'), # Govt update page
+    path('analytics/', views.analytics_dashboard, name='analytics_dashboard'),
 
 # Government Officer Verification
     path('apply-govt/', views.apply_govt_official, name='apply_govt_official'),  # citizen applies to become govt officer

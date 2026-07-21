@@ -14,6 +14,7 @@ CATEGORY_CHOICES = [
     ('waste', 'Waste'),
     ('corruption', 'Corruption Signal'),
     ('water', 'Water Issues'),
+    ('other', 'Other')
 ]
 
 STATUS_CHOICES = [

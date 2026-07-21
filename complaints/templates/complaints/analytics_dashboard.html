@@ -1,0 +1,271 @@
+{% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .analytics-card {
+        background: var(--surface-card);
+        border: 1px solid var(--border-dim);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+        transition: 0.2s;
+        height: 100%;
+    }
+    .analytics-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+    .analytics-card .number {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--brand-cyan);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        line-height: 1.1;
+    }
+    .analytics-card .label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+    .analytics-card .change {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .change.positive { color: #34C759; }
+    .change.negative { color: #FF3B30; }
+    .chart-container {
+        position: relative;
+        height: 250px;
+        width: 100%;
+    }
+    .top-item {
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border-dim);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .top-item:last-child { border-bottom: none; }
+    .range-selector {
+        background: transparent;
+        border: 1px solid var(--border-dim);
+        border-radius: 40px;
+        padding: 0.3rem 0.8rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+    .range-selector:focus {
+        outline: none;
+        border-color: var(--brand-cyan);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+        <div>
+            <h2 class="section-headline" style="margin-bottom:0;">📊 Analytics Dashboard</h2>
+            <p class="section-desc" style="margin-bottom:0;">Platform insights – complaints, engagement, and performance.</p>
+        </div>
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label for="range" class="text-muted">Period:</label>
+            <select name="range" id="range" class="range-selector" onchange="this.form.submit()">
+                <option value="7" {% if selected_range == 7 %}selected{% endif %}>Last 7 days</option>
+                <option value="30" {% if selected_range == 30 %}selected{% endif %}>Last 30 days</option>
+                <option value="90" {% if selected_range == 90 %}selected{% endif %}>Last 90 days</option>
+            </select>
+        </form>
+    </div>
+
+    <!-- ─── Key Metrics ─── -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_complaints }}</div>
+                <div class="label">Total Complaints</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_resolved }}</div>
+                <div class="label">Resolved</div>
+                <div class="change positive">{% widthratio total_resolved total_complaints 100 %}% resolved</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_pending }}</div>
+                <div class="label">Pending</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_escalated }}</div>
+                <div class="label">Escalated</div>
+                <div class="change negative">⚠️ Needs attention</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Engagement Metrics ─── -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_upvotes }}</div>
+                <div class="label">Total Upvotes</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_comments }}</div>
+                <div class="label">Total Comments</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_reposts }}</div>
+                <div class="label">Total Reposts</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ total_follows }}</div>
+                <div class="label">Total Follows</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Charts ─── -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="analytics-card">
+                <h5 style="font-weight: 700;">📂 Complaints by Category</h5>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="analytics-card">
+                <h5 style="font-weight: 700;">📊 Complaints by Status</h5>
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="analytics-card">
+                <h5 style="font-weight: 700;">📈 Daily Complaint Trend</h5>
+                <div class="chart-container" style="height: 220px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Top Complaints & Active Citizens ─── -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="analytics-card">
+                <h5 style="font-weight: 700;">🔥 Most Upvoted Complaints</h5>
+                <div>
+                    {% for complaint in top_complaints %}
+                    <div class="top-item">
+                        <div>
+                            <strong>{{ complaint.get_category_display }}</strong>
+                            <div class="text-muted small">{{ complaint.description|truncatechars:60 }}</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-info">⬆ {{ complaint.upvotes }}</span>
+                            <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-sm btn-outline-cyan ms-2">View</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No complaints yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="analytics-card">
+                <h5 style="font-weight: 700;">👤 Most Active Citizens</h5>
+                <div>
+                    {% for user in active_citizens %}
+                    <div class="top-item">
+                        <span>{{ user.username }}</span>
+                        <span class="badge bg-cyan">{{ user.reports }} reports</span>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No active citizens yet.</p>
+                    {% endfor %}
+                </div>
+                <div class="mt-3 pt-2 border-top">
+                    <small class="text-muted">Average Comments per complaint: {{ avg_comments }}</small><br>
+                    <small class="text-muted">Average Upvotes per complaint: {{ avg_upvotes }}</small><br>
+                    <small class="text-muted">Avg Response Time: {{ avg_response_time }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ category_labels|safe }},
+            datasets: [{
+                label: 'Complaints',
+                data: {{ category_counts|safe }},
+                backgroundColor: 'rgba(0, 122, 255, 0.6)',
+                borderColor: '#007AFF',
+                borderWidth: 1,
+                borderRadius: 8,
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusColors = ['#ffc107', '#17a2b8', '#fd7e14', '#28a745', '#dc3545'];
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ status_labels|safe }},
+            datasets: [{
+                data: {{ status_counts|safe }},
+                backgroundColor: statusColors,
+                borderWidth: 2,
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '70%' }
+    });
+
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: {{ dates|safe }},
+            datasets: [{
+                label: 'Complaints',
+                data: {{ daily_counts|safe }},
+                borderColor: '#007AFF',
+                backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+                pointBackgroundColor: '#007AFF',
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+});
+</script>
+{% endblock %}
