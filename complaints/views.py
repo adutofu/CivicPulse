@@ -38,6 +38,10 @@ import json
 from django.core.paginator import Paginator
 from itertools import chain
 from django.db.models import Q
+from django.conf import settings
+from .model import Repost 
+
+
 # ---------- Public Pages ----------
 def landing_page(request):
     # Total resolved issues
@@ -478,6 +482,7 @@ def community_complaints(request):
     return render(request, 'complaints/community_complaints.html', {'page_obj': page_obj})
 
 
+
 @login_required
 @require_POST
 def api_upvote(request):
@@ -489,7 +494,68 @@ def api_upvote(request):
         upvoted = False
     else:
         upvoted = True
+    
+    complaint.refresh_from_db()  # get fresh upvotes count
+    threshold = getattr(settings, 'COMMUNITY_PRIORITY_THRESHOLD', 5)
+    
+    if complaint.upvotes >= threshold and complaint.status != 'community_priority':
+        complaint.status = 'community_priority'
+        complaint.save()
+        # Notify staff
+        from django.contrib.auth.models import User
+        staff_users = User.objects.filter(is_staff=True)
+        for staff in staff_users:
+            send_notification(
+                staff,
+                complaint,
+                'community_priority',
+                f"Complaint #{complaint.id} reached {threshold} upvotes and is now a Community Priority."
+            )
+    
     return JsonResponse({'upvotes': complaint.upvotes, 'upvoted': upvoted})
+
+
+from .models import Repost
+
+@login_required
+def toggle_repost(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    repost, created = Repost.objects.get_or_create(complaint=complaint, user=request.user)
+    if not created:
+        repost.delete()  # un‑repost
+    else:
+        # Notify complaint owner (if not the reposter)
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'repost',
+                f"{request.user.username} reposted your complaint #{complaint.id}"
+            )
+    return redirect('complaint_detail', complaint_id=complaint.id)
+
+@login_required
+@require_POST
+def api_repost(request):
+    complaint_id = request.POST.get('complaint_id')
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    repost, created = Repost.objects.get_or_create(complaint=complaint, user=request.user)
+    if not created:
+        repost.delete()
+        reposted = False
+    else:
+        reposted = True
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'repost',
+                f"{request.user.username} reposted your complaint #{complaint.id}"
+            )
+    return JsonResponse({
+        'reposted': reposted,
+        'count': complaint.reposts.count()
+    })
 
 @login_required
 @require_POST
@@ -645,6 +711,7 @@ def activity_feed(request):
     votes = Vote.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
     # Get recent follows
     follows = ComplaintFollower.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
+    reposts = Repost.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
     
     activities = []
     
@@ -688,6 +755,16 @@ def activity_feed(request):
             'user': f.user,
         })
     
+    for r in reposts:
+        activities.append({
+            'type': 'repost',
+            'created_at': r.created_at,
+            'object': r,
+            'message': f"{r.user.username} reposted complaint #{r.complaint.id}",
+            'url': f"/complaint/{r.complaint.id}/",
+            'user': r.user,
+        })
+
     # Sort by created_at descending (most recent first)
     activities = sorted(activities, key=lambda x: x['created_at'], reverse=True)[:30]
     
@@ -734,6 +811,48 @@ def escalate_complaint(request, complaint_id):
     # GET request: show a simple form (or redirect to detail with modal)
     return render(request, 'complaints/escalate_modal.html', {'complaint': complaint})
 
+
+@login_required
+def toggle_repost(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    repost, created = Repost.objects.get_or_create(complaint=complaint, user=request.user)
+    if not created:
+        repost.delete()  # un‑repost
+        reposted = False
+    else:
+        reposted = True
+        # Notify complaint owner (if not the reposter)
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'repost',
+                f"{request.user.username} reposted your complaint #{complaint.id}"
+            )
+    return redirect('complaint_detail', complaint_id=complaint.id)
+
+
+@login_required
+@require_POST
+def api_repost(request):
+    complaint_id = request.POST.get('complaint_id')
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    repost, created = Repost.objects.get_or_create(complaint=complaint, user=request.user)
+    if not created:
+        repost.delete()
+        reposted = False
+    else:
+        reposted = True
+        # Notify complaint owner
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'repost',
+                f"{request.user.username} reposted your complaint #{complaint.id}"
+            )
+    repost_count = complaint.reposts.count()
+    return JsonResponse({'reposted': reposted, 'count': repost_count})
 
 
 @staff_member_required

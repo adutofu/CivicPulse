@@ -182,6 +182,7 @@
             <div style="display:flex; align-items:center; gap:0.5rem; color:var(--brand-cyan); font-weight:700;">
                 <span>⬆</span>
                 <span>{{ complaint.upvotes }} votes</span>
+                <span>🔁 {{ complaint.reposts.count }}</span>
             </div>
         </div>
 
@@ -258,6 +259,15 @@
                     <button type="submit" class="btn-outline">Unfollow</button>
                 {% else %}
                     <button type="submit" class="btn-cyan-sm">Follow</button>
+                {% endif %}
+            </form>
+
+            <form action="{% url 'toggle_repost' complaint.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                {% if request.user in complaint.reposts.all %}
+                    <button type="submit" class="btn-outline">🔁 Un‑Repost</button>
+                {% else %}
+                    <button type="submit" class="btn-cyan-sm">🔁 Repost</button>
                 {% endif %}
             </form>
 
@@ -404,4 +414,34 @@
         });
     });
 </script>
+
+<script>
+    // ---------- Repost ----------
+    document.querySelectorAll('.repost-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const complaintId = this.dataset.complaintId;
+            fetch('/api/repost/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: `complaint_id=${complaintId}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                const countSpan = this.querySelector('.repost-count');
+                countSpan.textContent = data.count;
+                if (data.reposted) {
+                    this.style.background = 'var(--brand-cyan)';
+                    this.style.color = 'white';
+                } else {
+                    this.style.background = 'transparent';
+                    this.style.color = 'var(--brand-cyan)';
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}

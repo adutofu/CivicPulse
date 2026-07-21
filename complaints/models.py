@@ -21,7 +21,8 @@ STATUS_CHOICES = [
     ('under_review', 'Under Review'),
     ('in_progress', 'In Progress'),
     ('resolved', 'Resolved'),
-    ('escalated', 'Escalated')
+    ('escalated', 'Escalated'),
+    ('community_priority', 'Community_Priority'),
 ]
 
 class Complaint(models.Model):
@@ -82,6 +83,10 @@ class Notification(models.Model):
         ('resolved_photo', 'Resolution Photo Added'),
         ('new_complaint', 'New Complaint (Govt Only)'),
         ('complaint_reminder', 'Complaint Reminder (Govt Only)'),
+        ('comment_added', 'Comment Added'),
+        ('comment_reply', 'Comment Reply'),
+        ('mention', 'Mention'),
+        ('repost', 'Repost'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -363,3 +368,15 @@ class ComplaintFollower(models.Model):
     def __str__(self):
         return f"{self.user.username} follows complaint #{self.complaint.id}"
 
+
+# Repost model for sharing complaints
+class Repost(models.Model):
+    complaint = models.ForeignKey('Complaint', on_delete=models.CASCADE, related_name='reposts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('complaint', 'user')  # prevent duplicate reposts
+
+    def __str__(self):
+        return f"{self.user.username} reposted complaint #{self.complaint.id}"

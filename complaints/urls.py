@@ -25,7 +25,8 @@ urlpatterns = [
     path('complaint/<int:complaint_id>/comment/', views.add_comment, name='add_comment'),
     path('complaint/<int:complaint_id>/follow/', views.toggle_follow, name='toggle_follow'),
     path('complaint/<int:complaint_id>/flag/', views.flag_complaint, name='flag_complaint'),
-
+    path('complaint/<int:complaint_id>/repost/', views.toggle_repost, name='toggle_repost'),
+    path('api/repost/', views.api_repost, name='api_repost'),
     path('complaint/<int:complaint_id>/escalate/', views.escalate_complaint, name='escalate_complaint'),
 
     # Community voting API endpoints
@@ -52,5 +53,9 @@ urlpatterns = [
     path('moderation/', views.moderation_queue, name='moderation_queue'),
     path('moderation/resolve/<int:flag_id>/', views.resolve_flag, name='resolve_flag'),
     path('moderation/resolve-comment/<int:flag_id>/', views.resolve_comment_flag, name='resolve_comment_flag'),
+
+    # Repost endpoints
+    path('complaint/<int:complaint_id>/repost/', views.toggle_repost, name='toggle_repost'),
+    path('api/repost/', views.api_repost, name='api_repost'),
     
 ]

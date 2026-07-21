@@ -152,6 +152,9 @@
                 <button class="btn-outline-cyan upvote-btn" data-complaint-id="{{ complaint.id }}">
                     👍 <span class="upvote-count">{{ complaint.upvotes }}</span>
                 </button>
+                <button class="btn-outline-cyan repost-btn" data-complaint-id="{{ complaint.id }}">
+                    🔁 <span class="repost-count">{{ complaint.reposts.count }}</span>
+                </button>
                 <button class="btn-outline-cyan follow-btn" data-complaint-id="{{ complaint.id }}">
                     {% if request.user in complaint.followers.all %}
                         Unfollow
@@ -310,6 +313,35 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+
+    // ---------- Repost (AJAX) ----------
+    document.querySelectorAll('.repost-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const complaintId = this.dataset.complaintId;
+            fetch('/api/repost/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: `complaint_id=${complaintId}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                const countSpan = this.querySelector('.repost-count');
+                countSpan.textContent = data.count;
+                if (data.reposted) {
+                    this.style.background = 'var(--brand-cyan)';
+                    this.style.color = 'white';
+                } else {
+                    this.style.background = 'transparent';
+                    this.style.color = 'var(--brand-cyan)';
+                }
+            });
+        });
+    });
+
 
     // ---------- Follow ----------
     document.querySelectorAll('.follow-btn').forEach(btn => {
