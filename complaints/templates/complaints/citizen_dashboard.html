@@ -34,6 +34,13 @@
                     <td><span class="cell-value">{{ complaint.get_category_display }}</span></td>
                     <td><span class="cell-value">{{ complaint.description|truncatechars:60 }}</span></td>
                     <td>
+                        {% if complaint.rating_score %}
+                            {{ complaint.rating_score }}★
+                        {% else %}
+                            Not rated yet
+                        {% endif %}
+                    </td>
+                    <td>
                         <span class="cell-value">
                             <span class="status-badge status-{{ complaint.status }}">
                                 {{ complaint.get_status_display }}

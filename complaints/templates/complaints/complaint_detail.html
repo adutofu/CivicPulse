@@ -269,6 +269,11 @@
                 {% else %}
                     <button type="submit" class="btn-cyan-sm">🔁 Repost</button>
                 {% endif %}
+                {% if is_owner and complaint.status == 'resolved' and complaint.rating_score is None %}
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#rateModal">
+                        ⭐ Rate Government Response
+                    </button>
+                {% endif %}
             </form>
 
             <!-- Flag button (opens modal) -->
@@ -392,6 +397,42 @@
                 <div class="modal-footer">
                     <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn-danger-outline" style="border-color:#dc3545;color:#dc3545;">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Rating Modal -->
+<div class="modal fade" id="rateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rate the Government Response</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'rate_complaint' complaint.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>How satisfied are you with the resolution of this complaint?</p>
+                    <div class="mb-3">
+                        <label class="form-label">Score (1-5)</label>
+                        <div class="rating-stars">
+                            <input type="radio" name="score" value="1" id="star1"><label for="star1">⭐</label>
+                            <input type="radio" name="score" value="2" id="star2"><label for="star2">⭐⭐</label>
+                            <input type="radio" name="score" value="3" id="star3"><label for="star3">⭐⭐⭐</label>
+                            <input type="radio" name="score" value="4" id="star4"><label for="star4">⭐⭐⭐⭐</label>
+                            <input type="radio" name="score" value="5" id="star5" checked><label for="star5">⭐⭐⭐⭐⭐</label>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label for="comment" class="form-label">Optional comment</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="2" placeholder="Share your feedback..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-success">Submit Rating</button>
                 </div>
             </form>
         </div>

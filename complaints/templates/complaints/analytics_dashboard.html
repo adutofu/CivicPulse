@@ -107,6 +107,12 @@
                 <div class="change negative">⚠️ Needs attention</div>
             </div>
         </div>
+        <div class="col-md-3 col-6">
+            <div class="analytics-card text-center">
+                <div class="number">{{ avg_rating }}★</div>
+                <div class="label">Average Rating</div>
+            </div>
+        </div>
     </div>
 
     <!-- ─── Engagement Metrics ─── -->
@@ -164,6 +170,15 @@
                 <div class="chart-container" style="height: 220px;">
                     <canvas id="trendChart"></canvas>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="analytics-card">
+            <h5 style="font-weight: 700;">⭐ Rating Distribution</h5>
+            <div class="chart-container">
+                <canvas id="ratingChart"></canvas>
             </div>
         </div>
     </div>
@@ -265,6 +280,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+    // Rating Distribution Chart
+    const ratingCtx = document.getElementById('ratingChart').getContext('2d');
+    new Chart(ratingCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ rating_labels|safe }},
+            datasets: [{
+                label: 'Count',
+                data: {{ rating_values|safe }},
+                backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                borderColor: '#FFC107',
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
     });
 });
 </script>

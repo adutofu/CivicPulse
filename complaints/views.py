@@ -65,6 +65,7 @@ def landing_page(request):
     total_upvotes = Complaint.objects.aggregate(total=Sum('upvotes'))['total'] or 0
     active_voters = Vote.objects.values('user').distinct().count()
     top_issues = Complaint.objects.order_by('-upvotes', '-created_at')[:5]
+    avg_rating = Complaint.average_rating()
 
     # Top Civic Heroes - This Month
     now = timezone.now()
@@ -97,6 +98,7 @@ def landing_page(request):
         'active_voters': active_voters,
         'top_issues': top_issues,
         'top_citizens': top_citizens,
+        'avg_rating': avg_rating,
     }
     return render(request, 'complaints/landing.html', context)
 
@@ -202,6 +204,19 @@ def analytics_dashboard(request):
     avg_comments = Comment.objects.filter(complaint__created_at__gte=start_date).count() / total_complaints if total_complaints else 0
     avg_upvotes = Vote.objects.filter(complaint__created_at__gte=start_date).count() / total_complaints if total_complaints else 0
 
+    # ─── Rating distribution ───
+    rating_counts = (
+        Complaint.objects
+        .filter(rating_score__isnull=False)
+        .values('rating_score')
+        .annotate(count=Count('id'))
+        .order_by('rating_score')
+    )
+    rating_labels = [f"{r['rating_score']}★" for r in rating_counts]
+    rating_values = [r['count'] for r in rating_counts]
+    avg_rating = Complaint.average_rating()
+
+
     context = {
         'total_complaints': total_complaints,
         'total_resolved': total_resolved,
@@ -223,6 +238,9 @@ def analytics_dashboard(request):
         'avg_comments': round(avg_comments, 1),
         'avg_upvotes': round(avg_upvotes, 1),
         'selected_range': days,
+        'rating_labels': rating_labels,
+        'rating_values': rating_values,
+        'avg_rating': avg_rating,
     }
     return render(request, 'complaints/analytics_dashboard.html', context)
 
@@ -895,7 +913,7 @@ def activity_feed(request):
 
 
 
-from django.utils import timezone
+
 
 @login_required
 def escalate_complaint(request, complaint_id):
@@ -976,6 +994,50 @@ def api_repost(request):
             )
     repost_count = complaint.reposts.count()
     return JsonResponse({'reposted': reposted, 'count': repost_count})
+
+
+
+@login_required
+def rate_complaint(request, complaint_id):
+    complaint = get_object_or_404(Complaint, id=complaint_id, citizen=request.user)
+    if complaint.status != 'resolved':
+        messages.error(request, "You can only rate resolved complaints.")
+        return redirect('complaint_detail', complaint_id=complaint.id)
+    if complaint.rating_score is not None:
+        messages.error(request, "You have already rated this complaint.")
+        return redirect('complaint_detail', complaint_id=complaint.id)
+
+    if request.method == 'POST':
+        score = request.POST.get('score')
+        comment = request.POST.get('comment', '').strip()
+        try:
+            score = int(score)
+            if score < 1 or score > 5:
+                raise ValueError
+        except (ValueError, TypeError):
+            messages.error(request, "Please select a valid rating (1-5).")
+            return redirect('complaint_detail', complaint_id=complaint.id)
+
+        complaint.rating_score = score
+        complaint.rating_comment = comment
+        complaint.rated_at = timezone.now()
+        complaint.save()
+
+        # Notify government staff (optional)
+        staff_users = User.objects.filter(is_staff=True)
+        for staff in staff_users:
+            send_notification(
+                staff,
+                complaint,
+                'new_rating',
+                f"Complaint #{complaint.id} received a rating of {score}★ from {request.user.username}."
+            )
+
+        messages.success(request, "Thank you for your rating!")
+        return redirect('complaint_detail', complaint_id=complaint.id)
+
+    # GET: show rating form (could be a modal)
+    return render(request, 'complaints/rate_modal.html', {'complaint': complaint})
 
 
 @staff_member_required

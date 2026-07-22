@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/comment/', views.api_comment, name='api_comment'),
     path('api/flag-complaint/', views.api_flag_complaint, name='api_flag_complaint'),
     path('api/flag-comment/', views.api_flag_comment, name='api_flag_comment'),
+    path('complaint/<int:complaint_id>/rate/', views.rate_complaint, name='rate_complaint'),
 
     # ---------- Map and spatial endpoints ----------
     path('api/nearby-complaints/', views.get_nearby_complaints, name='get_nearby_complaints'),

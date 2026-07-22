@@ -47,6 +47,9 @@ class Complaint(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     government_response = models.TextField(blank=True, null=True)
     resolved_photo = models.ImageField(upload_to='resolved/', blank=True, null=True)
+    rating_score = models.IntegerField(null=True, blank=True)  # 1-5
+    rating_comment = models.TextField(blank=True, null=True)
+    rated_at = models.DateTimeField(blank=True, null=True)
     is_hidden = models.BooleanField(default=False)
     escalation_reason = models.TextField(blank=True, null=True)
     escalated_at = models.DateTimeField(blank=True, null=True)
@@ -65,6 +68,12 @@ class Complaint(models.Model):
         if not user.is_authenticated:
             return False
         return self.votes.filter(user=user).exists()
+
+    @classmethod
+    def average_rating(cls):
+        from django.db.models import Avg
+        avg = cls.objects.filter(rating_score__isnull=False).aggregate(Avg('rating_score'))['rating_score__avg']
+        return round(avg, 1) if avg else 0
 
 class GovernmentUpdate(models.Model):
     title = models.CharField(max_length=255)
@@ -88,6 +97,7 @@ class Notification(models.Model):
         ('comment_reply', 'Comment Reply'),
         ('mention', 'Mention'),
         ('repost', 'Repost'),
+        ('new_rating', 'New Rating'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE)
