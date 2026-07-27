@@ -1,16 +1,19 @@
-from .models import Notification
 import re
+
 from django.contrib.auth.models import User
+
+from .models import Notification
 
 
 def send_notification(user, complaint, notification_type, message):
-    """Create an in‑app notification for a user."""
+    """Create an in-app notification for a user."""
     if user:  # safety check
         Notification.objects.create(
-            recipient=user,
+            user=user,
             complaint=complaint,
             notification_type=notification_type,
-            message=message
+            title=notification_type.replace('_', ' ').title(),
+            message=message,
         )
 
 

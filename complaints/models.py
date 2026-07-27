@@ -1,10 +1,9 @@
-from django.db import models
-from django.contrib.auth.models import User
-from django.utils import timezone
 from datetime import timedelta
-# separate import for GIS-specific fields (MultiPolygonField etc.)
 
+from django.contrib.auth.models import User
 from django.contrib.gis.db import models as gis_models
+from django.db import models
+from django.utils import timezone
 
 
 CATEGORY_CHOICES = [
@@ -365,6 +364,8 @@ class Repost(models.Model):
     class Meta:
         unique_together = ('complaint', 'user')  # prevent duplicate reposts
 
+    def __str__(self):
+        return f"{self.user.username} reposted complaint #{self.complaint.id}"
 
 
 #Follow a complaint
@@ -378,16 +379,3 @@ class ComplaintFollower(models.Model):
 
     def __str__(self):
         return f"{self.user.username} follows complaint #{self.complaint.id}"
-
-
-# Repost model for sharing complaints
-class Repost(models.Model):
-    complaint = models.ForeignKey('Complaint', on_delete=models.CASCADE, related_name='reposts')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('complaint', 'user')  # prevent duplicate reposts
-
-    def __str__(self):
-        return f"{self.user.username} reposted complaint #{self.complaint.id}"

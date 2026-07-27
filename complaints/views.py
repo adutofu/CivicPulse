@@ -1,47 +1,49 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+import json
+from datetime import timedelta
+from decimal import Decimal
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login as auth_login
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy
-from django.db.models import Count, Sum, Count, Q, Avg, F, Sum
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
+from django.contrib.auth.views import LoginView
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
+from django.contrib import messages
+from django.conf import settings
+from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncDate
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.decorators.http import require_POST
+
+from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm
 from .models import (
+    CATEGORY_CHOICES,
     Complaint,
-    Profile,
-    Notification,
+    ComplaintFollower,
     ComplaintImage,
-    Vote,
     Comment,
     Flag,
-    ComplaintFollower,
-    notify_status_change,
+    Notification,
+    Profile,
+    Repost,
+    Vote,
+    Ward,
+    notify_govt_application_reviewed,
+    notify_govt_application_submitted,
     notify_govt_response,
     notify_new_complaint_govt,
     notify_resolved_photo,
-    notify_govt_application_submitted,
-    notify_govt_application_reviewed,
+    notify_status_change,
 )
-from django.contrib.auth.decorators import login_required
-from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm
-from decimal import Decimal
-from django.contrib.gis.geos import Point
-from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.measure import D
-from .models import Ward
-from .utils import send_notification, notify_mentions
-import json
-from django.core.paginator import Paginator
-from itertools import chain
-from django.conf import settings
-from .models import Repost, CATEGORY_CHOICES
-from datetime import timedelta
-from django.db.models.functions import TruncDate
+from .utils import notify_mentions, send_notification
 
 
 
@@ -307,11 +309,17 @@ def report_complaint(request):
 
 def notify_mentions(text, sender, complaint):
     import re
+
     usernames = re.findall(r'@(\w+)', text)
     for username in usernames:
         try:
             user = User.objects.get(username=username)
-            send_notification(user, f"{sender.username} mentioned you in a comment on complaint #{complaint.id}")
+            send_notification(
+                user,
+                complaint,
+                'mention',
+                f"{sender.username} mentioned you in a comment on complaint #{complaint.id}",
+            )
         except User.DoesNotExist:
             pass
 
@@ -380,11 +388,10 @@ def escalate_complaint(request, complaint_id):
     if request.method == 'POST':
         reason = request.POST.get('reason')
         target_authority = request.POST.get('target_authority')
-        Escalation.objects.create(
-            complaint=complaint,
+        complaint.escalations.create(
             escalated_by=request.user,
             reason=reason,
-            target_authority=target_authority
+            target_authority=target_authority,
         )
         # Change complaint status to 'escalated'
         complaint.status = 'escalated'
@@ -656,48 +663,6 @@ def api_upvote(request):
     return JsonResponse({'upvotes': complaint.upvotes, 'upvoted': upvoted})
 
 
-from .models import Repost
-
-@login_required
-def toggle_repost(request, complaint_id):
-    complaint = get_object_or_404(Complaint, id=complaint_id)
-    repost, created = Repost.objects.get_or_create(complaint=complaint, user=request.user)
-    if not created:
-        repost.delete()  # un‑repost
-    else:
-        # Notify complaint owner (if not the reposter)
-        if complaint.citizen != request.user:
-            send_notification(
-                complaint.citizen,
-                complaint,
-                'repost',
-                f"{request.user.username} reposted your complaint #{complaint.id}"
-            )
-    return redirect('complaint_detail', complaint_id=complaint.id)
-
-@login_required
-@require_POST
-def api_repost(request):
-    complaint_id = request.POST.get('complaint_id')
-    complaint = get_object_or_404(Complaint, id=complaint_id)
-    repost, created = Repost.objects.get_or_create(complaint=complaint, user=request.user)
-    if not created:
-        repost.delete()
-        reposted = False
-    else:
-        reposted = True
-        if complaint.citizen != request.user:
-            send_notification(
-                complaint.citizen,
-                complaint,
-                'repost',
-                f"{request.user.username} reposted your complaint #{complaint.id}"
-            )
-    return JsonResponse({
-        'reposted': reposted,
-        'count': complaint.reposts.count()
-    })
-
 @login_required
 @require_POST
 def api_follow(request):
@@ -758,7 +723,13 @@ def api_flag_comment(request):
     reason = request.POST.get('reason')
     description = request.POST.get('description', '')
     comment = get_object_or_404(Comment, id=comment_id)
-    CommentFlag.objects.create(comment=comment, reported_by=request.user,reason=reason, description=description)
+    Flag.objects.create(
+        complaint=comment.complaint,
+        reported_by=request.user,
+        reason=reason,
+        description=description,
+        comment=comment,
+    )
     return JsonResponse({'status': 'flagged'})
 
 
