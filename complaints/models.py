@@ -358,7 +358,6 @@ class Escalation(models.Model):
 class Repost(models.Model):
     complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, related_name='reposts')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.TextField(blank=True)  # optional additional comment
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

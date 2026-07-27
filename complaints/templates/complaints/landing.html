@@ -3,6 +3,8 @@
 
 {% block title %}CivicPulse – Citizen Engagement Platform{% endblock %}
 
+{% block body_class %}page-landing{% endblock %}
+
 {% block header_navigation %}
             <!-- Desktop Navigation -->
             <nav class="desktop-nav">
@@ -125,12 +127,73 @@
         --transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
 
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--dark-bg);
-        color: var(--text-primary);
-        line-height: 1.6;
-        overflow-x: hidden;
+    .ekg-background-container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        padding: 90px 0 40px;
+    }
+
+    .ekg-row {
+        width: 100%;
+        height: 90px;
+        opacity: 0.95;
+    }
+
+    .ekg-svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .ekg-base {
+        fill: none;
+        stroke: rgba(148, 163, 184, 0.5);
+        stroke-width: 1.5;
+        opacity: 0.65;
+    }
+
+    .ekg-tracer {
+        fill: none;
+        stroke: rgba(13, 110, 253, 0.95);
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        filter: drop-shadow(0px 0px 14px rgba(13, 110, 253, 0.45));
+        stroke-dasharray: 250 1800;
+        stroke-dashoffset: 2050;
+        animation: ekgSweepPulse 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .delay-1 { animation-delay: 0s; }
+    .delay-2 { animation-delay: 2.3s; stroke: #008751; filter: drop-shadow(0px 0px 6px rgba(0, 135, 81, 0.8)); }
+    .delay-3 { animation-delay: 4.5s; }
+
+    @keyframes ekgSweepPulse {
+        0% {
+            stroke-dashoffset: 2050;
+        }
+        65% {
+            stroke-dashoffset: -400;
+        }
+        100% {
+            stroke-dashoffset: -400;
+        }
+    }
+
+    .hero-section,
+    .section-full-alt,
+    .section-full,
+    .trusted-section {
+        position: relative;
+        z-index: 1;
     }
 
     /* ----- BUTTONS ----- */
@@ -894,15 +957,42 @@
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
-.emergency-icon-img {
+/* Emergency icon backgrounds are handled in CSS so each icon width can be adjusted easily */
+.emergency-icon {
     width: 70px;
     height: 70px;
     margin-bottom: 8px;
     position: relative;
     z-index: 1;
     filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2)) brightness(1.1);
-    object-fit: contain;
-    display: block;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Individual icon styles: change width/height in these classes to control each icon separately */
+.emergency-item.police .emergency-icon {
+    background-image: url("{% static 'images/police-icon.jpeg' %}");
+    width: 80px; /* Police icon width */
+    height: 80px;
+}
+
+.emergency-item.fire .emergency-icon {
+    background-image: url("{% static 'images/fire-icon.png' %}");
+    width: 70px; /* Fire icon width */
+    height: 70px;
+}
+
+.emergency-item.frsc .emergency-icon {
+    background-image: url("{% static 'images/frsc-icon.png' %}");
+    width: 70px; /* FRSC icon width */
+    height: 70px;
+}
+
+.emergency-item.ambulance .emergency-icon {
+    background-image: url("{% static 'images/ambulance-icon.png' %}");
+    width: 70px; /* Ambulance icon width */
+    height: 70px;
 }
 
 .service-name {
@@ -1459,23 +1549,19 @@
                 
                 <div class="emergency-grid">
                     <div class="emergency-item police">
-                        <img src="{% static 'images/Screenshot_2026-07-26_14-16-48(1).png' %}" alt="Police" class="emergency-icon-img">
-                        <div class="service-name">POLICE</div>
+                        <div class="emergency-icon police-icon"></div>
                         <div class="service-number">199</div>
                     </div>
                     <div class="emergency-item fire">
-                        <img src="{% static 'images/fire-icon.png' %}" alt="Fire" class="emergency-icon-img">
-                        <div class="service-name">FIRE</div>
+                        <div class="emergency-icon fire-icon"></div>
                         <div class="service-number">112</div>
                     </div>
                     <div class="emergency-item frsc">
-                        <img src="{% static 'images/frsc-icon.png' %}" alt="FRSC" class="emergency-icon-img">
-                        <div class="service-name">FRSC</div>
+                        <div class="emergency-icon frsc-icon"></div>
                         <div class="service-number">122</div>
                     </div>
                     <div class="emergency-item ambulance">
-                        <img src="{% static 'images/ambulance-icon.png' %}" alt="Ambulance" class="emergency-icon-img">
-                        <div class="service-name">AMBULANCE</div>
+                        <div class="emergency-icon ambulance-icon"></div>
                         <div class="service-number">911</div>
                     </div>
                 </div>

@@ -355,8 +355,7 @@ def get_trending_complaints(request):
 def repost_complaint(request, complaint_id):
     complaint = get_object_or_404(Complaint, id=complaint_id)
     if request.method == 'POST':
-        comment = request.POST.get('comment', '')
-        Repost.objects.get_or_create(complaint=complaint, user=request.user, defaults={'comment': comment})
+        Repost.objects.get_or_create(complaint=complaint, user=request.user)
         # Update repost count (cached or via signal)
         return redirect('complaint_detail', complaint_id=complaint.id)
 
