@@ -708,6 +708,206 @@
             text-align: center;
             color: var(--text-muted);
         }
+
+        /* ============================================================
+           CIVICPULSE DESIGN SYSTEM — PHASE 1
+           Foundation utility classes consumed by every later phase.
+           ============================================================ */
+
+        /* --- Glass Card: puts your existing --glass/--glass-border vars to work --- */
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            transition: var(--transition);
+        }
+
+        /* --- Stat Card: icon + big number + label, for dashboards/landing stats --- */
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1.75rem;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.75rem;
+            line-height: 1;
+        }
+
+        .stat-card .stat-number {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--brand-cyan-deep);
+            line-height: 1.1;
+        }
+
+        .stat-card .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* --- Status Badges: color-coded pills for complaint status --- */
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.32rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .badge-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .badge-pending {
+            background: rgba(255, 159, 10, 0.12);
+            color: #B36B00;
+        }
+
+        .badge-progress {
+            background: var(--brand-cyan-glow);
+            color: var(--brand-cyan-deep);
+        }
+
+        .badge-resolved {
+            background: rgba(52, 199, 89, 0.14);
+            color: #1F8A3B;
+        }
+
+        .badge-acknowledged {
+            background: rgba(91, 101, 115, 0.12);
+            color: var(--text-secondary);
+        }
+
+        /* --- Microinteraction utilities --- */
+        .hover-lift {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-glow {
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card-glow:hover {
+            border-color: var(--brand-cyan);
+            box-shadow: 0 0 0 3px var(--brand-cyan-glow), var(--shadow-lg);
+        }
+
+        /* --- Entrance animation, applied selectively per-page in later phases --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        /* --- Reserved for Phase 3 (living background node pulses) --- */
+        @keyframes nodePulse {
+            0%, 100% {
+                opacity: 0.35;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.6);
+            }
+        }
+
+        /* ============================================================
+           SIGNATURE ELEMENT — THE PULSE LINE
+           An ECG-style animated squiggle echoing the logo mark and the
+           "CivicPulse" name. A traveling glow sweeps along a static
+           baseline, evoking a heartbeat monitor. Reusable anywhere via
+           the .pulse-line wrapper + inline SVG markup below.
+           ============================================================ */
+
+        .pulse-line {
+            width: 100%;
+            line-height: 0;
+            pointer-events: none;
+        }
+
+        .pulse-line svg {
+            width: 100%;
+            height: 26px;
+            display: block;
+        }
+
+        .pulse-line-base {
+            fill: none;
+            stroke: var(--border-dim);
+            stroke-width: 2;
+        }
+
+        .pulse-line-glow {
+            fill: none;
+            stroke: var(--brand-cyan);
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-dasharray: 70 260;
+            filter: drop-shadow(0 0 4px var(--brand-cyan-glow));
+            animation: pulseTravel 3.4s linear infinite;
+        }
+
+        @keyframes pulseTravel {
+            0% {
+                stroke-dashoffset: 330;
+            }
+            100% {
+                stroke-dashoffset: -330;
+            }
+        }
+
+        .pulse-line-header {
+            padding: 0.4rem 0;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .pulse-line-header .pulse-line-base {
+            stroke: rgba(0, 122, 255, 0.18);
+        }
+
+        .pulse-line-footer {
+            max-width: 320px;
+            margin: 2rem auto 0;
+            opacity: 0.85;
+        }
+        
+        .pulse-line-inner {
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
     </style>
 
     <!-- Extra CSS from child pages -->
@@ -887,6 +1087,16 @@
         </div>
     </header>
 
+    <div class="pulse-line pulse-line-header" aria-hidden="true">
+        <div class="pulse-line pulse-line-inner"></div>
+        <svg viewBox="0 0 300 26" preserveAspectRatio="none">
+            <path class="pulse-line-base" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
+            <path class="pulse-line-glow" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
+        </svg>
+        </div>
+    </div>
+
+
     <div class="page-wave page-wave-top" aria-hidden="true">
         <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
             <path d="M0,32 C240,90 480,0 720,24 C960,48 1200,100 1440,40 L1440,0 L0,0 Z" fill="rgba(0, 122, 255, 0.16)" />
@@ -935,11 +1145,19 @@
                 </ul>
             </div>
         </div>
+
+        <div class="pulse-line pulse-line-footer" aria-hidden="true">
+            <svg viewBox="0 0 300 26" preserveAspectRatio="none">
+                <path class="pulse-line-base" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
+                <path class="pulse-line-glow" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
+            </svg>
+        </div>
+
         <div class="footer-bottom">
             <p>© 2026 CivicPulse — Mapping issues, powering solutions. Built for Nigerian communities</p>
         </div>
     </footer>
-    </div>
+    
 
     <!-- Bootstrap JS (required for Bootstrap interactive components) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
