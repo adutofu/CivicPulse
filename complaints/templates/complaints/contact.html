@@ -1,30 +1,17 @@
 {% extends 'complaints/base.html' %}
 {% load static %}
 
-{% block content %}
+{% block extra_css %}
 <style>
-    .hero-mini {
-        background: linear-gradient(135deg, var(--brand-cyan) 0%, var(--brand-cyan-deep) 100%);
-        color: white;
-        padding: 3rem 2rem;
-        border-radius: 0.5rem;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .hero-mini h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-    }
-
     .contact-card {
         transition: transform 0.2s;
+        border: none;
+        background: var(--surface-card, #FFFFFF);
     }
-
     .contact-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.08) !important;
     }
-
     .btn-contact-submit {
         background: var(--brand-cyan);
         border: none;
@@ -34,70 +21,87 @@
         font-weight: 600;
         transition: 0.2s;
     }
-
     .btn-contact-submit:hover {
         background: var(--brand-cyan-deep);
         color: #FFFFFF;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 122, 255, 0.3);
+    }
+    .contact-icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--brand-cyan-glow, rgba(0,122,255,0.12));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin: 0 auto 0.75rem;
+        color: var(--brand-cyan);
     }
 </style>
+{% endblock %}
 
-<div class="hero-mini">
-    <div class="container">
-        <h1>Contact Us</h1>
-        <p class="lead">We’d love to hear from you – whether you’re a citizen, government official, or partner.</p>
-    </div>
-</div>
+{% block body_class %}has-page-hero{% endblock %}
 
-<div class="container">
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card contact-card h-100 shadow-sm text-center">
-                <div class="card-body">
-                    <div style="font-size: 2rem;">📧</div>
-                    <h5 class="card-title mt-2">Email</h5>
-                    <p class="card-text">general@civicpulse.org<br>support@civicpulse.org</p>
+{% block content %}
+    <!-- ========== PAGE HERO (exact same as feed) ========== -->
+    {% include "includes/page_hero.html" with icon="📧" title="Contact Us" subtitle="We'd love to hear from you – whether you're a citizen, government official, or partner." %}
+
+    <!-- ========== CONTACT CARDS & FORM – FULLY CENTRALISED ========== -->
+    <div class="container py-4">
+        <!-- Cards row: now centrally aligned with justify-content-center -->
+        <div class="row g-4 mb-5 justify-content-center">
+            <div class="col-md-4">
+                <div class="card contact-card h-100 shadow-sm text-center p-3">
+                    <div class="card-body">
+                        <div class="contact-icon-circle">📧</div>
+                        <h5 class="card-title">Email</h5>
+                        <p class="card-text mb-0">general@civicpulse.org</p>
+                        <p class="card-text">support@civicpulse.org</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card contact-card h-100 shadow-sm text-center p-3">
+                    <div class="card-body">
+                        <div class="contact-icon-circle">📞</div>
+                        <h5 class="card-title">Phone</h5>
+                        <p class="card-text mb-0">+234 812 239 7794</p>
+                        <p class="card-text">Mon–Fri, 9am–5pm</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card contact-card h-100 shadow-sm text-center">
-                <div class="card-body">
-                    <div style="font-size: 2rem;">📞</div>
-                    <h5 class="card-title mt-2">Phone</h5>
-                    <p class="card-text">+234 812 239 7794<br>Mon–Fri, 9am–5pm</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title text-center">Send a Message</h3>
-                    <form action="#" method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Your Name</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Message</label>
-                            <textarea rows="5" class="form-control" required></textarea>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-contact-submit">Send Message</button>
-                        </div>
-                    </form>
-                    <p class="text-muted text-center mt-3 small">For government partnership inquiries, please use the
-                        same form.</p>
+        <!-- Form row: already centralised via mx-auto -->
+        <div class="row mt-4 justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center mb-4">Send a Message</h3>
+                        <form action="#" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">Your Name</label>
+                                <input type="text" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Message</label>
+                                <textarea rows="5" class="form-control" required></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-contact-submit">Send Message</button>
+                            </div>
+                        </form>
+                        <p class="text-muted text-center mt-3 small">For government partnership inquiries, please use the same form.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

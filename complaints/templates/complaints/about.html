@@ -1,106 +1,99 @@
 {% extends 'complaints/base.html' %}
 {% load static %}
 
-{% block content %}
+{% block extra_css %}
 <style>
-    .hero-mini {
-        background: linear-gradient(135deg, var(--brand-cyan) 0%, var(--brand-cyan-deep) 100%);
-        color: white;
-        padding: 3rem 2rem;
-        border-radius: 0.5rem;
-        margin-bottom: 2rem;
-        text-align: center;
-    }
-
-    .hero-mini h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-    }
-
     .mission-card {
         border-left: 4px solid var(--brand-cyan);
-        transition: transform 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        background: var(--surface-card, #FFFFFF);
     }
-
     .mission-card:hover {
         transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.08) !important;
+    }
+    .mission-icon {
+        font-size: 2.5rem;
+    }
+    .story-card {
+        background: var(--surface-soft, #F8FAFE);
+        border: none;
+        height: 100%;
+    }
+    .story-card .card-body {
+        padding: 1.75rem;
     }
 </style>
+{% endblock %}
 
-<div class="hero-mini">
-    <div class="container">
-        <h1>About CivicPulse</h1>
-        <p class="lead">Bridging the gap between citizens and government through transparency and accountability.</p>
-    </div>
-</div>
+{% block body_class %}has-page-hero{% endblock %}
 
-<div class="container">
-    <div class="row mb-5">
-        <div class="col-md-8 mx-auto text-center">
-            <h2>Our Mission</h2>
-            <p class="lead">To empower every Nigerian citizen to report civic issues and hold government accountable,
-                while providing government with the tools to respond effectively and transparently.</p>
+{% block content %}
+    <!-- ========== PAGE HERO (exact same as feed & contact) ========== -->
+    {% include "includes/page_hero.html" with icon="🏛️" title="About CivicPulse" subtitle="Bridging the gap between citizens and government through transparency and accountability." %}
+
+    <!-- ========== ABOUT CONTENT ========== -->
+    <div class="container py-4">
+        <!-- Mission statement -->
+        <div class="row mb-5 justify-content-center">
+            <div class="col-md-8 text-center">
+                <h2>Our Mission</h2>
+                <p class="lead">To empower every Nigerian citizen to report civic issues and hold government accountable, while providing government with the tools to respond effectively and transparently.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card mission-card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div style="font-size: 2.5rem;">📢</div>
-                    <h4 class="card-title mt-2">Report</h4>
-                    <p class="card-text">Easily report bad roads, broken lights, flooding, waste, corruption, and water
-                        issues with photo and location.</p>
+        <!-- Three mission cards (Report, Track, Transform) -->
+        <div class="row g-4 mb-5 justify-content-center">
+            <div class="col-md-4">
+                <div class="card mission-card h-100 shadow-sm text-center p-3">
+                    <div class="card-body">
+                        <div class="mission-icon">📢</div>
+                        <h4 class="card-title mt-2">Report</h4>
+                        <p class="card-text">Easily report bad roads, broken lights, flooding, waste, corruption, and water issues with photo and location.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mission-card h-100 shadow-sm text-center p-3">
+                    <div class="card-body">
+                        <div class="mission-icon">👀</div>
+                        <h4 class="card-title mt-2">Track</h4>
+                        <p class="card-text">Follow the status of your reports – Reported, Under Review, In Progress, Resolved – and see government responses.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mission-card h-100 shadow-sm text-center p-3">
+                    <div class="card-body">
+                        <div class="mission-icon">🏆</div>
+                        <h4 class="card-title mt-2">Transform</h4>
+                        <p class="card-text">Drive change through transparency scores, community upvotes, and documented government action.</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card mission-card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div style="font-size: 2.5rem;">👀</div>
-                    <h4 class="card-title mt-2">Track</h4>
-                    <p class="card-text">Follow the status of your reports – Reported, Under Review, In Progress,
-                        Resolved – and see government responses.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card mission-card h-100 shadow-sm">
-                <div class="card-body text-center">
-                    <div style="font-size: 2.5rem;">🏆</div>
-                    <h4 class="card-title mt-2">Transform</h4>
-                    <p class="card-text">Drive change through transparency scores, community upvotes, and documented
-                        government action.</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <h3>Our Story</h3>
-                    <p>CivicPulse was founded in 2025 by a team of civic technologists who saw the need for a simple,
-                        transparent way for Nigerians to report everyday problems. Instead of waiting for government to
-                        notice, citizens can now document issues and start a public conversation.</p>
-                    <p>We believe that accountability begins with data. Every report, every response, every resolution
-                        is tracked and visible. This creates a virtuous cycle – government sees what matters, citizens
-                        see action.</p>
+        <!-- Our Story & Vision -->
+        <div class="row g-4 mt-3 justify-content-center">
+            <div class="col-md-6">
+                <div class="card story-card shadow-sm">
+                    <div class="card-body">
+                        <h3>Our Story</h3>
+                        <p>CivicPulse was founded in 2025 by a team of civic technologists who saw the need for a simple, transparent way for Nigerians to report everyday problems. Instead of waiting for government to notice, citizens can now document issues and start a public conversation.</p>
+                        <p>We believe that accountability begins with data. Every report, every response, every resolution is tracked and visible. This creates a virtuous cycle – government sees what matters, citizens see action.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <h3>Our Vision</h3>
-                    <p>To become the default civic engagement platform for Nigerian cities – a digital common where
-                        every citizen's voice is heard and every government action is transparent.</p>
-                    <p>We aim to expand to all 36 states, integrate with local government systems, and provide real‑time
-                        dashboards for officials.</p>
+            <div class="col-md-6">
+                <div class="card story-card shadow-sm">
+                    <div class="card-body">
+                        <h3>Our Vision</h3>
+                        <p>To become the default civic engagement platform for Nigerian cities – a digital common where every citizen's voice is heard and every government action is transparent.</p>
+                        <p>We aim to expand to all 36 states, integrate with local government systems, and provide real‑time dashboards for officials.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
