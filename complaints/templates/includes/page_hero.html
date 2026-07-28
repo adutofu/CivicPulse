@@ -1,0 +1,54 @@
+{% load static %}
+<div class="hero-band page-hero" style="background: linear-gradient(150deg, var(--brand-cyan) 0%, var(--brand-cyan-deep) 100%); margin-top: -2rem;">
+    <div class="hero-texture" aria-hidden="true">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <pattern id="heroDotGrid" x="0" y="0" width="26" height="26" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1.5" fill="#FFFFFF" />
+                </pattern>
+            </defs>
+            <rect x="0" y="0" width="360" height="180" fill="url(#heroDotGrid)" opacity="0.25" />
+
+            <g stroke="#FFFFFF" stroke-width="1" opacity="0.18" fill="none">
+                <line x1="60" y1="40" x2="140" y2="90" />
+                <line x1="140" y1="90" x2="90" y2="150" />
+                <line x1="140" y1="90" x2="220" y2="70" />
+                <line x1="220" y1="70" x2="280" y2="130" />
+                <circle cx="60" cy="40" r="3" fill="#FFFFFF" />
+                <circle cx="140" cy="90" r="3" fill="#FFFFFF" />
+                <circle cx="90" cy="150" r="3" fill="#FFFFFF" />
+                <circle cx="220" cy="70" r="3" fill="#FFFFFF" />
+                <circle cx="280" cy="130" r="3" fill="#FFFFFF" />
+            </g>
+
+            <g stroke="#FFFFFF" stroke-width="1" opacity="0.12" fill="none">
+                <line x1="1220" y1="30" x2="1320" y2="60" />
+                <line x1="1320" y1="60" x2="1280" y2="120" />
+                <line x1="1320" y1="60" x2="1400" y2="40" />
+                <circle cx="1220" cy="30" r="3" fill="#FFFFFF" />
+                <circle cx="1320" cy="60" r="3" fill="#FFFFFF" />
+                <circle cx="1280" cy="120" r="3" fill="#FFFFFF" />
+                <circle cx="1400" cy="40" r="3" fill="#FFFFFF" />
+            </g>
+        </svg>
+    </div>
+
+    <div class="container page-hero-inner fade-in-up">
+        {% if icon %}<div class="page-hero-icon">{{ icon }}</div>{% endif %}
+        <h1 class="page-hero-title">{{ title }}</h1>
+        {% if subtitle %}<p class="page-hero-subtitle">{{ subtitle }}</p>{% endif %}
+
+        <div class="pulse-line page-hero-pulse" aria-hidden="true">
+            <svg viewBox="0 0 300 26" preserveAspectRatio="none">
+                <path class="pulse-line-base" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
+                <path class="pulse-line-glow" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
+            </svg>
+        </div>
+    </div>
+
+    <div class="wave-divider">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path d="M0,64 C240,120 480,0 720,32 C960,64 1200,112 1440,64 L1440,120 L0,120 Z" fill="var(--surface)" />
+        </svg>
+    </div>
+</div>

@@ -908,6 +908,81 @@
             margin: 0 auto;
         }
 
+        .page-hero-inner {
+            text-align: center;
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 1.4rem 1rem 1.8rem;
+            color: #FFFFFF;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero-icon {
+            font-size: 1.4rem;
+            margin-bottom: 0.25rem;
+            opacity: 0.95;
+        }
+
+        .page-hero-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            letter-spacing: -0.01em;
+        }
+
+        .page-hero-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+
+        .page-hero-pulse {
+            max-width: 160px;
+            margin: 0.75rem auto 0;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 640px) {
+            .page-hero-subtitle {
+                white-space: normal;
+            }
+        }
+
+        .page-hero-pulse {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-hero .wave-divider svg {
+            height: 42px;
+        }
+
+        .page-hero-pulse .pulse-line-base {
+            stroke: rgba(255, 255, 255, 0.3);
+        }
+
+        .page-hero-pulse .pulse-line-glow {
+            stroke: #FFFFFF;
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.45));
+        }
+
+        .hero-texture {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .hero-texture svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        
+
     </style>
 
     <!-- Extra CSS from child pages -->
@@ -1011,7 +1086,6 @@
     </div>
 
     <div class="content-layer">
-        <header>
         <div class="header-container">
             <div class="logo-svg">
                 <svg width="200" height="60" viewBox="0 0 250 80" xmlns="http://www.w3.org/2000/svg">
@@ -1085,22 +1159,6 @@
             </div>
             {% endif %}
         </div>
-    </header>
-
-    <div class="pulse-line pulse-line-header" aria-hidden="true">
-        <div class="pulse-line pulse-line-inner"></div>
-        <svg viewBox="0 0 300 26" preserveAspectRatio="none">
-            <path class="pulse-line-base" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
-            <path class="pulse-line-glow" d="M0,13 L100,13 L112,3 L124,23 L136,13 L300,13" />
-        </svg>
-        </div>
-    </div>
-
-
-    <div class="page-wave page-wave-top" aria-hidden="true">
-        <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-            <path d="M0,32 C240,90 480,0 720,24 C960,48 1200,100 1440,40 L1440,0 L0,0 Z" fill="rgba(0, 122, 255, 0.16)" />
-        </svg>
     </div>
 
     <main>

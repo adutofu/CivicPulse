@@ -41,12 +41,12 @@
 </style>
 {% endblock %}
 
+{% block body_class %}has-page-hero{% endblock %}
 {% block content %}
+{% include "includes/page_hero.html" with icon="📡" title="Activity Feed" subtitle="See what's happening in your community – recent reports, comments, upvotes, and follows." %}
 <div class="container py-4">
-    <h2 class="section-headline">📡 Activity Feed</h2>
-    <p class="section-desc">See what's happening in your community – recent reports, comments, upvotes, and follows.</p>
-
     {% if activities %}
+
         {% for activity in activities %}
         <div class="feed-item">
             <span class="timestamp">{{ activity.created_at|timesince }} ago</span>
