@@ -1,0 +1,167 @@
+{% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .confirm-card {
+        max-width: 560px;
+        margin: 0 auto;
+        padding: 2.5rem;
+        text-align: center;
+    }
+
+    .confirm-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .confirm-card h2 {
+        color: var(--text-primary);
+        margin-bottom: 0.6rem;
+    }
+
+    .confirm-card p {
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .consequence-list {
+        text-align: left;
+        background: rgba(255, 59, 48, 0.05);
+        border: 1px solid rgba(255, 59, 48, 0.2);
+        border-radius: var(--radius-lg);
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .consequence-list li {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        list-style: none;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .consequence-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    .confirm-input-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .confirm-input-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .confirm-input-group input[type="text"] {
+        width: 100%;
+        padding: 0.7rem 1rem;
+        border: 1.5px solid var(--error-red);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        text-align: center;
+        letter-spacing: 0.05em;
+        font-weight: 700;
+        color: var(--error-red);
+    }
+
+    .confirm-input-group input[type="text"]:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.15);
+    }
+
+    .confirm-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-danger-solid {
+        background: var(--error-red);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 40px;
+        padding: 0.7rem 1.8rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-danger-solid:hover {
+        background: #D9342A;
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}has-page-hero{% endblock %}
+
+{% block content %}
+    {% if profile.user_type == 'govt' %}
+        {% include "includes/page_hero.html" with icon="⚠️" title="Deactivate Account" subtitle="Confirm you want to disable your government account." %}
+    {% else %}
+        {% include "includes/page_hero.html" with icon="⚠️" title="Delete Account" subtitle="This action is permanent and cannot be undone." %}
+    {% endif %}
+
+    <div class="container py-4">
+        <div class="glass-card confirm-card fade-in-up">
+
+            {% if profile.user_type == 'govt' %}
+                <div class="confirm-icon">🏛️</div>
+                <h2>Deactivate your government account?</h2>
+                <p>You'll be logged out immediately and won't be able to sign back in until an admin reactivates your account.</p>
+
+                <ul class="consequence-list">
+                    <li>✅ Your complaint history and response records will be preserved</li>
+                    <li>✅ Citizens will still see your past responses on their complaints</li>
+                    <li>🔒 You will be logged out and unable to log back in until reactivated</li>
+                    <li>👤 Reactivation must go through an administrator</li>
+                </ul>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="confirm-actions">
+                        <a href="{% url 'profile' %}" class="btn-cyan-sm" style="background:#FFFFFF; padding: 0.6rem 1.5rem;">Cancel</a>
+                        <button type="submit" class="btn-danger-solid">Deactivate My Account</button>
+                    </div>
+                </form>
+
+            {% else %}
+                <div class="confirm-icon">🗑️</div>
+                <h2>Delete your account?</h2>
+                <p>This permanently removes your account and everything tied to it. There is no way to undo this.</p>
+
+                <ul class="consequence-list">
+                    <li>🗑️ All complaints you've reported will be permanently deleted</li>
+                    <li>🗑️ Your upvotes, reposts, follows, and comments will be removed</li>
+                    <li>🗑️ Your profile picture and account details will be erased</li>
+                    <li>⛔ This cannot be reversed — there is no recovery option</li>
+                </ul>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="confirm-input-group">
+                        <label for="confirm_text">Type <strong>DELETE</strong> to confirm</label>
+                        <input type="text" id="confirm_text" name="confirm_text" placeholder="DELETE" autocomplete="off" required>
+                    </div>
+                    <div class="confirm-actions">
+                        <a href="{% url 'profile' %}" class="btn-cyan-sm" style="background:#FFFFFF; padding: 0.6rem 1.5rem;">Cancel</a>
+                        <button type="submit" class="btn-danger-solid">Delete My Account</button>
+                    </div>
+                </form>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}
