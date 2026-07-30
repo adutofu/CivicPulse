@@ -22,6 +22,9 @@ urlpatterns = [
     path('my-complaints/', views.citizen_dashboard, name='citizen_dashboard'),  # citizen view of all own complaints
     path('community/', views.community_complaints, name='community_complaints'),
     path('complaint/<int:complaint_id>/', views.complaint_detail, name='complaint_detail'),  # detailed complaint view for citizens
+    path('profile/', views.profile_view, name='profile'),  # role-aware: citizen or govt profile page
+    path('profile/settings/', views.profile_settings, name='profile_settings'),  # edit profile + coverage area
+    path('profile/delete/', views.delete_account, name='delete_account'),  # citizen: delete, govt: deactivate
 
     path('complaint/<int:complaint_id>/comment/', views.add_comment, name='add_comment'),
     path('complaint/<int:complaint_id>/follow/', views.toggle_follow, name='toggle_follow'),
