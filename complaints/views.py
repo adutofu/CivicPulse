@@ -30,6 +30,7 @@ from .models import (
     Complaint,
     ComplaintFollower,
     ComplaintImage,
+    GovernmentUpdate,
     Comment,
     Flag,
     Notification,
@@ -815,13 +816,10 @@ def mark_all_read(request):
 
 @login_required
 def activity_feed(request):
-    # Get recent complaints
+    # 1. YOUR ORIGINAL FEED LOGIC (UNTOUCHED)
     complaints = Complaint.objects.filter(is_hidden=False).order_by('-created_at')[:10]
-    # Get recent comments
     comments = Comment.objects.order_by('-created_at')[:10]
-    # Get recent upvotes
     votes = Vote.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
-    # Get recent follows
     follows = ComplaintFollower.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
     reposts = Repost.objects.select_related('complaint', 'user').order_by('-created_at')[:10]
     
@@ -879,8 +877,43 @@ def activity_feed(request):
 
     # Sort by created_at descending (most recent first)
     activities = sorted(activities, key=lambda x: x['created_at'], reverse=True)[:30]
+
+    # ==================================================
+    # 2. DYNAMIC SIDEBAR DATA (APPENDED - DOES NOT BREAK EXISTING CODE)
+    # ==================================================
     
-    return render(request, 'complaints/feeds.html', {'activities': activities})
+    # Trending Issues (Top 5 by upvotes)
+    top_issues = Complaint.objects.filter(is_hidden=False).order_by('-upvotes')[:5]
+    
+    # Top Civic Hero (This month, based on upvotes received on their complaints)
+    now = timezone.now()
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    top_hero_data = Complaint.objects.filter(
+        created_at__gte=start_of_month
+    ).values('citizen').annotate(
+        total_points=Sum('upvotes')
+    ).order_by('-total_points').first()
+    
+    top_hero = None
+    if top_hero_data:
+        user = User.objects.get(id=top_hero_data['citizen'])
+        top_hero = {
+            'user': user,
+            'points': top_hero_data['total_points']
+        }
+        
+    # Latest Official Government Notice
+    latest_notice = GovernmentUpdate.objects.order_by('-published_at').first()
+
+    # ==================================================
+    # 3. RETURN THE SAFELY UPDATED CONTEXT
+    # ==================================================
+    return render(request, 'complaints/feeds.html', {
+        'activities': activities,
+        'top_issues': top_issues,
+        'top_hero': top_hero,
+        'latest_notice': latest_notice,
+    })
 
 @login_required
 def escalate_complaint(request, complaint_id):

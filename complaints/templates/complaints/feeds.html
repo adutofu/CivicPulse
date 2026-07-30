@@ -3,168 +3,247 @@
 
 {% block extra_css %}
 <style>
-    .feed-wrapper {
-        max-width: 640px;
+    /* --- PROFESSIONAL FEED LAYOUT --- */
+    .feed-layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 340px; /* Two column layout */
+        gap: 2rem;
+        max-width: 1280px;
         margin: 0 auto;
+        align-items: start;
     }
 
-    .feed-card {
-        padding: 1.2rem;
-        margin-bottom: 1rem;
+    .feed-right-column {
+        position: sticky;
+        top: 90px; /* Sticky side panel based on header height */
+        align-self: start;
         display: flex;
-        gap: 0.85rem;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* --- FEED HEADER & LIVE STATS ROW --- */
+    .feed-header {
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 1.2rem;
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+    }
+
+    .feed-stats-row {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .stat-micro {
+        text-align: center;
+    }
+    .stat-micro .num {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--brand-cyan);
+        display: block;
+        line-height: 1;
+    }
+    .stat-micro .label {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .feed-filter-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 0.3rem 1rem;
+        border-radius: 40px;
+        border: 1px solid var(--glass-border);
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    .filter-btn:hover {
+        background: var(--brand-cyan-glow);
+        border-color: var(--brand-cyan);
+        color: var(--brand-cyan);
+    }
+    .filter-btn.active {
+        background: var(--brand-cyan);
+        color: #fff;
+        border-color: var(--brand-cyan);
+    }
+
+    /* --- FEED CARD (Fully inlined for 0 errors) --- */
+    .feed-wrapper { width: 100%; }
+    .feed-card {
+        padding: 1.4rem;
+        margin-bottom: 1.2rem;
+        display: flex;
+        gap: 1rem;
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        position: relative;
+    }
+    .feed-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg), var(--shadow-brand-sm);
+        border-color: var(--brand-cyan);
     }
 
     .feed-avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
+        width: 46px; height: 46px; border-radius: 50%;
         background: linear-gradient(135deg, var(--brand-cyan), var(--primary-dark));
-        color: #FFFFFF;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 700;
-        font-size: 1.1rem;
-        flex-shrink: 0;
+        color: #FFFFFF; display: flex; align-items: center; justify-content: center;
+        font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.15rem;
+        flex-shrink: 0; box-shadow: var(--shadow-sm);
     }
 
-    .feed-body {
-        flex: 1;
-        min-width: 0;
+    .feed-body { flex: 1; min-width: 0; }
+    .feed-top-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem; position: relative; }
+
+    /* --- More Options Dropdown --- */
+    .feed-actions-wrapper { margin-left: auto; display: flex; align-items: center; gap: 0.8rem; }
+    .feed-more-btn {
+        background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem;
+        line-height: 1; font-weight: 900; cursor: pointer; padding: 0 0.3rem; transition: var(--transition); letter-spacing: 2px;
     }
-
-    .feed-top-row {
-        display: flex;
-        align-items: baseline;
-        gap: 0.4rem;
-        flex-wrap: wrap;
-        margin-bottom: 0.15rem;
+    .feed-more-btn:hover { color: var(--text-primary); }
+    .feed-more-dropdown {
+        display: none; position: absolute; top: 2rem; right: 0;
+        background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(16px);
+        border-radius: var(--radius-md); box-shadow: var(--shadow-lg); padding: 0.4rem; width: 140px; z-index: 50;
     }
-
-    .feed-username {
-        font-weight: 700;
-        color: var(--text-primary);
-        font-size: 0.92rem;
+    .feed-more-dropdown.open { display: block; }
+    .feed-more-dropdown a {
+        display: block; padding: 0.4rem 0.8rem; font-size: 0.8rem; color: var(--text-secondary);
+        text-decoration: none; border-radius: 8px; transition: var(--transition);
     }
+    .feed-more-dropdown a:hover { background: var(--brand-cyan-glow); color: var(--brand-cyan); }
+    .feed-more-dropdown a.danger { color: var(--error-red); }
+    .feed-more-dropdown a.danger:hover { background: rgba(255, 59, 48, 0.1); }
 
-    .feed-action-label {
-        color: var(--text-muted);
-        font-size: 0.85rem;
+    /* --- Share Button --- */
+    .feed-share-btn {
+        background: transparent; border: none; color: var(--text-muted); font-size: 1rem;
+        cursor: pointer; transition: var(--transition); padding: 0; line-height: 1;
     }
+    .feed-share-btn:hover { color: var(--brand-cyan); transform: scale(1.1); }
 
-    .feed-dot {
-        color: var(--text-muted);
-        font-size: 0.7rem;
-    }
+    /* --- Image sizing --- */
+    .feed-media { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--glass-border); margin-bottom: 0.8rem; background: var(--surface-card); position: relative; cursor: pointer; }
+    .feed-media img { width: 100%; max-height: 300px; object-fit: cover; display: block; transition: transform 0.3s ease; }
+    .feed-media:hover img { transform: scale(1.02); }
 
-    .feed-time {
-        color: var(--text-muted);
-        font-size: 0.8rem;
-    }
-
-    .feed-action-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.12rem 0.6rem;
-        border-radius: 999px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-        margin-left: auto;
-        flex-shrink: 0;
-    }
-
-    .pill-complaint { background: var(--brand-cyan-glow); color: var(--brand-cyan-deep); }
-    .pill-comment   { background: rgba(91, 101, 115, 0.12); color: var(--text-secondary); }
-    .pill-upvote    { background: rgba(52, 199, 89, 0.14); color: #1F8A3B; }
-    .pill-follow    { background: rgba(255, 159, 10, 0.12); color: #B36B00; }
-    .pill-repost    { background: rgba(0, 122, 255, 0.12); color: var(--brand-cyan-deep); }
-
-    .feed-message {
-        color: var(--text-primary);
-        font-size: 0.92rem;
-        line-height: 1.4;
-        margin-bottom: 0.7rem;
-    }
-
-    .feed-media {
-        border-radius: 14px;
-        overflow: hidden;
-        border: 1px solid var(--border-dim);
-        margin-bottom: 0.7rem;
-    }
-
-    .feed-media img {
-        width: 100%;
-        max-height: 320px;
-        object-fit: cover;
-        display: block;
-    }
-
-    .feed-meta-row {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        flex-wrap: wrap;
-        margin-bottom: 0.7rem;
-    }
-
+    .feed-meta-row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
     .feed-location {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        font-size: 0.78rem;
-        color: var(--text-muted);
+        display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; color: var(--text-muted);
+        background: rgba(0,0,0,0.02); padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid var(--glass-border);
     }
 
+    /* --- MATCHING CUSTOM BUTTON AESTHETIC FOR FEED FOOTER --- */
     .feed-footer {
-        display: flex;
-        align-items: center;
-        gap: 1.4rem;
-        padding-top: 0.5rem;
-        border-top: 1px solid var(--border-dim);
+        display: flex; align-items: center; gap: 1.2rem; padding-top: 0.6rem; border-top: 1px solid var(--glass-border);
     }
-
     .feed-stat {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        text-decoration: none;
-        transition: var(--transition);
+        display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+        padding: 0.4rem 0.9rem; border-radius: 34px; /* Matches your custom buttons */
+        background: transparent; border: 1px solid var(--glass-border);
+        font-size: 0.85rem; font-weight: 600; color: var(--text-muted);
+        transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        cursor: pointer; text-decoration: none; position: relative;
     }
-
     .feed-stat:hover {
-        color: var(--brand-cyan);
+        background: var(--brand-cyan-glow); border-color: var(--brand-cyan); color: var(--brand-cyan);
     }
+    .feed-stat:active { transform: scale(0.95); }
+
+    /* Active AJAX States (Solid brand color with white text) */
+    .feed-stat.active-upvote {
+        background: var(--brand-cyan); border-color: var(--brand-cyan); color: #fff;
+        box-shadow: 0 0 12px var(--brand-cyan-glow);
+    }
+    .feed-stat.active-upvote .stat-icon { color: #fff; }
+
+    .feed-stat.active-follow {
+        background: #B36B00; border-color: #B36B00; color: #fff;
+        box-shadow: 0 0 12px rgba(179, 107, 0, 0.2);
+    }
+    .feed-stat.active-follow .stat-icon { color: #fff; }
+
+    .feed-stat.active-repost {
+        background: var(--brand-cyan); border-color: var(--brand-cyan); color: #fff;
+        box-shadow: 0 0 12px var(--brand-cyan-glow);
+    }
+    .feed-stat.active-repost .stat-icon { color: #fff; }
 
     .feed-view-link {
-        margin-left: auto;
-        color: var(--brand-cyan);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.82rem;
+        margin-left: auto; color: var(--brand-cyan); text-decoration: none; font-weight: 700;
+        font-size: 0.85rem; transition: var(--transition);
     }
+    .feed-view-link:hover { color: var(--brand-cyan-deep); text-decoration: underline; }
 
-    .feed-view-link:hover {
-        color: var(--brand-cyan-deep);
+    /* --- RIGHT SIDEBAR --- */
+    .sidebar-card {
+        padding: 1.2rem; background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);
+        transition: var(--transition);
     }
+    .sidebar-card:hover { border-color: var(--brand-cyan-glow); box-shadow: var(--shadow-lg); }
+    .sidebar-card h4 {
+        font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;
+        letter-spacing: 0.05em; margin-bottom: 0.8rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem;
+    }
+    .sidebar-trend-item {
+        display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0;
+        border-bottom: 1px solid var(--border-dim); font-size: 0.85rem;
+    }
+    .sidebar-trend-item:last-child { border-bottom: none; }
+    .sidebar-trend-item .trend-cat { font-weight: 600; color: var(--text-primary); }
+    .sidebar-trend-item .trend-votes { color: var(--brand-cyan); font-weight: 700; font-size: 0.75rem; }
 
+    /* --- TOAST & MODALS --- */
+    #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column-reverse; gap: 10px; max-width: 360px; pointer-events: none; }
+    .toast-item { padding: 0.8rem 1.2rem; background: var(--glass); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); color: var(--text-primary); font-weight: 600; font-size: 0.9rem; pointer-events: auto; animation: slideInRight 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; transform: translateX(calc(100% + 40px)); opacity: 0; }
+    .toast-item.success { border-left: 4px solid var(--accent-green); background: rgba(255, 255, 255, 0.95); }
+    .toast-item.error { border-left: 4px solid var(--error-red); background: rgba(255, 255, 255, 0.95); }
+    @keyframes slideInRight { to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOutRight { to { transform: translateX(calc(100% + 40px)); opacity: 0; } }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 1024px) {
+        .feed-layout-grid { grid-template-columns: 1fr; }
+        .feed-right-column { position: static; order: 2; }
+        .feed-left-column { order: 1; }
+    }
     @media (max-width: 480px) {
-        .feed-card {
-            padding: 1rem 0.85rem;
-            gap: 0.65rem;
-        }
-        .feed-avatar {
-            width: 36px;
-            height: 36px;
-            font-size: 0.95rem;
-        }
+        .feed-card { padding: 1rem; gap: 0.75rem; }
+        .feed-avatar { width: 38px; height: 38px; font-size: 1rem; }
+        .feed-stats-row { gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+        .feed-filter-row { justify-content: center; }
+        .feed-footer { gap: 0.5rem; flex-wrap: wrap; }
+        .feed-stat { padding: 0.3rem 0.5rem; font-size: 0.75rem; }
+        #toast-container { max-width: 90%; right: 5%; bottom: 10px; }
     }
 </style>
 {% endblock %}
@@ -175,73 +254,425 @@
     {% include "includes/page_hero.html" with icon="📡" title="Activity Feed" subtitle="See what's happening in your community – recent reports, comments, upvotes, and follows." %}
 
     <div class="container py-4">
-        <div class="feed-wrapper">
-            {% if activities %}
-                {% for activity in activities %}
-                {% with complaint=activity.complaint %}
-                <div class="glass-card card-glow hover-lift feed-card fade-in-up">
-                    <div class="feed-avatar">{{ activity.user.username|first|upper }}</div>
-
-                    <div class="feed-body">
-                        <div class="feed-top-row">
-                            <span class="feed-username">{{ activity.user.username }}</span>
-                            <span class="feed-dot">·</span>
-                            <span class="feed-time">{{ activity.created_at|timesince }} ago</span>
-
-                            <span class="feed-action-pill
-                                {% if activity.type == 'complaint' %}pill-complaint
-                                {% elif activity.type == 'comment' %}pill-comment
-                                {% elif activity.type == 'upvote' %}pill-upvote
-                                {% elif activity.type == 'follow' %}pill-follow
-                                {% elif activity.type == 'repost' %}pill-repost{% endif %}">
-                                {% if activity.type == 'complaint' %}📢 Reported
-                                {% elif activity.type == 'comment' %}💬 Commented
-                                {% elif activity.type == 'upvote' %}👍 Upvoted
-                                {% elif activity.type == 'follow' %}🔔 Following
-                                {% elif activity.type == 'repost' %}🔁 Reposted{% endif %}
-                            </span>
+        <div class="feed-layout-grid">
+            
+            <!-- ================= LEFT COLUMN: FEED ================= -->
+            <div class="feed-left-column">
+                
+                <!-- FEED HEADER CONTROLS (Dynamic Data from View) -->
+                <div class="feed-header fade-in-up">
+                    <div class="feed-stats-row">
+                        <div class="stat-micro">
+                            <span class="num">{{ today_reports|default:"0" }}</span>
+                            <span class="label">Today's Reports</span>
                         </div>
-
-                        <p class="feed-message">{{ activity.message }}</p>
-
-                        {% if complaint.photo %}
-                        <div class="feed-media">
-                            <img src="{{ complaint.photo.url }}" alt="{{ complaint.get_category_display }}">
+                        <div class="stat-micro">
+                            <span class="num">{{ today_resolved|default:"0" }}</span>
+                            <span class="label">Resolved Today</span>
                         </div>
-                        {% endif %}
-
-                        <div class="feed-meta-row">
-                            {% if complaint.category %}
-                            <span class="badge-status
-                                {% if complaint.status == 'reported' %}badge-pending
-                                {% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress
-                                {% elif complaint.status == 'resolved' %}badge-resolved
-                                {% else %}badge-acknowledged{% endif %}">
-                                {{ complaint.get_category_display }}
-                            </span>
-                            {% endif %}
-
-                            {% if complaint.ward %}
-                            <span class="feed-location">📍 {{ complaint.ward.ward }}, {{ complaint.ward.lga }}, {{ complaint.ward.state }}</span>
-                            {% elif complaint.address_text %}
-                            <span class="feed-location">📍 {{ complaint.address_text }}</span>
-                            {% endif %}
-                        </div>
-
-                        <div class="feed-footer">
-                            <span class="feed-stat">👍 {{ complaint.upvotes }}</span>
-                            <span class="feed-stat">💬 {{ complaint.comments.count }}</span>
-                            <span class="feed-stat">🔁 {{ complaint.reposts.count }}</span>
-                            <a href="{{ activity.url }}" class="feed-view-link">View →</a>
+                        <div class="stat-micro">
+                            <span class="num">{{ total_upvotes|default:"0" }}</span>
+                            <span class="label">Total Upvotes</span>
                         </div>
                     </div>
+                    <div class="feed-filter-row">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="roads">🚦 Roads</button>
+                        <button class="filter-btn" data-filter="waste">🗑️ Waste</button>
+                        <button class="filter-btn" data-filter="water">💧 Water</button>
+                        <button class="filter-btn" data-filter="resolved">✅ Resolved</button>
+                    </div>
                 </div>
-                {% endwith %}
-                {% endfor %}
-            {% else %}
-                {% url 'report_complaint' as report_url %}
-                {% include "includes/empty_state.html" with icon="📡" title="No activity yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
-            {% endif %}
+
+                <div class="feed-wrapper">
+                    {% if activities %}
+                        {% for activity in activities %}
+                            {% with obj=activity.object %}
+                                {% if activity.type == 'complaint' %}
+                                    {% with complaint=obj %}
+                                    <!-- INLINED COMPLAINT CARD -->
+                                    <div class="glass-card card-glow hover-lift feed-card fade-in-up">
+                                        <div class="feed-avatar">{{ activity.user.username|first|upper }}</div>
+                                        <div class="feed-body">
+                                            <div class="feed-top-row">
+                                                <span class="feed-username">{{ activity.user.username }}</span>
+                                                <span class="feed-dot">·</span>
+                                                <span class="feed-time">{{ activity.created_at|timesince }} ago</span>
+                                                
+                                                <div class="feed-actions-wrapper">
+                                                    <button class="feed-share-btn" data-url="{% url 'complaint_detail' complaint.id %}" aria-label="Share">🔗</button>
+                                                    <button class="feed-more-btn" aria-label="More Options">⋯</button>
+                                                    <div class="feed-more-dropdown">
+                                                        <a href="{% url 'flag_complaint' complaint.id %}" class="danger">🚩 Report / Flag</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <p class="feed-message">{{ activity.message }}</p>
+                                            
+                                            {% if complaint.photo %}
+                                            <div class="feed-media">
+                                                <img src="{{ complaint.photo.url }}" alt="{{ complaint.get_category_display }}">
+                                            </div>
+                                            {% endif %}
+
+                                            <div class="feed-meta-row">
+                                                {% if complaint.category %}
+                                                <span class="badge-status
+                                                    {% if complaint.status == 'reported' %}badge-pending
+                                                    {% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress
+                                                    {% elif complaint.status == 'resolved' %}badge-resolved
+                                                    {% else %}badge-acknowledged{% endif %}">
+                                                    {{ complaint.get_category_display }}
+                                                </span>
+                                                {% endif %}
+                                                {% if complaint.ward %}
+                                                <span class="feed-location">📍 {{ complaint.ward.ward }}, {{ complaint.ward.lga }}, {{ complaint.ward.state }}</span>
+                                                {% elif complaint.address_text %}
+                                                <span class="feed-location">📍 {{ complaint.address_text }}</span>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="feed-footer">
+                                                <button class="feed-stat interactive-btn" data-action="upvote" data-complaint-id="{{ complaint.id }}">
+                                                    <span class="stat-icon">👍</span> 
+                                                    <span id="upvote-count-{{ complaint.id }}">{{ complaint.upvotes }}</span>
+                                                </button>
+                                                
+                                                <button class="feed-stat interactive-btn" data-action="follow" data-complaint-id="{{ complaint.id }}">
+                                                    <span class="stat-icon">➕</span> Follow
+                                                </button>
+                                                
+                                                <button class="feed-stat interactive-btn" data-action="repost" data-complaint-id="{{ complaint.id }}">
+                                                    <span class="stat-icon">🔁</span> 
+                                                    <span id="repost-count-{{ complaint.id }}">{{ complaint.reposts.count }}</span>
+                                                </button>
+
+                                                <a href="{{ activity.url }}" class="feed-view-link">View →</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endwith %}
+                                {% else %}
+                                    {% with complaint=obj.complaint %}
+                                    <!-- INLINED SECONDARY ACTIVITY CARD -->
+                                    <div class="glass-card card-glow hover-lift feed-card fade-in-up">
+                                        <div class="feed-avatar">{{ activity.user.username|first|upper }}</div>
+                                        <div class="feed-body">
+                                            <div class="feed-top-row">
+                                                <span class="feed-username">{{ activity.user.username }}</span>
+                                                <span class="feed-dot">·</span>
+                                                <span class="feed-time">{{ activity.created_at|timesince }} ago</span>
+                                                
+                                                <span class="feed-action-pill
+                                                    {% if activity.type == 'comment' %}pill-comment
+                                                    {% elif activity.type == 'upvote' %}pill-upvote
+                                                    {% elif activity.type == 'follow' %}pill-follow
+                                                    {% elif activity.type == 'repost' %}pill-repost{% endif %}">
+                                                    {% if activity.type == 'comment' %}💬 Commented
+                                                    {% elif activity.type == 'upvote' %}👍 Upvoted
+                                                    {% elif activity.type == 'follow' %}🔔 Following
+                                                    {% elif activity.type == 'repost' %}🔁 Reposted{% endif %}
+                                                </span>
+                                                <div class="feed-actions-wrapper" style="margin-left: 0.5rem;">
+                                                    <button class="feed-share-btn" data-url="{% url 'complaint_detail' complaint.id %}" aria-label="Share">🔗</button>
+                                                </div>
+                                            </div>
+                                            
+                                            <p class="feed-message">{{ activity.message }}</p>
+                                            
+                                            {% if complaint.photo %}
+                                            <div class="feed-media">
+                                                <img src="{{ complaint.photo.url }}" alt="{{ complaint.get_category_display }}">
+                                            </div>
+                                            {% endif %}
+
+                                            <div class="feed-meta-row">
+                                                {% if complaint.category %}
+                                                <span class="badge-status
+                                                    {% if complaint.status == 'reported' %}badge-pending
+                                                    {% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress
+                                                    {% elif complaint.status == 'resolved' %}badge-resolved
+                                                    {% else %}badge-acknowledged{% endif %}">
+                                                    {{ complaint.get_category_display }}
+                                                </span>
+                                                {% endif %}
+                                                {% if complaint.ward %}
+                                                <span class="feed-location">📍 {{ complaint.ward.ward }}, {{ complaint.ward.lga }}, {{ complaint.ward.state }}</span>
+                                                {% elif complaint.address_text %}
+                                                <span class="feed-location">📍 {{ complaint.address_text }}</span>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="feed-footer">
+                                                <button class="feed-stat interactive-btn" data-action="upvote" data-complaint-id="{{ complaint.id }}">
+                                                    <span class="stat-icon">👍</span> 
+                                                    <span id="upvote-count-{{ complaint.id }}">{{ complaint.upvotes }}</span>
+                                                </button>
+                                                
+                                                <button class="feed-stat interactive-btn" data-action="follow" data-complaint-id="{{ complaint.id }}">
+                                                    <span class="stat-icon">➕</span> Follow
+                                                </button>
+                                                
+                                                <button class="feed-stat interactive-btn" data-action="repost" data-complaint-id="{{ complaint.id }}">
+                                                    <span class="stat-icon">🔁</span> 
+                                                    <span id="repost-count-{{ complaint.id }}">{{ complaint.reposts.count }}</span>
+                                                </button>
+
+                                                <a href="{{ activity.url }}" class="feed-view-link">View →</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endwith %}
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    {% else %}
+                        {% url 'report_complaint' as report_url %}
+                        {% include "includes/empty_state.html" with icon="📡" title="No activity yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ================= RIGHT COLUMN: SIDEBAR ================= -->
+            <div class="feed-right-column">
+                
+                <!-- SIDEBAR: Trending -->
+                <div class="sidebar-card fade-in-up">
+                    <h4>🔥 Trending Now</h4>
+                    {% if top_issues %}
+                        {% for issue in top_issues %}
+                        <div class="sidebar-trend-item">
+                            <span class="trend-cat">{{ issue.get_category_display }}</span>
+                            <span class="trend-votes">{{ issue.upvotes }} votes</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="font-size:0.85rem; color:var(--text-muted);">No trending issues yet.</div>
+                    {% endif %}
+                    <div style="margin-top: 0.8rem; text-align: right;">
+                        <a href="{% url 'community_complaints' %}" style="color:var(--brand-cyan); font-size:0.8rem; text-decoration:none; font-weight:600;">View All →</a>
+                    </div>
+                </div>
+
+                <!-- SIDEBAR: Top Hero -->
+                <div class="sidebar-card fade-in-up">
+                    <h4>🏆 Top Civic Hero</h4>
+                    {% if top_hero %}
+                    <div style="display:flex; align-items:center; gap:0.8rem;">
+                        <div class="feed-avatar" style="width: 44px; height: 44px; font-size:1rem; background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            {{ top_hero.user.username|first|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight:700;">{{ top_hero.user.username }}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">{{ top_hero.points }} issues this month</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div style="font-size:0.85rem; color:var(--text-muted);">No heroes this month yet!</div>
+                    {% endif %}
+                </div>
+
+                <!-- SIDEBAR: Govt Notice -->
+                <div class="sidebar-card fade-in-up" style="border-left: 4px solid var(--accent-green);">
+                    <h4 style="border:none; padding-bottom:0; margin-bottom:0.3rem;">📢 Official Notice</h4>
+                    {% if latest_notice %}
+                    <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.4;">
+                        <strong>{{ latest_notice.title }}.</strong> {{ latest_notice.content }}
+                    </div>
+                    {% else %}
+                    <div style="font-size:0.85rem; color:var(--text-muted);">No official announcements at this time.</div>
+                    {% endif %}
+                </div>
+
+            </div>
         </div>
     </div>
+
+    <!-- ================= IMAGE LIGHTBOX MODAL ================= -->
+    <div id="image-modal-overlay" class="image-modal-overlay" role="dialog" aria-modal="true">
+        <div class="image-modal-content">
+            <button class="image-modal-close" id="image-modal-close" aria-label="Close image">&times;</button>
+            <img id="modal-full-image" src="" alt="Zoomed Complaint Image">
+        </div>
+    </div>
+
+    <!-- ================= TOAST CONTAINER ================= -->
+    <div id="toast-container"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        'use strict';
+
+        // --- CSRFToken helper ---
+        function getCSRFToken() {
+            const name = 'csrftoken';
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const trimmed = cookie.trim();
+                if (trimmed.startsWith(name + '=')) {
+                    return decodeURIComponent(trimmed.substring(name.length + 1));
+                }
+            }
+            return '';
+        }
+        const csrfToken = getCSRFToken();
+
+        // --- TOAST NOTIFICATION SYSTEM ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const el = document.createElement('div');
+            el.className = `toast-item ${type}`;
+            el.textContent = message;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.animation = 'slideOutRight 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards';
+                setTimeout(() => el.remove(), 400);
+            }, 4000);
+        }
+
+        // --- AJAX HANDLER ---
+        async function handleAction(button, action, complaintId) {
+            if (button.dataset.loading === 'true') return;
+            button.dataset.loading = 'true';
+            const url = `/api/${action}/`;
+            const formData = new FormData();
+            formData.append('complaint_id', complaintId);
+            const originalInnerHTML = button.innerHTML;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken },
+                    body: formData
+                });
+                if (!response.ok) throw new Error('Request failed');
+                const data = await response.json();
+                
+                let actionMsg = 'Action completed successfully!';
+
+                if (action === 'upvote') {
+                    button.classList.toggle('active-upvote', data.upvoted);
+                    const countSpan = document.getElementById(`upvote-count-${complaintId}`);
+                    if (countSpan) countSpan.textContent = data.upvotes;
+                    actionMsg = data.upvoted ? 'You upvoted this complaint!' : 'You removed your upvote.';
+                } 
+                else if (action === 'follow') {
+                    button.classList.toggle('active-follow', data.following);
+                    if (data.following) {
+                        button.innerHTML = `<span class="stat-icon">🔔</span> Following`;
+                        actionMsg = 'You are now following this complaint.';
+                    } else {
+                        button.innerHTML = `<span class="stat-icon">➕</span> Follow`;
+                        actionMsg = 'You unfollowed this complaint.';
+                    }
+                } 
+                else if (action === 'repost') {
+                    button.classList.toggle('active-repost', data.reposted);
+                    const countSpan = document.getElementById(`repost-count-${complaintId}`);
+                    if (countSpan) countSpan.textContent = data.count;
+                    actionMsg = data.reposted ? 'You reposted this complaint!' : 'Repost removed.';
+                }
+                showToast(actionMsg, 'success');
+            } catch (error) {
+                console.error(`Error performing ${action}:`, error);
+                button.innerHTML = originalInnerHTML;
+                showToast('Something went wrong. Please try again.', 'error');
+            } finally {
+                button.dataset.loading = 'false';
+            }
+        }
+
+        // --- MAIN EVENT DELEGATION ---
+        document.querySelector('.feed-left-column').addEventListener('click', function(e) {
+            const target = e.target;
+
+            const button = target.closest('.interactive-btn');
+            if (button) {
+                const action = button.dataset.action;
+                const complaintId = button.dataset.complaintId;
+                if (action && complaintId) {
+                    e.preventDefault();
+                    handleAction(button, action, complaintId);
+                }
+                return;
+            }
+
+            const moreBtn = target.closest('.feed-more-btn');
+            if (moreBtn) {
+                e.stopPropagation();
+                const dropdown = moreBtn.nextElementSibling;
+                if (dropdown) {
+                    const isOpen = dropdown.classList.contains('open');
+                    document.querySelectorAll('.feed-more-dropdown.open').forEach(el => el.classList.remove('open'));
+                    if (!isOpen) dropdown.classList.add('open');
+                }
+                return;
+            }
+
+            const img = target.closest('.feed-media img');
+            if (img) {
+                e.preventDefault();
+                const modalOverlay = document.getElementById('image-modal-overlay');
+                const modalImage = document.getElementById('modal-full-image');
+                if (modalOverlay && modalImage) {
+                    modalImage.src = img.src;
+                    modalOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+                return;
+            }
+
+            const shareBtn = target.closest('.feed-share-btn');
+            if (shareBtn) {
+                e.preventDefault();
+                const url = shareBtn.dataset.url || window.location.href;
+                if (navigator.share) {
+                    navigator.share({ title: 'CivicPulse Complaint', url: url }).catch(() => {});
+                } else {
+                    navigator.clipboard.writeText(url).then(() => {
+                        showToast('Link copied to clipboard!', 'success');
+                    }).catch(() => {
+                        showToast('Share feature not supported on this browser.', 'error');
+                    });
+                }
+                return;
+            }
+
+            const filterBtn = target.closest('.filter-btn');
+            if (filterBtn) {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                filterBtn.classList.add('active');
+                showToast(`Filtered by: ${filterBtn.textContent.trim()}`, 'success');
+                return;
+            }
+        });
+
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.feed-more-dropdown.open').forEach(el => el.classList.remove('open'));
+        });
+
+        const modalOverlay = document.getElementById('image-modal-overlay');
+        const closeBtn = document.getElementById('image-modal-close');
+        function closeImageModal() {
+            if (modalOverlay) {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                const modalImage = document.getElementById('modal-full-image');
+                if (modalImage) modalImage.src = '';
+            }
+        }
+        if (closeBtn) closeBtn.addEventListener('click', closeImageModal);
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', function(e) {
+                if (e.target === modalOverlay) closeImageModal();
+            });
+        }
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeImageModal(); });
+
+    })();
+</script>
 {% endblock %}
