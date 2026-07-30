@@ -13,17 +13,29 @@
                 <a href="{% url 'contact' %}">Contact</a>
                 <a href="{% url 'analytics_dashboard' %}">Analytics</a>
                 {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
-                <a href="{% url 'activity_feed' %}">Feed</a>
                 <a href="{% url 'community_complaints' %}">Community</a>
-                {% if user.profile.verification_status == 'not_applicable' %}
-                <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
                 {% endif %}
-                {% endif %}
-                {% if user.is_staff %}
-                <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
-                {% if user.is_superuser %}
-                <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
-                {% endif %}
+
+                {% if user.is_authenticated and user.profile.user_type == 'citizen' or user.profile.verification_status == 'not_applicable' or user.is_staff %}
+                <div class="nav-more" id="nav-more">
+                    <button type="button" class="nav-more-toggle" id="nav-more-toggle">
+                        More <span class="nav-more-caret">▾</span>
+                    </button>
+                    <div class="nav-more-dropdown">
+                        {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                        <a href="{% url 'activity_feed' %}">Feed</a>
+                        {% if user.profile.verification_status == 'not_applicable' %}
+                        <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
+                        {% endif %}
+                        {% endif %}
+                        {% if user.is_staff %}
+                        <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
+                        {% if user.is_superuser %}
+                        <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
                 {% endif %}
             </nav>
             
