@@ -11,10 +11,10 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
         rel="stylesheet">
 
-    <!-- Bootstrap 5 CSS (required for grid, cards, etc. used in About page) -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Leaflet CSS (optional, only if you use maps) -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         /* ----- GLOBAL LIGHT NIGERIAN CIVIC THEME ----- */
@@ -105,6 +105,18 @@
             opacity: 0.35;
         }
 
+        /* --- Phase 3: Network dots pulse --- */
+        .pulse-dot {
+            animation: nodePulse 3.4s ease-in-out infinite both;
+            transform-origin: center;
+        }
+        .pulse-dot.delay-1 { animation-delay: 0.0s; }
+        .pulse-dot.delay-2 { animation-delay: 0.8s; }
+        .pulse-dot.delay-3 { animation-delay: 1.6s; }
+        .pulse-dot.delay-4 { animation-delay: 2.4s; }
+        .pulse-dot.delay-5 { animation-delay: 3.2s; }
+        .pulse-dot.delay-6 { animation-delay: 4.0s; }
+
         .background-layer .bg-worldmap {
             position: absolute;
             top: 6%;
@@ -115,6 +127,18 @@
             opacity: 0.35;
         }
 
+        /* --- Phase 3: Nigeria pin glow --- */
+        .pin-glow {
+            animation: pinGlow 4s ease-in-out infinite both;
+            transform-origin: center;
+        }
+        @keyframes pinGlow {
+            0% { opacity: 0.25; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.25; transform: scale(0.9); }
+        }
+
+        /* --- Original single skyline (no duplication) --- */
         .background-layer .bg-skyline {
             position: absolute;
             bottom: 0;
@@ -209,9 +233,8 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-left: auto; /* push to right */
+            margin-left: auto;
         }
-        /* Notification bell container */
         .notification-container {
             margin-left: 0.5rem;
         }
@@ -334,7 +357,6 @@
             transform: translateY(-2px);
         }
 
-        /* Main container matching max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 */
         .container {
             width: 100%;
             max-width: 1152px;
@@ -362,7 +384,6 @@
             padding: 2rem 0 4rem;
         }
 
-        /* Footer */
         footer {
             background: #F5F7FA;
             border-top: 2px solid var(--brand-cyan);
@@ -435,7 +456,6 @@
             font-size: 0.8rem;
         }
 
-        /* Bootstrap card overrides for light theme */
         .card {
             background-color: #FFFFFF;
             border: 1px solid rgba(0, 0, 0, 0.05);
@@ -483,7 +503,6 @@
             color: var(--text-primary) !important;
         }
 
-        /* Custom classes used by About page (so they don't break) */
         .hero-mini {
             background: linear-gradient(135deg, var(--primary) 0%, var(--brand-cyan-deep) 100%);
             color: white;
@@ -626,17 +645,24 @@
             font-weight: 700;
         }
 
+        /* ============================================================
+           PHASE 5 — NOTIFICATION DROPDOWN RESTYLE
+           Applies glass-card treatment to the dropdown.
+           ============================================================ */
         .notification-dropdown {
             position: absolute;
             top: 100%;
             right: 0;
-            background: #FFFFFF;
-            border: 1px solid var(--border-dim);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             width: 360px;
             max-height: 420px;
             z-index: 1000;
-            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+            box-shadow: var(--shadow-lg);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            overflow: hidden;
         }
 
         .notification-header {
@@ -645,6 +671,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: rgba(255,255,255,0.4);
         }
 
         .notification-header h4 {
@@ -660,11 +687,16 @@
             border-radius: 15px;
             cursor: pointer;
             font-size: 12px;
+            transition: 0.2s;
+        }
+        .mark-all-read-btn:hover {
+            background: var(--brand-cyan-deep);
         }
 
         .notification-list {
             max-height: 300px;
             overflow-y: auto;
+            background: rgba(255,255,255,0.6);
         }
 
         .notification-item {
@@ -672,12 +704,12 @@
             border-bottom: 1px solid var(--border-dim);
             cursor: pointer;
             transition: var(--transition);
-            background: #FFFFFF;
+            background: transparent;
             color: var(--text-primary);
         }
 
         .notification-item:hover {
-            background: var(--secondary);
+            background: rgba(255,255,255,0.4);
         }
 
         .notification-item.unread {
@@ -711,10 +743,8 @@
 
         /* ============================================================
            CIVICPULSE DESIGN SYSTEM — PHASE 1
-           Foundation utility classes consumed by every later phase.
            ============================================================ */
 
-        /* --- Glass Card: puts your existing --glass/--glass-border vars to work --- */
         .glass-card {
             background: var(--glass);
             border: 1px solid var(--glass-border);
@@ -725,7 +755,6 @@
             transition: var(--transition);
         }
 
-        /* --- Stat Card: icon + big number + label, for dashboards/landing stats --- */
         .stat-card {
             display: flex;
             flex-direction: column;
@@ -754,7 +783,6 @@
             letter-spacing: 0.06em;
         }
 
-        /* --- Status Badges: color-coded pills for complaint status --- */
         .badge-status {
             display: inline-flex;
             align-items: center;
@@ -795,7 +823,6 @@
             color: var(--text-secondary);
         }
 
-        /* --- Microinteraction utilities --- */
         .hover-lift {
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
@@ -814,7 +841,6 @@
             box-shadow: 0 0 0 3px var(--brand-cyan-glow), var(--shadow-lg);
         }
 
-        /* --- Entrance animation, applied selectively per-page in later phases --- */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -830,7 +856,6 @@
             animation: fadeInUp 0.6s ease both;
         }
 
-        /* --- Reserved for Phase 3 (living background node pulses) --- */
         @keyframes nodePulse {
             0%, 100% {
                 opacity: 0.35;
@@ -844,10 +869,6 @@
 
         /* ============================================================
            SIGNATURE ELEMENT — THE PULSE LINE
-           An ECG-style animated squiggle echoing the logo mark and the
-           "CivicPulse" name. A traveling glow sweeps along a static
-           baseline, evoking a heartbeat monitor. Reusable anywhere via
-           the .pulse-line wrapper + inline SVG markup below.
            ============================================================ */
 
         .pulse-line {
@@ -981,8 +1002,6 @@
             height: 100%;
         }
 
-        
-
     </style>
 
     <!-- Extra CSS from child pages -->
@@ -994,6 +1013,7 @@
         <div class="bg-blob blob-1"></div>
         <div class="bg-blob blob-2"></div>
 
+        <!-- ===== bg-network SVG with original pattern + 6 pulsing dots ===== -->
         <svg class="bg-network" viewBox="0 0 400 400" preserveAspectRatio="xMinYMin slice">
             <defs>
                 <pattern id="dotGrid" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
@@ -1001,8 +1021,17 @@
                 </pattern>
             </defs>
             <rect x="0" y="0" width="400" height="400" fill="url(#dotGrid)" />
+
+            <!-- Phase 3: 6 pulsing dots -->
+            <circle cx="50" cy="50" r="3" fill="var(--primary)" class="pulse-dot delay-1" />
+            <circle cx="150" cy="120" r="3" fill="var(--primary)" class="pulse-dot delay-2" />
+            <circle cx="220" cy="60" r="3" fill="var(--primary)" class="pulse-dot delay-3" />
+            <circle cx="320" cy="220" r="3" fill="var(--primary)" class="pulse-dot delay-4" />
+            <circle cx="370" cy="150" r="3" fill="var(--primary)" class="pulse-dot delay-5" />
+            <circle cx="90" cy="320" r="3" fill="var(--primary)" class="pulse-dot delay-6" />
         </svg>
 
+        <!-- ===== bg-worldmap with Nigeria pin glow ===== -->
         <svg class="bg-worldmap" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
             <defs>
                 <pattern id="mapDotGrid" x="0" y="0" width="9" height="9" patternUnits="userSpaceOnUse">
@@ -1013,25 +1042,27 @@
                 </clipPath>
             </defs>
 
-            <!-- solid continent base (this is what makes it actually visible) -->
+            <!-- solid continent base -->
             <use href="#worldLandPath" fill="var(--primary)" opacity="0.32" stroke="var(--primary-dark)" stroke-width="1" />
 
-            <!-- dot texture layered on top, clipped to the continent shapes only -->
+            <!-- dot texture -->
             <g clip-path="url(#continentsClip)" opacity="0.5">
                 <rect x="0" y="0" width="1000" height="500" fill="url(#mapDotGrid)" />
             </g>
 
-            <!-- Nigeria highlight, distinct shade + pin -->
+            <!-- Nigeria highlight + pin glow -->
             <g>
                 <path d="M523.6,236.7 L516.4,238.2 L507.5,232.6 L511.4,212.4 L537.0,212.3 L540.0,217.9 L523.6,236.7 Z"
                       fill="var(--brand-cyan)" opacity="0.95" stroke="var(--brand-cyan-deep)" stroke-width="1.5" />
                 <circle cx="522.2" cy="223.5" r="5" fill="var(--brand-cyan-deep)" />
-                <circle cx="522.2" cy="223.5" r="11" fill="none" stroke="var(--brand-cyan-deep)" stroke-width="2" opacity="0.7" />
+                <!-- glow ring with pin-glow class -->
+                <circle cx="522.2" cy="223.5" r="11" fill="none" stroke="var(--brand-cyan-deep)" stroke-width="2" opacity="0.7" class="pin-glow" />
                 <path d="M522.2,223.5 L522.2,192" stroke="var(--brand-cyan-deep)" stroke-width="2.5" opacity="0.85" />
                 <circle cx="522.2" cy="188" r="4.5" fill="var(--brand-cyan-deep)" />
             </g>
         </svg>
 
+        <!-- ===== Original single skyline (unchanged) ===== -->
         <svg class="bg-skyline" viewBox="0 0 900 200" preserveAspectRatio="xMidYMax slice">
             <g fill="var(--primary-dark)" opacity="0.16">
                 <!-- low rooftops, left -->
@@ -1059,12 +1090,10 @@
                 <rect x="392" y="90" width="38" height="110" />
                 <rect x="404" y="72" width="14" height="20" />
 
-                
                 <!-- spire tower -->
                 <rect x="434" y="80" width="30" height="120" />
                 <polygon points="434,80 449,40 464,80" />
                 <line x1="449" y1="40" x2="449" y2="20" stroke="var(--primary-dark)" stroke-width="2" />
-
 
                 <rect x="470" y="130" width="46" height="70" />
                 <rect x="522" y="100" width="36" height="100" />
@@ -1085,6 +1114,7 @@
 
     </div>
 
+    <!-- rest of the page unchanged (header, nav, content, footer, scripts) -->
     <div class="content-layer">
         <div class="header-container">
             <div class="logo-svg">
@@ -1138,14 +1168,12 @@
             {% endblock %}
 
             {% if user.is_authenticated %}
-            <!-- Notification System -->
             <div class="notification-container">
                 <button id="notification-btn" class="notification-btn" type="button" aria-expanded="false"
                     aria-haspopup="true">
                     <span class="bell-icon">🔔</span>
                     <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
                 </button>
-
                 <div id="notification-dropdown" class="notification-dropdown" style="display: none;"
                     aria-label="Notifications">
                     <div class="notification-header">
@@ -1217,12 +1245,12 @@
     </footer>
     
 
-    <!-- Bootstrap JS (required for Bootstrap interactive components) -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Leaflet JS (only if maps are used) -->
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Notification System JavaScript -->
+    <!-- Notification System JavaScript (unchanged) -->
     <script>
         // Notification System with Polling
         class NotificationManager {
@@ -1480,6 +1508,63 @@
             if (document.querySelector('.notification-container')) {
                 notificationManager = new NotificationManager();
             }
+        });
+    </script>
+
+    <!-- ============================================================
+         PHASE 4 — LIVING DATA
+         Reusable scroll-triggered count-up animation. Any element with
+         a data-count-to attribute animates from 0 to that number once
+         it scrolls into view. No per-page JS needed.
+         ============================================================ -->
+    <script>
+        function animateCounter(el, target, duration = 1400) {
+            const start = 0;
+            const startTime = performance.now();
+            const isDecimal = target % 1 !== 0;
+            const suffix = el.dataset.countSuffix || '';
+            const prefix = el.dataset.countPrefix || '';
+
+            function easeOutQuad(t) {
+                return t * (2 - t);
+            }
+
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeOutQuad(progress);
+                const current = start + (target - start) * eased;
+
+                el.textContent = prefix + (isDecimal ? current.toFixed(1) : Math.round(current)) + suffix;
+
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                }
+            }
+
+            requestAnimationFrame(tick);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const counters = document.querySelectorAll('[data-count-to]');
+            if (!counters.length) return;
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.countTo);
+                    const duration = parseInt(el.dataset.countDuration, 10) || 1400;
+
+                    if (!isNaN(target)) {
+                        animateCounter(el, target, duration);
+                    }
+                    obs.unobserve(el);
+                });
+            }, { threshold: 0.4 });
+
+            counters.forEach(el => observer.observe(el));
         });
     </script>
 

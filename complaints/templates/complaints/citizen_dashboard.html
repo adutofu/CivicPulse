@@ -1,95 +1,7 @@
 {% extends 'complaints/base.html' %}
-{% block content %}
-<div class="container py-4">
-    <h2 class="mb-4" style="color: var(--brand-cyan); font-family:'Poppins',sans-serif;">📋 My Complaints</h2>
+{% load static %}
 
-    <div class="table-responsive">
-        <table class="table table-hover" style="color: var(--text-primary);">
-            <thead>
-                <tr>
-                    <th style="color: var(--brand-cyan);">Image</th>
-                    <th style="color: var(--brand-cyan);">Category</th>
-                    <th style="color: var(--brand-cyan);">Description</th>
-                    <th style="color: var(--brand-cyan);">Status</th>
-                    <th style="color: var(--brand-cyan);">Upvotes</th>
-                    <th style="color: var(--brand-cyan);">Reported On</th>
-                    <th style="color: var(--brand-cyan);">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for complaint in complaints %}
-                {% with report_date=complaint.created_at|date:"Y-m-d H:i" %}
-                <tr>
-                    <td>
-                        <span class="cell-value">
-                        {% if complaint.photo %}
-                            <a href="{{ complaint.photo.url }}" target="_blank">
-                                <img src="{{ complaint.photo.url }}" alt="Complaint photo" style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-dim);">
-                            </a>
-                        {% else %}
-                            <span style="color: var(--text-muted);">No image</span>
-                        {% endif %}
-                        </span>
-                    </td>
-                    <td><span class="cell-value">{{ complaint.get_category_display }}</span></td>
-                    <td><span class="cell-value">{{ complaint.description|truncatechars:60 }}</span></td>
-                    <td>
-                        {% if complaint.rating_score %}
-                            {{ complaint.rating_score }}★
-                        {% else %}
-                            Not rated yet
-                        {% endif %}
-                    </td>
-                    <td>
-                        <span class="cell-value">
-                            <span class="status-badge status-{{ complaint.status }}">
-                                {{ complaint.get_status_display }}
-                            </span>
-                        </span>
-                    </td>
-                    <td><span class="cell-value">{{ complaint.upvotes }}</span></td>
-                    <td><span class="cell-value">{{ report_date }}</span></td>
-                    <td>
-                        <span class="cell-value">
-                            <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
-                        </span>
-                    </td>
-                </tr>
-                {% endwith %}
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center text-muted">
-                        You haven't reported any issues yet.
-                        <a href="{% url 'report_complaint' %}" style="color: var(--brand-cyan);">Report one now</a>.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="mt-4 d-flex flex-wrap gap-3" style="align-items:flex-start;">
-        <a href="{% url 'report_complaint' %}" class="btn-cyan">+ New Complaint</a>
-        <div class="top-voted-card">
-            <h4 style="color: var(--brand-cyan); margin-bottom: 0.8rem; font-family:'Poppins',sans-serif;">Top Voted Issues</h4>
-            {% if top_issues %}
-                <ul class="top-voted-list">
-                    {% for complaint in top_issues %}
-                    {% with category=complaint.get_category_display short_desc=complaint.description|truncatechars:50 %}
-                        <li>
-                            <a href="{% url 'complaint_detail' complaint.id %}">{{ category }} · {{ short_desc }}</a>
-                            <span class="upvote-pill">⬆ {{ complaint.upvotes }}</span>
-                        </li>
-                    {% endwith %}
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="text-muted">No upvoted complaints yet.</p>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
+{% block extra_css %}
 <style>
     :root {
         --brand-cyan: #007AFF;
@@ -102,6 +14,9 @@
         --surface-card: #FFFFFF;
         --surface-dark: #F5F7FA;
         --shadow-md: 0 1px 6px rgba(0, 0, 0, 0.08);
+        --radius-lg: 20px;
+        --glass: rgba(255,255,255,0.88);
+        --glass-border: rgba(255,255,255,0.45);
     }
 
     .btn-cyan-sm {
@@ -131,17 +46,7 @@
     .btn-cyan:hover {
         background: var(--brand-cyan-deep);
     }
-    .status-badge {
-        display: inline-block;
-        padding: 0.2rem 0.6rem;
-        border-radius: 40px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    .status-pending { background: #FAEEDA; color: #854F0B; }
-    .status-acknowledged { background: #E6F1FB; color: #0C447C; }
-    .status-in_progress { background: #FAC775; color: #4A1B0C; }
-    .status-resolved { background: #EAF3DE; color: #3B6D11; }
+
     .table {
         background: var(--surface-card);
         border-radius: 12px;
@@ -155,14 +60,21 @@
     .table tbody tr:hover {
         background-color: var(--surface-dark);
     }
+    .table thead th {
+        color: var(--brand-cyan) !important;
+        font-weight: 700;
+    }
+
     .top-voted-card {
         min-width: 310px;
         max-width: 380px;
-        background: #FFFFFF;
-        border: 1px solid var(--border-dim);
-        border-radius: 16px;
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
         padding: 1rem;
         box-shadow: var(--shadow-md);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
     }
     .top-voted-list {
         list-style: none;
@@ -203,6 +115,8 @@
         white-space: nowrap;
         flex-shrink: 0;
     }
+
+    /* ─── Mobile card layout with glass-card ─── */
     @media (max-width: 860px) {
         .mt-4.d-flex {
             flex-direction: column;
@@ -213,7 +127,11 @@
             max-width: none;
             text-align: center;
         }
+        .top-voted-card {
+            max-width: 100%;
+        }
     }
+
     @media (max-width: 720px) {
         .table-responsive {
             overflow-x: hidden;
@@ -234,14 +152,16 @@
             display: block;
             width: 100%;
         }
-        .table tr {
-            background: #FFFFFF;
-            border: 1px solid var(--border-dim);
-            border-radius: 18px;
+        .table tr.complaint-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
             padding: 0.85rem;
             margin-bottom: 0.75rem;
             overflow: hidden;
-            box-shadow: var(--shadow-md);
         }
         .table td {
             display: flex;
@@ -270,14 +190,16 @@
         .table td:nth-of-type(2)::before { content: "Category"; }
         .table td:nth-of-type(3)::before { content: "Description"; }
         .table td:nth-of-type(4)::before { content: "Status"; }
-        .table td:nth-of-type(5)::before { content: "Upvotes"; }
-        .table td:nth-of-type(6)::before { content: "Reported"; }
-        .table td:nth-of-type(7)::before { content: "Action"; }
+        .table td:nth-of-type(5)::before { content: "Rating"; }
+        .table td:nth-of-type(6)::before { content: "Upvotes"; }
+        .table td:nth-of-type(7)::before { content: "Reported"; }
+        .table td:nth-of-type(8)::before { content: "Action"; }
+
         .table td img {
             max-width: 60px;
             height: auto;
         }
-        .table td .status-badge {
+        .table td .badge-status {
             white-space: normal;
         }
         .table td a.btn-cyan-sm {
@@ -298,4 +220,132 @@
         }
     }
 </style>
+{% endblock %}
+
+{% block body_class %}has-page-hero{% endblock %}
+
+{% block content %}
+    <!-- ========== PAGE HERO ========== -->
+    {% include "includes/page_hero.html" with icon="📋" title="My Complaints" subtitle="Track your reported issues – see status, upvotes, and updates." %}
+
+    <div class="container py-4">
+        <!-- ─── Dashboard Greeting ─── -->
+        {% now "G" as current_hour %}
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+            <div>
+                <h2 style="color: var(--text-primary); margin-bottom: 0;">
+                    {% if current_hour|add:"0" < 12 %}
+                        Good morning
+                    {% elif current_hour|add:"0" < 17 %}
+                        Good afternoon
+                    {% elif current_hour|add:"0" < 21 %}
+                        Good evening
+                    {% else %}
+                        Good night
+                    {% endif %}
+                    , {{ user.first_name|default:"Citizen" }} 👋
+                </h2>
+                <p class="text-muted" style="margin-bottom: 0;">Here are your reported complaints.</p>
+            </div>
+            <div>
+                <span class="badge bg-cyan">Total: {{ complaints.count }}</span>
+            </div>
+        </div>
+
+        <!-- ─── Complaints Table ─── -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Rating</th>
+                        <th>Upvotes</th>
+                        <th>Reported On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complaint in complaints %}
+                    {% with report_date=complaint.created_at|date:"Y-m-d H:i" %}
+                    <tr class="complaint-card">
+                        <td>
+                            <span class="cell-value">
+                            {% if complaint.photo %}
+                                <a href="{{ complaint.photo.url }}" target="_blank">
+                                    <img src="{{ complaint.photo.url }}" alt="Complaint photo" style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-dim);">
+                                </a>
+                            {% else %}
+                                <span style="color: var(--text-muted);">No image</span>
+                            {% endif %}
+                            </span>
+                        </td>
+                        <td><span class="cell-value">{{ complaint.get_category_display }}</span></td>
+                        <td><span class="cell-value">{{ complaint.description|truncatechars:60 }}</span></td>
+                        <td>
+                            <span class="cell-value">
+                                <span class="badge-status 
+                                    {% if complaint.status == 'pending' %}badge-pending
+                                    {% elif complaint.status == 'in_progress' %}badge-progress
+                                    {% elif complaint.status == 'resolved' %}badge-resolved
+                                    {% else %}badge-acknowledged{% endif %}">
+                                    {{ complaint.get_status_display }}
+                                </span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="cell-value">
+                                {% if complaint.rating_score %}
+                                    {{ complaint.rating_score }}★
+                                {% else %}
+                                    Not rated
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td><span class="cell-value">{{ complaint.upvotes }}</span></td>
+                        <td><span class="cell-value">{{ report_date }}</span></td>
+                        <td>
+                            <span class="cell-value">
+                                <a href="{% url 'complaint_detail' complaint.id %}" class="btn-cyan-sm">View Details</a>
+                            </span>
+                        </td>
+                    </tr>
+                    {% endwith %}
+                    {% empty %}
+                    <!-- ===== EMPTY STATE – fixed URL nesting ===== -->
+                    {% url 'report_complaint' as report_url %}
+                    <tr>
+                        <td colspan="8">
+                            {% include "includes/empty_state.html" with icon="📝" title="You haven't reported any issues yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ─── New Complaint Button + Top Voted Issues ─── -->
+        <div class="mt-4 d-flex flex-wrap gap-3" style="align-items:flex-start;">
+            <a href="{% url 'report_complaint' %}" class="btn-cyan">+ New Complaint</a>
+            <div class="top-voted-card">
+                <h4 style="color: var(--brand-cyan); margin-bottom: 0.8rem; font-family:'Poppins',sans-serif;">Top Voted Issues</h4>
+                {% if top_issues %}
+                    <ul class="top-voted-list">
+                        {% for complaint in top_issues %}
+                        {% with category=complaint.get_category_display short_desc=complaint.description|truncatechars:50 %}
+                            <li>
+                                <a href="{% url 'complaint_detail' complaint.id %}">{{ category }} · {{ short_desc }}</a>
+                                <span class="upvote-pill">⬆ {{ complaint.upvotes }}</span>
+                            </li>
+                        {% endwith %}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    {% include "includes/empty_state.html" with icon="👍" title="No upvoted complaints yet" message="Top voted issues will appear here once citizens start voting." %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

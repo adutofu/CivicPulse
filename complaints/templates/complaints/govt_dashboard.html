@@ -1,30 +1,28 @@
 {% extends 'complaints/base.html' %}
-{% block content %}
+{% load static %}
+
+{% block extra_css %}
 <style>
+    /* ─── Desktop table styles ─── */
     .table tbody td {
         color: var(--text-secondary) !important;
         font-weight: 500;
     }
-
     .table thead th {
         color: var(--brand-cyan) !important;
         font-weight: 700;
     }
-
     .table a {
         color: var(--brand-cyan) !important;
     }
-
     .table a:hover {
         color: var(--brand-cyan-deep) !important;
     }
-
     .table {
         background: #FFFFFF;
         border-radius: 12px;
         box-shadow: var(--shadow-md);
     }
-
     .btn-cyan {
         background: #FFFFFF;
         border: 1.5px solid var(--brand-cyan);
@@ -38,7 +36,6 @@
         text-align: center;
         font-size: 0.85rem;
     }
-
     .btn-cyan:hover {
         background: var(--brand-cyan);
         color: #FFFFFF !important;
@@ -46,6 +43,7 @@
         transform: translateY(-1px);
     }
 
+    /* ─── Mobile card layout with glass-card ─── */
     @media (max-width: 860px) {
         .table-responsive {
             overflow-x: auto;
@@ -76,13 +74,15 @@
             width: 100%;
         }
 
-        .table tr {
-            background: #FFFFFF;
-            border: 1px solid var(--border-dim);
-            border-radius: 18px;
+        .table tr.complaint-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
             padding: 0.85rem;
             margin-bottom: 0.75rem;
-            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
 
@@ -118,7 +118,7 @@
         .table td:nth-of-type(4)::before { content: "Upvotes"; }
         .table td:nth-of-type(5)::before { content: "Description"; }
         .table td:nth-of-type(6)::before { content: "Status"; }
-        .table td:nth-of-type(7)::before { content: "Rating"; }          <!-- new -->
+        .table td:nth-of-type(7)::before { content: "Rating"; }
         .table td:nth-of-type(8)::before { content: "Reported On"; }
         .table td:nth-of-type(9)::before { content: "Action"; }
 
@@ -133,62 +133,106 @@
         }
     }
 </style>
+{% endblock %}
 
-<h2 style="color: var(--brand-cyan);">Government Dashboard – All Citizen Complaints</h2>
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Image</th>
-                <th>Citizen</th>
-                <th>Category</th>
-                <th>Upvotes</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Rating</th>        <!-- new header -->
-                <th>Reported On</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for complaint in complaints %}
-            <tr>
-                <td>
-                    <span class="cell-value">
-                        {% if complaint.photo %}
-                        <a href="{{ complaint.photo.url }}" target="_blank">
-                            <img src="{{ complaint.photo.url }}" alt="Complaint photo"
-                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-dim);">
-                        </a>
-                        {% else %}
-                        <span style="color: var(--text-muted);">No image</span>
-                        {% endif %}
-                    </span>
-                </td>
-                <td><span class="cell-value">{{ complaint.citizen.username }}</span></td>
-                <td><span class="cell-value">{{ complaint.get_category_display }}</span></td>
-                <td><span class="cell-value">{{ complaint.upvotes }}</span></td>
-                <td><span class="cell-value">{{ complaint.description|truncatechars:50 }}</span></td>
-                <td><span class="cell-value">{{ complaint.get_status_display }}</span></td>
-                <td>
-                    <span class="cell-value">
-                        {% if complaint.rating_score %}
-                            {{ complaint.rating_score }}★
-                        {% else %}
-                            Not rated
-                        {% endif %}
-                    </span>
-                </td>
-                <td><span class="cell-value">{{ complaint.created_at|date:"Y-m-d" }}</span></td>
-                <td><span class="cell-value"><a href="{% url 'update_complaint' complaint.id %}"
-                            class="btn btn-sm btn-cyan">Update</a></span></td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="9">No complaints reported yet.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+{% block body_class %}has-page-hero{% endblock %}
+
+{% block content %}
+    <!-- ========== PAGE HERO ========== -->
+    {% include "includes/page_hero.html" with icon="🏛️" title="Government Dashboard" subtitle="All citizen complaints – review, update, and track progress." %}
+
+    <div class="container py-4">
+        <!-- ─── Dashboard Greeting ─── -->
+        {% now "G" as current_hour %}
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+            <div>
+                <h2 style="color: var(--text-primary); margin-bottom: 0;">
+                    {% if current_hour|add:"0" < 12 %}
+                        Good morning
+                    {% elif current_hour|add:"0" < 17 %}
+                        Good afternoon
+                    {% elif current_hour|add:"0" < 21 %}
+                        Good evening
+                    {% else %}
+                        Good night
+                    {% endif %}
+                    , {{ user.first_name|default:"Government Official" }} 👋
+                </h2>
+                <p class="text-muted" style="margin-bottom: 0;">Here's a summary of all citizen complaints.</p>
+            </div>
+            <div>
+                <span class="badge bg-cyan">Total: {{ complaints.count }}</span>
+            </div>
+        </div>
+
+        <!-- ─── Complaints Table ─── -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Citizen</th>
+                        <th>Category</th>
+                        <th>Upvotes</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Rating</th>
+                        <th>Reported On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complaint in complaints %}
+                    <tr class="complaint-card">
+                        <td>
+                            <span class="cell-value">
+                                {% if complaint.photo %}
+                                <a href="{{ complaint.photo.url }}" target="_blank">
+                                    <img src="{{ complaint.photo.url }}" alt="Complaint photo"
+                                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-dim);">
+                                </a>
+                                {% else %}
+                                <span style="color: var(--text-muted);">No image</span>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td><span class="cell-value">{{ complaint.citizen.username }}</span></td>
+                        <td><span class="cell-value">{{ complaint.get_category_display }}</span></td>
+                        <td><span class="cell-value">{{ complaint.upvotes }}</span></td>
+                        <td><span class="cell-value">{{ complaint.description|truncatechars:50 }}</span></td>
+                        <td>
+                            <span class="cell-value">
+                                <span class="badge-status 
+                                    {% if complaint.status == 'pending' %}badge-pending
+                                    {% elif complaint.status == 'in_progress' %}badge-progress
+                                    {% elif complaint.status == 'resolved' %}badge-resolved
+                                    {% else %}badge-acknowledged{% endif %}">
+                                    {{ complaint.get_status_display }}
+                                </span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="cell-value">
+                                {% if complaint.rating_score %}
+                                    {{ complaint.rating_score }}★
+                                {% else %}
+                                    Not rated
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td><span class="cell-value">{{ complaint.created_at|date:"Y-m-d" }}</span></td>
+                        <td><span class="cell-value"><a href="{% url 'update_complaint' complaint.id %}"
+                                    class="btn btn-sm btn-cyan">Update</a></span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9">
+                            {% include "includes/empty_state.html" with icon="📋" title="No complaints reported yet" message="Citizens haven't reported any issues. Check back later." %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

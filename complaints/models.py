@@ -259,6 +259,19 @@ class Profile(models.Model):
     user_type = models.CharField(max_length=10, choices=USER_TYPES, default='citizen')
     agency = models.CharField(max_length=100, blank=True)
 
+
+    # --- Profile page additions (citizen + govt) ---
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    bio = models.TextField(max_length=280, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+
+
+    # --- Government coverage area (govt only; blank for citizens) ---
+    assigned_state = models.CharField(max_length=50, blank=True)  # e.g. "Oyo" — matches Ward.state
+    assigned_lga = models.CharField(max_length=50, blank=True)    # e.g. "Akinyele" — matches Ward.lga
+
+
+
     # --- Government official verification fields ---
     verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='not_applicable')
     id_card = models.ImageField(upload_to='govt_ids/', blank=True, null=True)

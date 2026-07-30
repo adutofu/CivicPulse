@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="empty-state text-center py-5 my-3">
+    <div class="empty-state-icon" style="font-size: 4rem; line-height: 1; margin-bottom: 1rem;">
+        {% if icon %}
+            {{ icon }}
+        {% else %}
+            📭
+        {% endif %}
+    </div>
+    <h5 class="empty-state-title" style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">
+        {% if title %}
+            {{ title }}
+        {% else %}
+            Nothing here yet
+        {% endif %}
+    </h5>
+    <p class="empty-state-message text-muted" style="max-width: 420px; margin: 0 auto;">
+        {% if message %}
+            {{ message }}
+        {% else %}
+            Check back later or be the first to contribute.
+        {% endif %}
+    </p>
+    {% if action_url and action_label %}
+        <a href="{{ action_url }}" class="btn btn-cyan-sm mt-3" style="background: var(--brand-cyan); color: #fff; border-radius: 40px; padding: 0.5rem 1.5rem; text-decoration: none; font-weight: 600; display: inline-block;">
+            {{ action_label }}
+        </a>
+    {% endif %}
+</div>

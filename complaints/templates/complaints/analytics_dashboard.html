@@ -59,249 +59,264 @@
         outline: none;
         border-color: var(--brand-cyan);
     }
+    .toolbar-row {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        gap: 0.75rem;
+    }
+    .toolbar-row label {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
 </style>
 {% endblock %}
 
+{% block body_class %}has-page-hero{% endblock %}
+
 {% block content %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
-        <div>
-            <h2 class="section-headline" style="margin-bottom:0;">📊 Analytics Dashboard</h2>
-            <p class="section-desc" style="margin-bottom:0;">Platform insights – complaints, engagement, and performance.</p>
-        </div>
-        <form method="get" class="d-flex align-items-center gap-2">
-            <label for="range" class="text-muted">Period:</label>
-            <select name="range" id="range" class="range-selector" onchange="this.form.submit()">
-                <option value="7" {% if selected_range == 7 %}selected{% endif %}>Last 7 days</option>
-                <option value="30" {% if selected_range == 30 %}selected{% endif %}>Last 30 days</option>
-                <option value="90" {% if selected_range == 90 %}selected{% endif %}>Last 90 days</option>
-            </select>
-        </form>
-    </div>
+    <!-- ========== PAGE HERO ========== -->
+    {% include "includes/page_hero.html" with icon="📊" title="Analytics Dashboard" subtitle="Platform insights – complaints, engagement, and performance." %}
 
-    <!-- ─── Key Metrics ─── -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_complaints }}</div>
-                <div class="label">Total Complaints</div>
-            </div>
+    <!-- ========== CONTENT ========== -->
+    <div class="container py-4">
+        <!-- Range selector toolbar -->
+        <div class="toolbar-row">
+            <label for="range">Period:</label>
+            <form method="get" class="d-inline">
+                <select name="range" id="range" class="range-selector" onchange="this.form.submit()">
+                    <option value="7" {% if selected_range == 7 %}selected{% endif %}>Last 7 days</option>
+                    <option value="30" {% if selected_range == 30 %}selected{% endif %}>Last 30 days</option>
+                    <option value="90" {% if selected_range == 90 %}selected{% endif %}>Last 90 days</option>
+                </select>
+            </form>
         </div>
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_resolved }}</div>
-                <div class="label">Resolved</div>
-                <div class="change positive">{% widthratio total_resolved total_complaints 100 %}% resolved</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_pending }}</div>
-                <div class="label">Pending</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_escalated }}</div>
-                <div class="label">Escalated</div>
-                <div class="change negative">⚠️ Needs attention</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ avg_rating }}★</div>
-                <div class="label">Average Rating</div>
-            </div>
-        </div>
-    </div>
 
-    <!-- ─── Engagement Metrics ─── -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_upvotes }}</div>
-                <div class="label">Total Upvotes</div>
+        <!-- ─── Key Metrics ─── -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_complaints }}">0</div>
+                    <div class="label">Total Complaints</div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_comments }}</div>
-                <div class="label">Total Comments</div>
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_resolved }}">0</div>
+                    <div class="label">Resolved</div>
+                    <div class="change positive">{% widthratio total_resolved total_complaints 100 %}% resolved</div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_reposts }}</div>
-                <div class="label">Total Reposts</div>
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_pending }}">0</div>
+                    <div class="label">Pending</div>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="analytics-card text-center">
-                <div class="number">{{ total_follows }}</div>
-                <div class="label">Total Follows</div>
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_escalated }}">0</div>
+                    <div class="label">Escalated</div>
+                    <div class="change negative">⚠️ Needs attention</div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- ─── Charts ─── -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-6">
-            <div class="analytics-card">
-                <h5 style="font-weight: 700;">📂 Complaints by Category</h5>
-                <div class="chart-container">
-                    <canvas id="categoryChart"></canvas>
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ avg_rating|floatformat:1 }}" data-count-suffix="★">0</div>
+                    <div class="label">Average Rating</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="analytics-card">
-                <h5 style="font-weight: 700;">📊 Complaints by Status</h5>
-                <div class="chart-container">
-                    <canvas id="statusChart"></canvas>
+
+        <!-- ─── Engagement Metrics ─── -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_upvotes }}">0</div>
+                    <div class="label">Total Upvotes</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_comments }}">0</div>
+                    <div class="label">Total Comments</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_reposts }}">0</div>
+                    <div class="label">Total Reposts</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="analytics-card text-center">
+                    <div class="number" data-count-to="{{ total_follows }}">0</div>
+                    <div class="label">Total Follows</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="analytics-card">
-                <h5 style="font-weight: 700;">📈 Daily Complaint Trend</h5>
-                <div class="chart-container" style="height: 220px;">
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="analytics-card">
-            <h5 style="font-weight: 700;">⭐ Rating Distribution</h5>
-            <div class="chart-container">
-                <canvas id="ratingChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- ─── Top Complaints & Active Citizens ─── -->
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="analytics-card">
-                <h5 style="font-weight: 700;">🔥 Most Upvoted Complaints</h5>
-                <div>
-                    {% for complaint in top_complaints %}
-                    <div class="top-item">
-                        <div>
-                            <strong>{{ complaint.get_category_display }}</strong>
-                            <div class="text-muted small">{{ complaint.description|truncatechars:60 }}</div>
-                        </div>
-                        <div>
-                            <span class="badge bg-info">⬆ {{ complaint.upvotes }}</span>
-                            <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-sm btn-outline-cyan ms-2">View</a>
-                        </div>
+        <!-- ─── Charts ─── -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="analytics-card">
+                    <h5 style="font-weight: 700;">📂 Complaints by Category</h5>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
                     </div>
-                    {% empty %}
-                    <p class="text-muted">No complaints yet.</p>
-                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="analytics-card">
+                    <h5 style="font-weight: 700;">📊 Complaints by Status</h5>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="analytics-card">
+                    <h5 style="font-weight: 700;">📈 Daily Complaint Trend</h5>
+                    <div class="chart-container" style="height: 220px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-6">
             <div class="analytics-card">
-                <h5 style="font-weight: 700;">👤 Most Active Citizens</h5>
-                <div>
-                    {% for user in active_citizens %}
-                    <div class="top-item">
-                        <span>{{ user.username }}</span>
-                        <span class="badge bg-cyan">{{ user.reports }} reports</span>
-                    </div>
-                    {% empty %}
-                    <p class="text-muted">No active citizens yet.</p>
-                    {% endfor %}
+                <h5 style="font-weight: 700;">⭐ Rating Distribution</h5>
+                <div class="chart-container">
+                    <canvas id="ratingChart"></canvas>
                 </div>
-                <div class="mt-3 pt-2 border-top">
-                    <small class="text-muted">Average Comments per complaint: {{ avg_comments }}</small><br>
-                    <small class="text-muted">Average Upvotes per complaint: {{ avg_upvotes }}</small><br>
-                    <small class="text-muted">Avg Response Time: {{ avg_response_time }}</small>
+            </div>
+        </div>
+
+        <!-- ─── Top Complaints & Active Citizens ─── -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="analytics-card">
+                    <h5 style="font-weight: 700;">🔥 Most Upvoted Complaints</h5>
+                    <div>
+                        {% for complaint in top_complaints %}
+                        <div class="top-item">
+                            <div>
+                                <strong>{{ complaint.get_category_display }}</strong>
+                                <div class="text-muted small">{{ complaint.description|truncatechars:60 }}</div>
+                            </div>
+                            <div>
+                                <span class="badge bg-info">⬆ {{ complaint.upvotes }}</span>
+                                <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-sm btn-outline-cyan ms-2">View</a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No complaints yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="analytics-card">
+                    <h5 style="font-weight: 700;">👤 Most Active Citizens</h5>
+                    <div>
+                        {% for user in active_citizens %}
+                        <div class="top-item">
+                            <span>{{ user.username }}</span>
+                            <span class="badge bg-cyan">{{ user.reports }} reports</span>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No active citizens yet.</p>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-3 pt-2 border-top">
+                        <small class="text-muted">Average Comments per complaint: {{ avg_comments }}</small><br>
+                        <small class="text-muted">Average Upvotes per complaint: {{ avg_upvotes }}</small><br>
+                        <small class="text-muted">Avg Response Time: {{ avg_response_time }}</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-    new Chart(categoryCtx, {
-        type: 'bar',
-        data: {
-            labels: {{ category_labels|safe }},
-            datasets: [{
-                label: 'Complaints',
-                data: {{ category_counts|safe }},
-                backgroundColor: 'rgba(0, 122, 255, 0.6)',
-                borderColor: '#007AFF',
-                borderWidth: 1,
-                borderRadius: 8,
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-    });
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        new Chart(categoryCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ category_labels|safe }},
+                datasets: [{
+                    label: 'Complaints',
+                    data: {{ category_counts|safe }},
+                    backgroundColor: 'rgba(0, 122, 255, 0.6)',
+                    borderColor: '#007AFF',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
 
-    const statusCtx = document.getElementById('statusChart').getContext('2d');
-    const statusColors = ['#ffc107', '#17a2b8', '#fd7e14', '#28a745', '#dc3545'];
-    new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-            labels: {{ status_labels|safe }},
-            datasets: [{
-                data: {{ status_counts|safe }},
-                backgroundColor: statusColors,
-                borderWidth: 2,
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '70%' }
-    });
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const statusColors = ['#ffc107', '#17a2b8', '#fd7e14', '#28a745', '#dc3545'];
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ status_labels|safe }},
+                datasets: [{
+                    data: {{ status_counts|safe }},
+                    backgroundColor: statusColors,
+                    borderWidth: 2,
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '70%' }
+        });
 
-    const trendCtx = document.getElementById('trendChart').getContext('2d');
-    new Chart(trendCtx, {
-        type: 'line',
-        data: {
-            labels: {{ dates|safe }},
-            datasets: [{
-                label: 'Complaints',
-                data: {{ daily_counts|safe }},
-                borderColor: '#007AFF',
-                backgroundColor: 'rgba(0, 122, 255, 0.1)',
-                fill: true,
-                tension: 0.3,
-                pointRadius: 3,
-                pointBackgroundColor: '#007AFF',
-            }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: {{ dates|safe }},
+                datasets: [{
+                    label: 'Complaints',
+                    data: {{ daily_counts|safe }},
+                    borderColor: '#007AFF',
+                    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#007AFF',
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+        });
+
+        const ratingCtx = document.getElementById('ratingChart').getContext('2d');
+        new Chart(ratingCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ rating_labels|safe }},
+                datasets: [{
+                    label: 'Count',
+                    data: {{ rating_values|safe }},
+                    backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                    borderColor: '#FFC107',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
     });
-    // Rating Distribution Chart
-    const ratingCtx = document.getElementById('ratingChart').getContext('2d');
-    new Chart(ratingCtx, {
-        type: 'bar',
-        data: {
-            labels: {{ rating_labels|safe }},
-            datasets: [{
-                label: 'Count',
-                data: {{ rating_values|safe }},
-                backgroundColor: 'rgba(255, 193, 7, 0.6)',
-                borderColor: '#FFC107',
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
-    });
-});
-</script>
+    </script>
 {% endblock %}
