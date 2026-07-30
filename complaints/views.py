@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -23,7 +24,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm
+from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm, ProfileEditForm, GovtCoverageForm
 from .models import (
     CATEGORY_CHOICES,
     Complaint,
@@ -881,10 +882,6 @@ def activity_feed(request):
     
     return render(request, 'complaints/feeds.html', {'activities': activities})
 
-
-
-
-
 @login_required
 def escalate_complaint(request, complaint_id):
     complaint = get_object_or_404(Complaint, id=complaint_id, citizen=request.user)  # only owner can escalate
@@ -965,8 +962,6 @@ def api_repost(request):
     repost_count = complaint.reposts.count()
     return JsonResponse({'reposted': reposted, 'count': repost_count})
 
-
-
 @login_required
 def rate_complaint(request, complaint_id):
     complaint = get_object_or_404(Complaint, id=complaint_id, citizen=request.user)
@@ -1008,6 +1003,104 @@ def rate_complaint(request, complaint_id):
 
     # GET: show rating form (could be a modal)
     return render(request, 'complaints/rate_modal.html', {'complaint': complaint})
+
+
+# ---------- Profile Page ----------
+@login_required
+def profile_view(request):
+    profile = request.user.profile
+
+    if profile.user_type == 'govt':
+        coverage_complaints = Complaint.objects.none()
+        if profile.assigned_state and profile.assigned_lga:
+            coverage_complaints = Complaint.objects.filter(
+                ward__state=profile.assigned_state,
+                ward__lga=profile.assigned_lga,
+            ).order_by('-created_at')
+
+        resolved_count = coverage_complaints.filter(status='resolved').count()
+        pending_count = coverage_complaints.exclude(status__in=['resolved']).count()
+
+        return render(request, 'complaints/govt_profile.html', {
+            'profile': profile,
+            'coverage_complaints': coverage_complaints,
+            'resolved_count': resolved_count,
+            'pending_count': pending_count,
+        })
+
+    my_complaints = Complaint.objects.filter(citizen=request.user).order_by('-created_at')
+    upvoted_complaints = Complaint.objects.filter(votes__user=request.user).distinct().order_by('-created_at')
+    reposted_complaints = Complaint.objects.filter(reposts__user=request.user).distinct().order_by('-created_at')
+    followed_complaints = Complaint.objects.filter(followers__user=request.user).distinct().order_by('-created_at')
+    escalated_complaints = Complaint.objects.filter(escalated_by=request.user).order_by('-created_at')
+
+    return render(request, 'complaints/citizen_profile.html', {
+        'profile': profile,
+        'my_complaints': my_complaints,
+        'upvoted_complaints': upvoted_complaints,
+        'reposted_complaints': reposted_complaints,
+        'followed_complaints': followed_complaints,
+        'escalated_complaints': escalated_complaints,
+    })
+
+
+@login_required
+def profile_settings(request):
+    profile = request.user.profile
+
+    if request.method == 'POST':
+        edit_form = ProfileEditForm(request.POST, request.FILES, instance=profile)
+        coverage_form = GovtCoverageForm(request.POST, instance=profile) if profile.user_type == 'govt' else None
+
+        edit_valid = edit_form.is_valid()
+        coverage_valid = coverage_form.is_valid() if coverage_form else True
+
+        if edit_valid and coverage_valid:
+            edit_form.save()
+            if coverage_form:
+                coverage_form.save()
+            messages.success(request, "Profile updated successfully.")
+            return redirect('profile')
+    else:
+        edit_form = ProfileEditForm(instance=profile)
+        coverage_form = GovtCoverageForm(instance=profile) if profile.user_type == 'govt' else None
+
+    return render(request, 'complaints/profile_settings.html', {
+        'profile': profile,
+        'edit_form': edit_form,
+        'coverage_form': coverage_form,
+    })
+
+
+@login_required
+def delete_account(request):
+    profile = request.user.profile
+
+    if request.method == 'POST':
+        if profile.user_type == 'govt':
+            # Government accounts are deactivated, not deleted — preserves
+            # complaint history, government_response records, and audit trail
+            user = request.user
+            user.is_active = False
+            user.save()
+            auth_logout(request)
+            messages.success(request, "Your government account has been deactivated.")
+            return redirect('landing')
+
+        # Citizen accounts require typed confirmation before a real delete
+        confirm_text = request.POST.get('confirm_text', '')
+        if confirm_text == 'DELETE':
+            user = request.user
+            auth_logout(request)
+            user.delete()
+            messages.success(request, "Your account has been deleted.")
+            return redirect('landing')
+
+        messages.error(request, "Please type DELETE to confirm account deletion.")
+        return redirect('delete_account')
+
+    return render(request, 'complaints/delete_account_confirm.html', {'profile': profile})
+
 
 
 @staff_member_required
