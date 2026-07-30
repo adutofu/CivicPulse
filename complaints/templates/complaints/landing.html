@@ -43,7 +43,6 @@
                 {% if user.is_authenticated %}
                 {% if user.profile.user_type == 'govt' %}
                 <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
-                <a href="{% url 'activity_feed' %}">Feed</a>
                 {% else %}
                 <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
                 {% endif %}
@@ -63,16 +62,6 @@
                     <button type="submit" class="btn-logout">Logout</button>
                 </form>
                 {% else %}
-                <div class="nav-more" id="guest-profile">
-                    <button type="button" class="btn-profile-avatar" id="guest-profile-toggle" style="cursor:pointer; border:1.5px solid var(--brand-cyan);">
-                        <span class="avatar-circle">👤</span>
-                        My Profile
-                    </button>
-                    <div class="nav-more-dropdown">
-                        <a href="{% url 'login' %}">🔑 Log In</a>
-                        <a href="{% url 'signup' %}">✨ Create an Account</a>
-                    </div>
-                </div>
                 <a href="{% url 'login' %}" class="btn-login">Login</a>
                 <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
                 {% endif %}
@@ -111,7 +100,7 @@
                     <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
                     {% endif %}
                     <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                    <a href="{% url 'profile' %}" class="btn-dashboard">👤 My Profile</a>
+                    <a href="{% url 'profile' %}" class="btn-dashboard">My Profile</a>
                     <form action="{% url 'logout' %}" method="post" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn-logout">Logout</button>
@@ -916,24 +905,6 @@
                     mobileMenu.classList.remove('active');
                     document.body.classList.remove('menu-open');
                 });
-            });
-        }
-    })();
-
-    // ---------- GUEST PROFILE ICON DROPDOWN ----------
-    (function() {
-        const guestProfile = document.getElementById('guest-profile');
-        const guestProfileToggle = document.getElementById('guest-profile-toggle');
-
-        if (guestProfile && guestProfileToggle) {
-            guestProfileToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                guestProfile.classList.toggle('open');
-            });
-            document.addEventListener('click', function(e) {
-                if (!guestProfile.contains(e.target)) {
-                    guestProfile.classList.remove('open');
-                }
             });
         }
     })();
