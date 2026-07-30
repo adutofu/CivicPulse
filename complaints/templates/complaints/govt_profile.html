@@ -1,0 +1,553 @@
+{% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* ================= PROFILE HEADER ================= */
+    .profile-header-card {
+        display: flex;
+        align-items: center;
+        gap: 1.75rem;
+        padding: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-header-card::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--brand-cyan-glow), transparent 70%);
+        pointer-events: none;
+    }
+
+    .profile-avatar-ring {
+        width: 108px;
+        height: 108px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        padding: 4px;
+        background: conic-gradient(from 180deg, var(--primary-dark), var(--brand-cyan), var(--primary-light), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-avatar-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.4rem;
+        color: var(--brand-cyan-deep);
+    }
+
+    .profile-avatar-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-meta {
+        flex: 1;
+        min-width: 220px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-meta h2 {
+        margin-bottom: 0.15rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .verified-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: rgba(52, 199, 89, 0.14);
+        color: #1F8A3B;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.7rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .profile-username {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-agency-row {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.6rem;
+    }
+
+    .agency-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .agency-item strong {
+        color: var(--text-primary);
+    }
+
+    .profile-joined {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .profile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-outline-danger-sm {
+        background: transparent;
+        border: 1.5px solid var(--error-red);
+        color: var(--error-red);
+        border-radius: 40px;
+        padding: 0.45rem 1.1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .btn-outline-danger-sm:hover {
+        background: var(--error-red);
+        color: #FFFFFF;
+    }
+
+    /* ================= STATS ROW ================= */
+    .profile-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-stats-grid .stat-card {
+        text-align: center;
+        align-items: center;
+    }
+
+    /* ================= TAB NAV ================= */
+    .profile-tabs {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+        background: #FFFFFF;
+        border: 1.5px solid var(--border-dim);
+        color: var(--text-secondary);
+        padding: 0.55rem 1.2rem;
+        border-radius: 40px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .tab-btn .tab-count {
+        background: rgba(0,0,0,0.06);
+        color: var(--text-muted);
+        border-radius: 999px;
+        padding: 0.05rem 0.5rem;
+        font-size: 0.72rem;
+    }
+
+    .tab-btn:hover {
+        border-color: var(--brand-cyan);
+        color: var(--brand-cyan-deep);
+    }
+
+    .tab-btn.active {
+        background: var(--brand-cyan);
+        border-color: var(--brand-cyan);
+        color: #FFFFFF;
+        box-shadow: 0 0 12px var(--brand-cyan-glow);
+    }
+
+    .tab-btn.active .tab-count {
+        background: rgba(255,255,255,0.25);
+        color: #FFFFFF;
+    }
+
+    .tab-panel {
+        display: none;
+    }
+
+    .tab-panel.active {
+        display: block;
+    }
+
+    /* ================= COMPLAINT CARD GRID ================= */
+    .complaint-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .complaint-card-mini {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .complaint-card-mini .card-top {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .complaint-card-mini .card-thumb {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        object-fit: cover;
+        border: 1px solid var(--border-dim);
+        flex-shrink: 0;
+    }
+
+    .complaint-card-mini .card-thumb-placeholder {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        background: var(--brand-cyan-glow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .complaint-card-mini .card-category {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 0.92rem;
+    }
+
+    .complaint-card-mini .card-desc {
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .complaint-card-mini .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: auto;
+    }
+
+    .complaint-card-mini .card-footer a {
+        color: var(--brand-cyan);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    /* ================= COVERAGE BANNER (unconfigured state) ================= */
+    .coverage-warning {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid #B36B00;
+        background: rgba(255, 159, 10, 0.08);
+    }
+
+    .coverage-warning .icon {
+        font-size: 1.6rem;
+    }
+
+    .coverage-warning p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+    }
+
+    .coverage-warning a {
+        color: var(--brand-cyan-deep);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+        .profile-header-card {
+            justify-content: center;
+            text-align: center;
+        }
+        .profile-meta {
+            text-align: center;
+        }
+        .profile-meta h2,
+        .profile-agency-row,
+        .profile-joined {
+            justify-content: center;
+        }
+        .profile-actions {
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}has-page-hero{% endblock %}
+
+{% block content %}
+    {% include "includes/page_hero.html" with icon="🏛️" title="Government Profile" subtitle="Complaints tailored to your ministry and coverage area." %}
+
+    <div class="container py-4">
+
+        <!-- ========== PROFILE HEADER ========== -->
+        <div class="glass-card hover-lift profile-header-card fade-in-up">
+            <div class="profile-avatar-ring">
+                <div class="profile-avatar-inner">
+                    {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ user.username }}">
+                    {% else %}
+                        {{ user.username|first|upper }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="profile-meta">
+                <h2>
+                    {{ user.first_name|default:user.username }} {{ user.last_name }}
+                    {% if profile.is_verified_govt %}
+                        <span class="verified-pill">✓ Verified Official</span>
+                    {% endif %}
+                </h2>
+                <div class="profile-username">@{{ user.username }}</div>
+
+                <div class="profile-agency-row">
+                    {% if profile.agency %}
+                        <span class="agency-item">🏢 <strong>{{ profile.agency }}</strong></span>
+                    {% endif %}
+                    {% if profile.assigned_state and profile.assigned_lga %}
+                        <span class="agency-item">📍 <strong>{{ profile.assigned_lga }}, {{ profile.assigned_state }}</strong></span>
+                    {% endif %}
+                </div>
+
+                {% if profile.bio %}
+                    <p class="profile-bio" style="color: var(--text-secondary); max-width: 480px; font-size: 0.92rem; margin-bottom: 0.6rem;">{{ profile.bio }}</p>
+                {% endif %}
+
+                <div class="profile-joined">
+                    <span>🗓️</span> Verified since {{ profile.verified_at|date:"F Y"|default:"—" }}
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center;">⚙️ Edit Profile</a>
+                <a href="{% url 'delete_account' %}" class="btn-outline-danger-sm">Deactivate Account</a>
+            </div>
+        </div>
+
+        <!-- ========== COVERAGE AREA WARNING (unconfigured) ========== -->
+        {% if not profile.assigned_state or not profile.assigned_lga %}
+        <div class="glass-card coverage-warning fade-in-up">
+            <span class="icon">⚠️</span>
+            <p>
+                Your coverage area hasn't been set yet, so no complaints are being filtered to your dashboard.
+                <a href="{% url 'profile_settings' %}">Set your state and LGA →</a>
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- ========== STATS ========== -->
+        <div class="profile-stats-grid">
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">📋</div>
+                <div class="stat-number" data-count-to="{{ coverage_complaints.count }}">0</div>
+                <div class="stat-label">In Coverage Area</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number" data-count-to="{{ resolved_count }}">0</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-number" data-count-to="{{ pending_count }}">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+
+        <!-- ========== TABS ========== -->
+        <div class="profile-tabs">
+            <button type="button" class="tab-btn active" data-tab="all">All Coverage <span class="tab-count">{{ coverage_complaints.count }}</span></button>
+            <button type="button" class="tab-btn" data-tab="pending">Pending <span class="tab-count">{{ pending_count }}</span></button>
+            <button type="button" class="tab-btn" data-tab="resolved">Resolved <span class="tab-count">{{ resolved_count }}</span></button>
+        </div>
+
+        <!-- ===== All Coverage Area Complaints ===== -->
+        <div class="tab-panel active" id="tab-all">
+            {% if coverage_complaints %}
+                <div class="complaint-grid">
+                    {% for complaint in coverage_complaints %}
+                    {% with cat=complaint.get_category_display status=complaint.get_status_display %}
+                    <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                        <div class="card-top">
+                            {% if complaint.photo %}
+                                <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                            {% else %}
+                                <div class="card-thumb-placeholder">📷</div>
+                            {% endif %}
+                            <div>
+                                <div class="card-category">{{ cat }}</div>
+                                <span class="badge-status {% if complaint.status == 'reported' %}badge-pending{% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress{% elif complaint.status == 'resolved' %}badge-resolved{% else %}badge-acknowledged{% endif %}">{{ status }}</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
+                        <div class="card-footer">
+                            <span>👤 {{ complaint.citizen.username }} · {{ complaint.created_at|date:"M d, Y" }}</span>
+                            <a href="{% url 'update_complaint' complaint.id %}">Manage →</a>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% include "includes/empty_state.html" with icon="📋" title="No complaints in your coverage area yet" message="Once citizens report issues in your assigned state and LGA, they'll appear here." %}
+            {% endif %}
+        </div>
+
+        <!-- ===== Pending ===== -->
+        <div class="tab-panel" id="tab-pending">
+            {% with has_pending=False %}
+            <div class="complaint-grid">
+                {% for complaint in coverage_complaints %}
+                {% if complaint.status != 'resolved' %}
+                {% with cat=complaint.get_category_display status=complaint.get_status_display %}
+                <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                    <div class="card-top">
+                        {% if complaint.photo %}
+                            <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                        {% else %}
+                            <div class="card-thumb-placeholder">📷</div>
+                        {% endif %}
+                        <div>
+                            <div class="card-category">{{ cat }}</div>
+                            <span class="badge-status {% if complaint.status == 'reported' %}badge-pending{% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress{% else %}badge-acknowledged{% endif %}">{{ status }}</span>
+                        </div>
+                    </div>
+                    <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
+                    <div class="card-footer">
+                        <span>👤 {{ complaint.citizen.username }} · {{ complaint.created_at|date:"M d, Y" }}</span>
+                        <a href="{% url 'update_complaint' complaint.id %}">Manage →</a>
+                    </div>
+                </div>
+                {% endwith %}
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endwith %}
+            {% if pending_count == 0 %}
+                {% include "includes/empty_state.html" with icon="⏳" title="No pending complaints" message="Everything in your coverage area has been resolved. Nice work." %}
+            {% endif %}
+        </div>
+
+        <!-- ===== Resolved ===== -->
+        <div class="tab-panel" id="tab-resolved">
+            <div class="complaint-grid">
+                {% for complaint in coverage_complaints %}
+                {% if complaint.status == 'resolved' %}
+                {% with cat=complaint.get_category_display %}
+                <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                    <div class="card-top">
+                        {% if complaint.resolved_photo %}
+                            <img src="{{ complaint.resolved_photo.url }}" class="card-thumb" alt="{{ cat }}">
+                        {% elif complaint.photo %}
+                            <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                        {% else %}
+                            <div class="card-thumb-placeholder">✅</div>
+                        {% endif %}
+                        <div>
+                            <div class="card-category">{{ cat }}</div>
+                            <span class="badge-status badge-resolved">Resolved</span>
+                        </div>
+                    </div>
+                    <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
+                    <div class="card-footer">
+                        <span>👤 {{ complaint.citizen.username }} · {{ complaint.updated_at|date:"M d, Y" }}</span>
+                        <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
+                    </div>
+                </div>
+                {% endwith %}
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% if resolved_count == 0 %}
+                {% include "includes/empty_state.html" with icon="✅" title="No resolved complaints yet" message="Resolved issues from your coverage area will show up here." %}
+            {% endif %}
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabButtons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const target = btn.dataset.tab;
+
+                tabButtons.forEach(function (b) { b.classList.remove('active'); });
+                tabPanels.forEach(function (p) { p.classList.remove('active'); });
+
+                btn.classList.add('active');
+                document.getElementById('tab-' + target).classList.add('active');
+            });
+        });
+    });
+</script>
+{% endblock %}
