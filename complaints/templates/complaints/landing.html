@@ -907,5 +907,23 @@
             });
         }
     })();
+
+    // ---------- GUEST PROFILE ICON DROPDOWN ----------
+    (function() {
+        const guestProfile = document.getElementById('guest-profile');
+        const guestProfileToggle = document.getElementById('guest-profile-toggle');
+
+        if (guestProfile && guestProfileToggle) {
+            guestProfileToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                guestProfile.classList.toggle('open');
+            });
+            document.addEventListener('click', function(e) {
+                if (!guestProfile.contains(e.target)) {
+                    guestProfile.classList.remove('open');
+                }
+            });
+        }
+    })();
 </script>
 {% endblock %}
