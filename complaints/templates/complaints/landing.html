@@ -26,6 +26,7 @@
                 {% endif %}
                 {% endif %}
             </nav>
+            
             <div class="nav-buttons desktop-buttons">
                 {% if user.is_authenticated %}
                 {% if user.profile.user_type == 'govt' %}
@@ -35,15 +36,36 @@
                 <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
                 {% endif %}
                 <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
+                <a href="{% url 'profile' %}" class="btn-profile-avatar">
+                    <span class="avatar-circle">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                        {% else %}
+                            {{ user.username|first|upper }}
+                        {% endif %}
+                    </span>
+                    My Profile
+                </a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn-logout">Logout</button>
                 </form>
                 {% else %}
+                <div class="nav-more" id="guest-profile">
+                    <button type="button" class="btn-profile-avatar" id="guest-profile-toggle" style="cursor:pointer; border:1.5px solid var(--brand-cyan);">
+                        <span class="avatar-circle">👤</span>
+                        My Profile
+                    </button>
+                    <div class="nav-more-dropdown">
+                        <a href="{% url 'login' %}">🔑 Log In</a>
+                        <a href="{% url 'signup' %}">✨ Create an Account</a>
+                    </div>
+                </div>
                 <a href="{% url 'login' %}" class="btn-login">Login</a>
                 <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
                 {% endif %}
             </div>
+
 
             <!-- Hamburger Menu Button -->
             <button id="mobile-hamburger-btn" class="hamburger-btn" aria-label="Toggle Navigation Menu">
@@ -77,6 +99,7 @@
                     <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
                     {% endif %}
                     <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
+                    <a href="{% url 'profile' %}" class="btn-dashboard">👤 My Profile</a>
                     <form action="{% url 'logout' %}" method="post" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn-logout">Logout</button>
