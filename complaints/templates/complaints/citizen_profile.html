@@ -1,0 +1,540 @@
+{% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* ================= PROFILE HEADER ================= */
+    .profile-header-card {
+        display: flex;
+        align-items: center;
+        gap: 1.75rem;
+        padding: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-header-card::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--brand-cyan-glow), transparent 70%);
+        pointer-events: none;
+    }
+
+    .profile-avatar-ring {
+        width: 108px;
+        height: 108px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        padding: 4px;
+        background: conic-gradient(from 180deg, var(--brand-cyan), var(--primary-light), var(--brand-cyan-deep), var(--brand-cyan));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-avatar-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 2.4rem;
+        color: var(--brand-cyan-deep);
+    }
+
+    .profile-avatar-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-meta {
+        flex: 1;
+        min-width: 220px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-meta h2 {
+        margin-bottom: 0.15rem;
+        color: var(--text-primary);
+    }
+
+    .profile-username {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-bio {
+        color: var(--text-secondary);
+        max-width: 480px;
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin-bottom: 0.6rem;
+    }
+
+    .profile-joined {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .profile-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-outline-danger-sm {
+        background: transparent;
+        border: 1.5px solid var(--error-red);
+        color: var(--error-red);
+        border-radius: 40px;
+        padding: 0.45rem 1.1rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: var(--transition);
+    }
+
+    .btn-outline-danger-sm:hover {
+        background: var(--error-red);
+        color: #FFFFFF;
+    }
+
+    /* ================= STATS ROW ================= */
+    .profile-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-stats-grid .stat-card {
+        text-align: center;
+        align-items: center;
+    }
+
+    /* ================= TAB NAV ================= */
+    .profile-tabs {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+        background: #FFFFFF;
+        border: 1.5px solid var(--border-dim);
+        color: var(--text-secondary);
+        padding: 0.55rem 1.2rem;
+        border-radius: 40px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .tab-btn .tab-count {
+        background: rgba(0,0,0,0.06);
+        color: var(--text-muted);
+        border-radius: 999px;
+        padding: 0.05rem 0.5rem;
+        font-size: 0.72rem;
+    }
+
+    .tab-btn:hover {
+        border-color: var(--brand-cyan);
+        color: var(--brand-cyan-deep);
+    }
+
+    .tab-btn.active {
+        background: var(--brand-cyan);
+        border-color: var(--brand-cyan);
+        color: #FFFFFF;
+        box-shadow: 0 0 12px var(--brand-cyan-glow);
+    }
+
+    .tab-btn.active .tab-count {
+        background: rgba(255,255,255,0.25);
+        color: #FFFFFF;
+    }
+
+    .tab-panel {
+        display: none;
+    }
+
+    .tab-panel.active {
+        display: block;
+    }
+
+    /* ================= COMPLAINT CARD GRID ================= */
+    .complaint-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .complaint-card-mini {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .complaint-card-mini .card-top {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .complaint-card-mini .card-thumb {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        object-fit: cover;
+        border: 1px solid var(--border-dim);
+        flex-shrink: 0;
+    }
+
+    .complaint-card-mini .card-thumb-placeholder {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        background: var(--brand-cyan-glow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .complaint-card-mini .card-category {
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 0.92rem;
+    }
+
+    .complaint-card-mini .card-desc {
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .complaint-card-mini .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: auto;
+    }
+
+    .complaint-card-mini .card-footer a {
+        color: var(--brand-cyan);
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+        .profile-header-card {
+            justify-content: center;
+            text-align: center;
+        }
+        .profile-meta {
+            text-align: center;
+        }
+        .profile-joined {
+            justify-content: center;
+        }
+        .profile-actions {
+            width: 100%;
+            flex-direction: row;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}has-page-hero{% endblock %}
+
+{% block content %}
+    {% include "includes/page_hero.html" with icon="👤" title="My Profile" subtitle="Your reports, engagement, and account settings — all in one place." %}
+
+    <div class="container py-4">
+
+        <!-- ========== PROFILE HEADER ========== -->
+        <div class="glass-card hover-lift profile-header-card fade-in-up">
+            <div class="profile-avatar-ring">
+                <div class="profile-avatar-inner">
+                    {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ user.username }}">
+                    {% else %}
+                        {{ user.username|first|upper }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="profile-meta">
+                <h2>{{ user.first_name|default:user.username }} {{ user.last_name }}</h2>
+                <div class="profile-username">@{{ user.username }}</div>
+                {% if profile.bio %}
+                    <p class="profile-bio">{{ profile.bio }}</p>
+                {% endif %}
+                <div class="profile-joined">
+                    <span>🗓️</span> Joined {{ user.date_joined|date:"F Y" }}
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center;">⚙️ Edit Profile</a>
+                <a href="{% url 'delete_account' %}" class="btn-outline-danger-sm">Delete Account</a>
+            </div>
+        </div>
+
+        <!-- ========== STATS ========== -->
+        <div class="profile-stats-grid">
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">📋</div>
+                <div class="stat-number" data-count-to="{{ my_complaints.count }}">0</div>
+                <div class="stat-label">Reported</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">👍</div>
+                <div class="stat-number" data-count-to="{{ upvoted_complaints.count }}">0</div>
+                <div class="stat-label">Upvoted</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">🔁</div>
+                <div class="stat-number" data-count-to="{{ reposted_complaints.count }}">0</div>
+                <div class="stat-label">Reposted</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">🔔</div>
+                <div class="stat-number" data-count-to="{{ followed_complaints.count }}">0</div>
+                <div class="stat-label">Following</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">🚩</div>
+                <div class="stat-number" data-count-to="{{ escalated_complaints.count }}">0</div>
+                <div class="stat-label">Escalated</div>
+            </div>
+        </div>
+
+        <!-- ========== TABS ========== -->
+        <div class="profile-tabs">
+            <button type="button" class="tab-btn active" data-tab="mine">My Complaints <span class="tab-count">{{ my_complaints.count }}</span></button>
+            <button type="button" class="tab-btn" data-tab="upvoted">Upvoted <span class="tab-count">{{ upvoted_complaints.count }}</span></button>
+            <button type="button" class="tab-btn" data-tab="reposted">Reposted <span class="tab-count">{{ reposted_complaints.count }}</span></button>
+            <button type="button" class="tab-btn" data-tab="followed">Following <span class="tab-count">{{ followed_complaints.count }}</span></button>
+            <button type="button" class="tab-btn" data-tab="escalated">Escalated <span class="tab-count">{{ escalated_complaints.count }}</span></button>
+        </div>
+
+        <!-- ===== My Complaints ===== -->
+        <div class="tab-panel active" id="tab-mine">
+            {% if my_complaints %}
+                <div class="complaint-grid">
+                    {% for complaint in my_complaints %}
+                    {% with cat=complaint.get_category_display status=complaint.get_status_display %}
+                    <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                        <div class="card-top">
+                            {% if complaint.photo %}
+                                <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                            {% else %}
+                                <div class="card-thumb-placeholder">📷</div>
+                            {% endif %}
+                            <div>
+                                <div class="card-category">{{ cat }}</div>
+                                <span class="badge-status {% if complaint.status == 'reported' %}badge-pending{% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress{% elif complaint.status == 'resolved' %}badge-resolved{% else %}badge-acknowledged{% endif %}">{{ status }}</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
+                        <div class="card-footer">
+                            <span>⬆ {{ complaint.upvotes }} · {{ complaint.created_at|date:"M d, Y" }}</span>
+                            <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% url 'report_complaint' as report_url %}
+                {% include "includes/empty_state.html" with icon="📝" title="You haven't reported any issues yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
+            {% endif %}
+        </div>
+
+        <!-- ===== Upvoted ===== -->
+        <div class="tab-panel" id="tab-upvoted">
+            {% if upvoted_complaints %}
+                <div class="complaint-grid">
+                    {% for complaint in upvoted_complaints %}
+                    {% with cat=complaint.get_category_display status=complaint.get_status_display %}
+                    <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                        <div class="card-top">
+                            {% if complaint.photo %}
+                                <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                            {% else %}
+                                <div class="card-thumb-placeholder">📷</div>
+                            {% endif %}
+                            <div>
+                                <div class="card-category">{{ cat }}</div>
+                                <span class="badge-status {% if complaint.status == 'reported' %}badge-pending{% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress{% elif complaint.status == 'resolved' %}badge-resolved{% else %}badge-acknowledged{% endif %}">{{ status }}</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
+                        <div class="card-footer">
+                            <span>⬆ {{ complaint.upvotes }} · by {{ complaint.citizen.username }}</span>
+                            <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% url 'community_complaints' as community_url %}
+                {% include "includes/empty_state.html" with icon="👍" title="No upvoted complaints yet" message="Browse the community feed and upvote issues that matter to you." action_url=community_url action_label="Browse Community" %}
+            {% endif %}
+        </div>
+
+        <!-- ===== Reposted ===== -->
+        <div class="tab-panel" id="tab-reposted">
+            {% if reposted_complaints %}
+                <div class="complaint-grid">
+                    {% for complaint in reposted_complaints %}
+                    {% with cat=complaint.get_category_display status=complaint.get_status_display %}
+                    <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                        <div class="card-top">
+                            {% if complaint.photo %}
+                                <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                            {% else %}
+                                <div class="card-thumb-placeholder">📷</div>
+                            {% endif %}
+                            <div>
+                                <div class="card-category">{{ cat }}</div>
+                                <span class="badge-status {% if complaint.status == 'reported' %}badge-pending{% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress{% elif complaint.status == 'resolved' %}badge-resolved{% else %}badge-acknowledged{% endif %}">{{ status }}</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
+                        <div class="card-footer">
+                            <span>🔁 by {{ complaint.citizen.username }}</span>
+                            <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% include "includes/empty_state.html" with icon="🔁" title="You haven't reposted anything yet" message="Share a complaint from the community feed to boost its visibility." %}
+            {% endif %}
+        </div>
+
+        <!-- ===== Followed ===== -->
+        <div class="tab-panel" id="tab-followed">
+            {% if followed_complaints %}
+                <div class="complaint-grid">
+                    {% for complaint in followed_complaints %}
+                    {% with cat=complaint.get_category_display status=complaint.get_status_display %}
+                    <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                        <div class="card-top">
+                            {% if complaint.photo %}
+                                <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                            {% else %}
+                                <div class="card-thumb-placeholder">📷</div>
+                            {% endif %}
+                            <div>
+                                <div class="card-category">{{ cat }}</div>
+                                <span class="badge-status {% if complaint.status == 'reported' %}badge-pending{% elif complaint.status == 'in_progress' or complaint.status == 'under_review' %}badge-progress{% elif complaint.status == 'resolved' %}badge-resolved{% else %}badge-acknowledged{% endif %}">{{ status }}</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
+                        <div class="card-footer">
+                            <span>🔔 tracking updates</span>
+                            <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% include "includes/empty_state.html" with icon="🔔" title="You're not following any complaints yet" message="Follow a complaint to get notified as its status changes." %}
+            {% endif %}
+        </div>
+
+        <!-- ===== Escalated ===== -->
+        <div class="tab-panel" id="tab-escalated">
+            {% if escalated_complaints %}
+                <div class="complaint-grid">
+                    {% for complaint in escalated_complaints %}
+                    {% with cat=complaint.get_category_display %}
+                    <div class="glass-card card-glow complaint-card-mini fade-in-up">
+                        <div class="card-top">
+                            {% if complaint.photo %}
+                                <img src="{{ complaint.photo.url }}" class="card-thumb" alt="{{ cat }}">
+                            {% else %}
+                                <div class="card-thumb-placeholder">📷</div>
+                            {% endif %}
+                            <div>
+                                <div class="card-category">{{ cat }}</div>
+                                <span class="badge-status badge-pending">Escalated</span>
+                            </div>
+                        </div>
+                        <p class="card-desc">{{ complaint.escalation_reason|default:"No reason provided"|truncatechars:70 }}</p>
+                        <div class="card-footer">
+                            <span>🚩 {{ complaint.escalated_at|date:"M d, Y" }}</span>
+                            <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% include "includes/empty_state.html" with icon="🚩" title="No escalated complaints" message="If a report isn't resolved in a reasonable time, you can escalate it to a higher authority from its detail page." %}
+            {% endif %}
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabButtons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const target = btn.dataset.tab;
+
+                tabButtons.forEach(function (b) { b.classList.remove('active'); });
+                tabPanels.forEach(function (p) { p.classList.remove('active'); });
+
+                btn.classList.add('active');
+                document.getElementById('tab-' + target).classList.add('active');
+            });
+        });
+    });
+</script>
+{% endblock %}
