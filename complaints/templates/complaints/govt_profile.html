@@ -125,6 +125,7 @@
         gap: 0.4rem;
     }
 
+    /* --- PHASE 1: SHARE BUTTON & ROW STYLING --- */
     .profile-actions {
         display: flex;
         flex-direction: column;
@@ -132,6 +133,37 @@
         position: relative;
         z-index: 1;
     }
+
+    .profile-actions-row {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+        width: 100%;
+    }
+
+    .btn-icon-sm {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: transparent;
+        border: 1.5px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        flex-shrink: 0;
+    }
+
+    .btn-icon-sm:hover {
+        background: var(--brand-cyan-glow);
+        border-color: var(--brand-cyan);
+        color: var(--brand-cyan);
+        transform: translateY(-2px);
+    }
+    /* --------------------------------- */
 
     .btn-outline-danger-sm {
         background: transparent;
@@ -144,6 +176,7 @@
         text-decoration: none;
         text-align: center;
         transition: var(--transition);
+        width: 100%;
     }
 
     .btn-outline-danger-sm:hover {
@@ -330,7 +363,10 @@
         }
         .profile-actions {
             width: 100%;
-            flex-direction: row;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .profile-actions-row {
             justify-content: center;
         }
     }
@@ -384,7 +420,13 @@
             </div>
 
             <div class="profile-actions">
-                <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center;">⚙️ Edit Profile</a>
+                <!-- PHASE 1: ADDED SHARE BUTTON & ROW -->
+                <div class="profile-actions-row">
+                    <button class="btn-icon-sm" id="copyProfileLinkBtn" title="Share Profile" aria-label="Share Profile">
+                        🔗
+                    </button>
+                    <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center; flex: 1;">⚙️ Edit Profile</a>
+                </div>
                 <a href="{% url 'delete_account' %}" class="btn-outline-danger-sm">Deactivate Account</a>
             </div>
         </div>
@@ -548,6 +590,45 @@
                 document.getElementById('tab-' + target).classList.add('active');
             });
         });
+
+        // ===== PHASE 1: SHARE BUTTON LOGIC =====
+        const shareBtn = document.getElementById('copyProfileLinkBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', function(e) {
+                const currentUrl = window.location.href;
+                
+                // Use modern clipboard API
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(currentUrl).then(() => {
+                        // Quick visual feedback
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '✅';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    }).catch(() => {
+                        alert('Unable to copy link. Please copy the URL from the address bar manually.');
+                    });
+                } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = currentUrl;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '✅';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    } catch (err) {
+                        alert('Unable to copy link. Please copy the URL from the address bar manually.');
+                    }
+                    document.body.removeChild(textArea);
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

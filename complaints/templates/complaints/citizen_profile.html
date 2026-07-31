@@ -96,12 +96,33 @@
         gap: 0.4rem;
     }
 
+    /* ===== PHASE 1 ADDITIONS ===== */
+    .profile-location {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--brand-cyan-deep);
+        background: var(--brand-cyan-glow);
+        padding: 0.2rem 0.8rem;
+        border-radius: 40px;
+        margin-top: 0.4rem;
+        border: 1px solid var(--glass-border);
+    }
+
     .profile-actions {
         display: flex;
         flex-direction: column;
         gap: 0.6rem;
         position: relative;
         z-index: 1;
+    }
+
+    .profile-actions-row {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
     }
 
     .btn-outline-danger-sm {
@@ -115,12 +136,36 @@
         text-decoration: none;
         text-align: center;
         transition: var(--transition);
+        width: 100%;
     }
 
     .btn-outline-danger-sm:hover {
         background: var(--error-red);
         color: #FFFFFF;
     }
+
+    /* Share Button stylized as an Icon */
+    .btn-icon-sm {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: transparent;
+        border: 1.5px solid var(--glass-border);
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .btn-icon-sm:hover {
+        background: var(--brand-cyan-glow);
+        border-color: var(--brand-cyan);
+        color: var(--brand-cyan);
+        transform: translateY(-2px);
+    }
+    /* =============================== */
 
     /* ================= STATS ROW ================= */
     .profile-stats-grid {
@@ -270,10 +315,11 @@
         .profile-joined {
             justify-content: center;
         }
+        .profile-location {
+            justify-content: center;
+        }
         .profile-actions {
             width: 100%;
-            flex-direction: row;
-            justify-content: center;
         }
     }
 </style>
@@ -301,16 +347,35 @@
             <div class="profile-meta">
                 <h2>{{ user.first_name|default:user.username }} {{ user.last_name }}</h2>
                 <div class="profile-username">@{{ user.username }}</div>
+                
                 {% if profile.bio %}
                     <p class="profile-bio">{{ profile.bio }}</p>
                 {% endif %}
+
+                <!-- === PHASE 1: LOCATION PILL === -->
+                {% with latest_complaint=my_complaints.first %}
+                    {% if latest_complaint.ward %}
+                        <div class="profile-location">📍 {{ latest_complaint.ward.ward }}, {{ latest_complaint.ward.lga }}, {{ latest_complaint.ward.state }}</div>
+                    {% elif latest_complaint.address_text %}
+                        <div class="profile-location">📍 {{ latest_complaint.address_text }}</div>
+                    {% endif %}
+                {% endwith %}
+                <!-- ================================ -->
+
                 <div class="profile-joined">
                     <span>🗓️</span> Joined {{ user.date_joined|date:"F Y" }}
                 </div>
             </div>
 
             <div class="profile-actions">
-                <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center;">⚙️ Edit Profile</a>
+                <!-- === PHASE 1: SHARE BUTTON === -->
+                <div class="profile-actions-row">
+                    <button class="btn-icon-sm" id="copyProfileLinkBtn" title="Share Profile" aria-label="Share Profile">
+                        🔗
+                    </button>
+                    <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center; flex: 1;">⚙️ Edit Profile</a>
+                </div>
+                <!-- ================================= -->
                 <a href="{% url 'delete_account' %}" class="btn-outline-danger-sm">Delete Account</a>
             </div>
         </div>
@@ -535,6 +600,45 @@
                 document.getElementById('tab-' + target).classList.add('active');
             });
         });
+
+        // ===== PHASE 1: SHARE BUTTON LOGIC =====
+        const shareBtn = document.getElementById('copyProfileLinkBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', function(e) {
+                const currentUrl = window.location.href;
+                
+                // Use modern clipboard API
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(currentUrl).then(() => {
+                        // Quick visual feedback
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '✅';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    }).catch(() => {
+                        alert('Unable to copy link. Please copy the URL from the address bar manually.');
+                    });
+                } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = currentUrl;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '✅';
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                        }, 2000);
+                    } catch (err) {
+                        alert('Unable to copy link. Please copy the URL from the address bar manually.');
+                    }
+                    document.body.removeChild(textArea);
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
