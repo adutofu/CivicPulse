@@ -380,7 +380,7 @@
             </div>
         </div>
 
-        <!-- ========== STATS ========== -->
+                <!-- ========== STATS ========== -->
         <div class="profile-stats-grid">
             <div class="glass-card stat-card hover-lift">
                 <div class="stat-icon">📋</div>
@@ -406,6 +406,17 @@
                 <div class="stat-icon">🚩</div>
                 <div class="stat-number" data-count-to="{{ escalated_complaints.count }}">0</div>
                 <div class="stat-label">Escalated</div>
+            </div>
+            <!-- ===== PHASE 2: NEW CITIZEN STATS ===== -->
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number" data-count-to="{{ avg_rating_received|floatformat:1 }}">0</div>
+                <div class="stat-label">Avg. Rating</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number" data-count-to="{{ resolution_rate }}">0</div>
+                <div class="stat-label">Resolution Rate</div>
             </div>
         </div>
 

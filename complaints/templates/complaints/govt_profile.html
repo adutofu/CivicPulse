@@ -442,7 +442,7 @@
         </div>
         {% endif %}
 
-        <!-- ========== STATS ========== -->
+                <!-- ========== STATS ========== -->
         <div class="profile-stats-grid">
             <div class="glass-card stat-card hover-lift">
                 <div class="stat-icon">📋</div>
@@ -458,6 +458,17 @@
                 <div class="stat-icon">⏳</div>
                 <div class="stat-number" data-count-to="{{ pending_count }}">0</div>
                 <div class="stat-label">Pending</div>
+            </div>
+            <!-- ===== PHASE 2: NEW GOVERNMENT STATS ===== -->
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-number" style="font-size: 1.4rem; color: var(--brand-cyan);" data-count-to="0">{{ avg_resolution_time }}</div>
+                <div class="stat-label">Avg. Res. Time</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon">🤝</div>
+                <div class="stat-number" data-count-to="{{ citizen_satisfaction|floatformat:1 }}">0</div>
+                <div class="stat-label">Citizen Satisfaction</div>
             </div>
         </div>
 

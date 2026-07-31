@@ -16,14 +16,13 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Avg, F
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-
 from .forms import ComplaintForm, ExtraImageForm, GovtApplicationForm, ProfileEditForm, GovtCoverageForm
 from .models import (
     CATEGORY_CHOICES,
@@ -1038,7 +1037,7 @@ def rate_complaint(request, complaint_id):
     return render(request, 'complaints/rate_modal.html', {'complaint': complaint})
 
 
-# ---------- Profile Page ----------
+# ---------- Profile Page ---------- 
 @login_required
 def profile_view(request):
     profile = request.user.profile
@@ -1053,19 +1052,60 @@ def profile_view(request):
 
         resolved_count = coverage_complaints.filter(status='resolved').count()
         pending_count = coverage_complaints.exclude(status__in=['resolved']).count()
+        
+        # --- PHASE 2: GOVERNMENT PERFORMANCE STATS ---
+        resolved_complaints = coverage_complaints.filter(status='resolved')
+        
+        # Average Resolution Time
+        avg_time = resolved_complaints.aggregate(
+            avg_time=Avg(F('updated_at') - F('created_at'))
+        )['avg_time']
+        
+        avg_resolution_time = "N/A"
+        if avg_time:
+            total_seconds = int(avg_time.total_seconds())
+            days = total_seconds // 86400
+            hours = (total_seconds % 86400) // 3600
+            minutes = (total_seconds % 3600) // 60
+            if days > 0:
+                avg_resolution_time = f"{days}d {hours}h"
+            elif hours > 0:
+                avg_resolution_time = f"{hours}h {minutes}m"
+            else:
+                avg_resolution_time = f"{minutes}m"
+        
+        # Citizen Satisfaction (Average rating of resolved complaints in their area)
+        citizen_satisfaction = resolved_complaints.filter(
+            rating_score__isnull=False
+        ).aggregate(Avg('rating_score'))['rating_score__avg'] or 0
 
         return render(request, 'complaints/govt_profile.html', {
             'profile': profile,
             'coverage_complaints': coverage_complaints,
             'resolved_count': resolved_count,
             'pending_count': pending_count,
+            'avg_resolution_time': avg_resolution_time,
+            'citizen_satisfaction': citizen_satisfaction,
         })
 
+    # --- CITIZEN CONTEXT ---
     my_complaints = Complaint.objects.filter(citizen=request.user).order_by('-created_at')
     upvoted_complaints = Complaint.objects.filter(votes__user=request.user).distinct().order_by('-created_at')
     reposted_complaints = Complaint.objects.filter(reposts__user=request.user).distinct().order_by('-created_at')
     followed_complaints = Complaint.objects.filter(followers__user=request.user).distinct().order_by('-created_at')
     escalated_complaints = Complaint.objects.filter(escalated_by=request.user).order_by('-created_at')
+
+    # --- PHASE 2: CITIZEN ENGAGEMENT STATS ---
+    total_reported = my_complaints.count()
+    resolved_reported = my_complaints.filter(status='resolved').count()
+    
+    # Resolution Rate
+    resolution_rate = round((resolved_reported / total_reported) * 100) if total_reported > 0 else 0
+    
+    # Average Rating Received
+    avg_rating_received = my_complaints.filter(
+        rating_score__isnull=False
+    ).aggregate(Avg('rating_score'))['rating_score__avg'] or 0
 
     return render(request, 'complaints/citizen_profile.html', {
         'profile': profile,
@@ -1074,6 +1114,8 @@ def profile_view(request):
         'reposted_complaints': reposted_complaints,
         'followed_complaints': followed_complaints,
         'escalated_complaints': escalated_complaints,
+        'resolution_rate': resolution_rate,
+        'avg_rating_received': avg_rating_received,
     })
 
 
