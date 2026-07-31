@@ -472,15 +472,18 @@
             </div>
         </div>
 
-        <!-- ========== TABS ========== -->
+                <!-- ========== TABS ========== -->
         <div class="profile-tabs">
             <button type="button" class="tab-btn active" data-tab="all">All Coverage <span class="tab-count">{{ coverage_complaints.count }}</span></button>
             <button type="button" class="tab-btn" data-tab="pending">Pending <span class="tab-count">{{ pending_count }}</span></button>
             <button type="button" class="tab-btn" data-tab="resolved">Resolved <span class="tab-count">{{ resolved_count }}</span></button>
+            <!-- === PHASE 3: ACTIVITY TAB === -->
+            <button type="button" class="tab-btn" data-tab="activity">⚡ Activity</button>
         </div>
 
         <!-- ===== All Coverage Area Complaints ===== -->
         <div class="tab-panel active" id="tab-all">
+            <!-- ... Keep your existing All Coverage code exactly as it was ... -->
             {% if coverage_complaints %}
                 <div class="complaint-grid">
                     {% for complaint in coverage_complaints %}
@@ -508,6 +511,64 @@
                 </div>
             {% else %}
                 {% include "includes/empty_state.html" with icon="📋" title="No complaints in your coverage area yet" message="Once citizens report issues in your assigned state and LGA, they'll appear here." %}
+            {% endif %}
+        </div>
+
+        <!-- ... Keep your Pending and Resolved panels exactly as they were ... -->
+
+        <!-- ===== PHASE 3: ACTIVITY PANEL ===== -->
+        <div class="tab-panel" id="tab-activity">
+            {% if user_activities %}
+                <div class="complaint-grid" style="grid-template-columns: 1fr;">
+                    {% for act in user_activities %}
+                        {% with obj=act.object %}
+                            {% if act.type == 'complaint' %}
+                                {% with complaint=obj %}
+                                <div class="glass-card card-glow hover-lift feed-card fade-in-up" style="padding: 1.2rem; display: flex; gap: 1rem;">
+                                    <div class="feed-avatar" style="width: 38px; height: 38px; font-size: 1rem; background: var(--brand-cyan); color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">{{ request.user.username|first|upper }}</div>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:0.2rem;">
+                                            <span style="font-weight:600; font-size:0.9rem;">You reported an issue</span>
+                                            <span style="font-size:0.75rem; color:var(--text-muted);">{{ act.created_at|timesince }} ago</span>
+                                        </div>
+                                        <p style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--text-secondary);">{{ complaint.get_category_display }} - {{ complaint.description|truncatechars:80 }}</p>
+                                        {% if complaint.photo %}
+                                        <div style="border-radius:12px; overflow:hidden; max-width:200px; margin-bottom:0.5rem; border:1px solid var(--glass-border);">
+                                            <img src="{{ complaint.photo.url }}" style="width:100%; height:auto; display:block;">
+                                        </div>
+                                        {% endif %}
+                                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--glass-border); padding-top:0.5rem;">
+                                            <span style="font-size:0.75rem; color:var(--text-muted);">⬆ {{ complaint.upvotes }}</span>
+                                            <a href="{{ act.url }}" style="color:var(--brand-cyan); font-weight:600; text-decoration:none; font-size:0.8rem;">View →</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                            {% else %}
+                                {% with complaint=obj.complaint %}
+                                <div class="glass-card card-glow hover-lift feed-card fade-in-up" style="padding: 1.2rem; display: flex; gap: 1rem;">
+                                    <div class="feed-avatar" style="width: 38px; height: 38px; font-size: 1rem; background: var(--brand-cyan); color: #fff; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0;">{{ request.user.username|first|upper }}</div>
+                                    <div style="flex:1;">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:0.2rem;">
+                                            <span style="font-weight:600; font-size:0.9rem;">
+                                                {% if act.type == 'comment' %}You commented{% elif act.type == 'upvote' %}You upvoted{% elif act.type == 'follow' %}You followed{% elif act.type == 'repost' %}You reposted{% endif %}
+                                            </span>
+                                            <span style="font-size:0.75rem; color:var(--text-muted);">{{ act.created_at|timesince }} ago</span>
+                                        </div>
+                                        <p style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--text-secondary);">{{ act.message }}</p>
+                                        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--glass-border); padding-top:0.5rem;">
+                                            <span style="font-size:0.75rem; color:var(--text-muted);">⬆ {{ complaint.upvotes }}</span>
+                                            <a href="{{ act.url }}" style="color:var(--brand-cyan); font-weight:600; text-decoration:none; font-size:0.8rem;">View →</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endwith %}
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% include "includes/empty_state.html" with icon="⚡" title="No recent activity" message="Your interactions and reported issues will appear here as you use the platform." %}
             {% endif %}
         </div>
 

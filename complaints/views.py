@@ -1042,6 +1042,67 @@ def rate_complaint(request, complaint_id):
 def profile_view(request):
     profile = request.user.profile
 
+    # --- PHASE 3: GENERATE USER ACTIVITIES ---
+    user_activities = []
+    # 1. User Complaints
+    user_complaints = Complaint.objects.filter(citizen=request.user, is_hidden=False).order_by('-created_at')[:5]
+    # 2. User Comments
+    user_comments = Comment.objects.filter(author=request.user).order_by('-created_at')[:5]
+    # 3. User Votes
+    user_votes = Vote.objects.filter(user=request.user).select_related('complaint').order_by('-created_at')[:5]
+    # 4. User Follows
+    user_follows = ComplaintFollower.objects.filter(user=request.user).select_related('complaint').order_by('-created_at')[:5]
+    # 5. User Reposts
+    user_reposts = Repost.objects.filter(user=request.user).select_related('complaint').order_by('-created_at')[:5]
+
+    for c in user_complaints:
+        user_activities.append({
+            'type': 'complaint',
+            'created_at': c.created_at,
+            'object': c,
+            'message': f"You reported a new issue: {c.get_category_display()}",
+            'url': f"/complaint/{c.id}/",
+            'user': request.user,
+        })
+    for c in user_comments:
+        user_activities.append({
+            'type': 'comment',
+            'created_at': c.created_at,
+            'object': c,
+            'message': f"You commented on complaint #{c.complaint.id}: {c.text[:50]}...",
+            'url': f"/complaint/{c.complaint.id}/",
+            'user': request.user,
+        })
+    for v in user_votes:
+        user_activities.append({
+            'type': 'upvote',
+            'created_at': v.created_at,
+            'object': v,
+            'message': f"You upvoted complaint #{v.complaint.id}",
+            'url': f"/complaint/{v.complaint.id}/",
+            'user': request.user,
+        })
+    for f in user_follows:
+        user_activities.append({
+            'type': 'follow',
+            'created_at': f.created_at,
+            'object': f,
+            'message': f"You started following complaint #{f.complaint.id}",
+            'url': f"/complaint/{f.complaint.id}/",
+            'user': request.user,
+        })
+    for r in user_reposts:
+        user_activities.append({
+            'type': 'repost',
+            'created_at': r.created_at,
+            'object': r,
+            'message': f"You reposted complaint #{r.complaint.id}",
+            'url': f"/complaint/{r.complaint.id}/",
+            'user': request.user,
+        })
+    user_activities = sorted(user_activities, key=lambda x: x['created_at'], reverse=True)[:20]
+    # ----------------------------------------------
+
     if profile.user_type == 'govt':
         coverage_complaints = Complaint.objects.none()
         if profile.assigned_state and profile.assigned_lga:
@@ -1056,7 +1117,6 @@ def profile_view(request):
         # --- PHASE 2: GOVERNMENT PERFORMANCE STATS ---
         resolved_complaints = coverage_complaints.filter(status='resolved')
         
-        # Average Resolution Time
         avg_time = resolved_complaints.aggregate(
             avg_time=Avg(F('updated_at') - F('created_at'))
         )['avg_time']
@@ -1074,7 +1134,6 @@ def profile_view(request):
             else:
                 avg_resolution_time = f"{minutes}m"
         
-        # Citizen Satisfaction (Average rating of resolved complaints in their area)
         citizen_satisfaction = resolved_complaints.filter(
             rating_score__isnull=False
         ).aggregate(Avg('rating_score'))['rating_score__avg'] or 0
@@ -1086,6 +1145,7 @@ def profile_view(request):
             'pending_count': pending_count,
             'avg_resolution_time': avg_resolution_time,
             'citizen_satisfaction': citizen_satisfaction,
+            'user_activities': user_activities, # Passed to Government Template
         })
 
     # --- CITIZEN CONTEXT ---
@@ -1099,10 +1159,7 @@ def profile_view(request):
     total_reported = my_complaints.count()
     resolved_reported = my_complaints.filter(status='resolved').count()
     
-    # Resolution Rate
     resolution_rate = round((resolved_reported / total_reported) * 100) if total_reported > 0 else 0
-    
-    # Average Rating Received
     avg_rating_received = my_complaints.filter(
         rating_score__isnull=False
     ).aggregate(Avg('rating_score'))['rating_score__avg'] or 0
@@ -1116,6 +1173,7 @@ def profile_view(request):
         'escalated_complaints': escalated_complaints,
         'resolution_rate': resolution_rate,
         'avg_rating_received': avg_rating_received,
+        'user_activities': user_activities, # Passed to Citizen Template
     })
 
 
