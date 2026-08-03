@@ -108,39 +108,51 @@
 
 {% block extra_js %}
 <script>
-    var map = L.map('map').setView([9.0765, 7.3986], 13);
+    const defaultLat = 9.0765;
+    const defaultLng = 7.3986;
+    const geolocationOptions = {
+        enableHighAccuracy: false,
+        timeout: 4000,
+        maximumAge: 300000
+    };
+
+    var map = L.map('map').setView([defaultLat, defaultLng], 13);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap contributors © CARTO',
         maxZoom: 19
     }).addTo(map);
-    var marker;
-    var userPickedManually = false;  // tracks if citizen already chose a spot
 
-    function setMarker(lat, lng) {
+    var marker;
+    var userPickedManually = false;
+
+    function setMarker(lat, lng, zoom = 15) {
         if (marker) map.removeLayer(marker);
         marker = L.marker([lat, lng]).addTo(map);
         document.getElementById('lat').value = lat;
         document.getElementById('lng').value = lng;
+        map.setView([lat, lng], zoom, { animate: true, duration: 0.5 });
     }
 
     map.on('click', function (e) {
-        userPickedManually = true;      // citizen took control — never auto-override after this
-        setMarker(e.latlng.lat, e.latlng.lng);
+        userPickedManually = true;
+        setMarker(e.latlng.lat, e.latlng.lng, 16);
     });
+
+    // Seed the form immediately with a safe fallback point so the submission is never blocked on location discovery.
+    setMarker(defaultLat, defaultLng, 13);
 
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function (position) {
-                if (userPickedManually) return;  // respect the citizen's manual choice
+                if (userPickedManually) return;
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
-                console.log('Geolocation accuracy (meters):', position.coords.accuracy);
-                map.setView([lat, lng], 15);
-                setMarker(lat, lng);
+                setMarker(lat, lng, 15);
             },
             function (error) {
                 console.log('Geolocation unavailable or denied:', error.message);
-            }
+            },
+            geolocationOptions
         );
     }
 </script>

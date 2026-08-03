@@ -859,7 +859,16 @@
     }
 
     function getGPSAndWeather() {
-        if (!navigator.geolocation) return fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
+        const locationDisplay = document.getElementById('locationDisplay');
+        const weatherContent = document.getElementById('weatherContent');
+
+        if (!navigator.geolocation) {
+            locationDisplay.innerHTML = 'Location unavailable';
+            weatherContent.innerHTML = '<div style="text-align:center;">⚠️ Enable location access to see local weather.</div>';
+            document.getElementById('mapLoadingOverlay').classList.add('hidden');
+            return;
+        }
+
         navigator.geolocation.getCurrentPosition(pos => {
             const { latitude, longitude } = pos.coords;
             map.flyTo([latitude, longitude], 16, { duration: 1.2 });
@@ -873,8 +882,9 @@
                     fetchWeatherForLocation(latitude, longitude, city);
                 }).catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
         }, () => {
+            locationDisplay.innerHTML = 'Location permission denied';
+            weatherContent.innerHTML = '<div style="text-align:center;">⚠️ Allow location access to show your local weather.</div>';
             document.getElementById('mapLoadingOverlay').classList.add('hidden');
-            fetchWeatherForLocation(9.0765, 7.3986, 'Abuja, Nigeria');
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
     }
 

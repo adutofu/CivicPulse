@@ -6,3 +6,4 @@ class ComplaintsConfig(AppConfig):
 
     def ready(self):
         from . import signals   # relative import (preferred)
+

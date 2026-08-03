@@ -440,8 +440,6 @@ def get_nearby_complaints(request):
         for c in nearby
     ]})
 
-@require_POST
-@login_required
 
 def get_ward_boundary(request):
     """API endpoint: returns the Ward polygon (GeoJSON) containing a given lat/lng"""
@@ -1116,27 +1114,36 @@ def profile_view(request):
         
         # --- PHASE 2: GOVERNMENT PERFORMANCE STATS ---
         resolved_complaints = coverage_complaints.filter(status='resolved')
-        
-        avg_time = resolved_complaints.aggregate(
-            avg_time=Avg(F('updated_at') - F('created_at'))
-        )['avg_time']
-        
+        avg_time = resolved_complaints.aggregate(avg_time=Avg(F('updated_at') - F('created_at')))['avg_time']
         avg_resolution_time = "N/A"
         if avg_time:
             total_seconds = int(avg_time.total_seconds())
             days = total_seconds // 86400
             hours = (total_seconds % 86400) // 3600
             minutes = (total_seconds % 3600) // 60
-            if days > 0:
-                avg_resolution_time = f"{days}d {hours}h"
-            elif hours > 0:
-                avg_resolution_time = f"{hours}h {minutes}m"
-            else:
-                avg_resolution_time = f"{minutes}m"
+            if days > 0: avg_resolution_time = f"{days}d {hours}h"
+            elif hours > 0: avg_resolution_time = f"{hours}h {minutes}m"
+            else: avg_resolution_time = f"{minutes}m"
         
-        citizen_satisfaction = resolved_complaints.filter(
-            rating_score__isnull=False
-        ).aggregate(Avg('rating_score'))['rating_score__avg'] or 0
+        citizen_satisfaction = resolved_complaints.filter(rating_score__isnull=False).aggregate(Avg('rating_score'))['rating_score__avg'] or 0
+
+        # ==================================================
+        # PHASE 4: TOP URGENT COMPLAINTS (COCKPIT DATA)
+        # ==================================================
+        urgent_complaints = coverage_complaints.order_by('-upvotes')[:3]
+
+        # FIX: Build the safe map data list
+        # ==================================================
+        coverage_map_data = []
+        for c in coverage_complaints:
+            if c.latitude and c.longitude:
+                coverage_map_data.append({
+                    'lat': float(c.latitude),
+                    'lng': float(c.longitude),
+                    'id': c.id,
+                    'cat': c.get_category_display(),
+                    'status': c.get_status_display(),
+                })
 
         return render(request, 'complaints/govt_profile.html', {
             'profile': profile,
@@ -1145,7 +1152,21 @@ def profile_view(request):
             'pending_count': pending_count,
             'avg_resolution_time': avg_resolution_time,
             'citizen_satisfaction': citizen_satisfaction,
-            'user_activities': user_activities, # Passed to Government Template
+            'user_activities': user_activities,
+            'urgent_complaints': urgent_complaints,
+            'coverage_map_data': coverage_map_data,  # <-- ADD THIS KEY
+        })
+
+        return render(request, 'complaints/govt_profile.html', {
+            'profile': profile,
+            'coverage_complaints': coverage_complaints,
+            'coverage_map_data': json.dumps(coverage_map_data),
+            'resolved_count': resolved_count,
+            'pending_count': pending_count,
+            'avg_resolution_time': avg_resolution_time,
+            'citizen_satisfaction': citizen_satisfaction,
+            'user_activities': user_activities,
+            'urgent_complaints': urgent_complaints, # Added for Phase 4
         })
 
     # --- CITIZEN CONTEXT ---
