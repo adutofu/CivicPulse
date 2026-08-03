@@ -1420,10 +1420,10 @@
                 this.isDropdownOpen = false;
                 this.pollingInterval = null;
                 this.urls = {
-                    unreadCount: '{% url "get_unread_count" %}',
-                    notifications: '{% url "get_notifications" %}',
-                    markAllRead: '{% url "mark_all_read" %}',
-                    markReadTemplate: '{% url "mark_notification_read" notification_id=0 %}',
+                    unreadCount: '{% url "notification-unread-count" %}',
+                    notifications: '{% url "notification-list" %}',
+                    markAllRead: '{% url "notification-mark-all-read" %}',
+                    markReadTemplate: '{% url "notification-mark-read" pk=0 %}',
                 };
                 this.init();
             }
