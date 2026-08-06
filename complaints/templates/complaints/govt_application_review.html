@@ -100,8 +100,10 @@
 
     {% if profile.id_card %}
     <div class="id-card-preview">
-        <p style="color: var(--text-muted); font-size:0.85rem;">Uploaded ID Card:</p>
-        <img src="{{ profile.id_card.url }}" alt="ID card for {{ profile.user.username }}">
+        <p style="color: var(--text-muted); font-size:0.85rem;">Uploaded document:</p>
+        <a href="{{ profile.id_card.url }}" target="_blank" rel="noopener noreferrer" style="color: var(--brand-cyan); font-weight: 700;">
+            View uploaded application document
+        </a>
     </div>
     {% else %}
     <p style="color: var(--text-muted);">No ID card uploaded.</p>

@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models as gis_models
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.utils import timezone
 
@@ -274,7 +275,8 @@ class Profile(models.Model):
 
     # --- Government official verification fields ---
     verification_status = models.CharField(max_length=20, choices=VERIFICATION_STATUS, default='not_applicable')
-    id_card = models.ImageField(upload_to='govt_ids/', blank=True, null=True)
+    id_card = models.FileField(upload_to='govt_ids/', blank=True, null=True,
+        validators=[FileExtensionValidator(['pdf', 'docx'])])
     applied_at = models.DateTimeField(blank=True, null=True)
     verified_at = models.DateTimeField(blank=True, null=True)
     verified_by = models.ForeignKey(

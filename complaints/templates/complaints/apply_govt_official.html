@@ -62,6 +62,13 @@
         background: var(--brand-cyan-deep);
         transform: translateY(-2px);
     }
+
+    .field-error {
+        color: #ff6b6b;
+        font-size: 0.85rem;
+        margin-top: -0.8rem;
+        margin-bottom: 1rem;
+    }
 </style>
 {% endblock %}
 
@@ -71,18 +78,66 @@
     <p class="subtitle">Submit your agency and a valid ID card for admin verification. Your account stays a citizen
         account until approved.</p>
 
-    <form method="post" enctype="multipart/form-data">
+    <form id="govt-application-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
+        {% if field.help_text %}
+        <div style="color:rgba(255,255,255,0.75); font-size:0.85rem; margin-top:-0.5rem; margin-bottom:1rem;">
+            {{ field.help_text }}
+        </div>
+        {% endif %}
         {% if field.errors %}
-        <div style="color:#ff6b6b; font-size:0.85rem; margin-top:-1rem; margin-bottom:1rem;">
+        <div class="field-error">
             {{ field.errors }}
         </div>
         {% endif %}
         {% endfor %}
+        <div id="file-validation-error" class="field-error" style="display: none;"></div>
         <button type="submit" class="btn-submit-application">Submit Application</button>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('govt-application-form');
+            const fileInput = form.querySelector('input[name="id_card"]');
+            const errorEl = document.getElementById('file-validation-error');
+            const allowedExtensions = ['pdf', 'docx'];
+            const maxFileSize = 5 * 1024 * 1024; // 5MB
+
+            function validateFile(file) {
+                if (!file) {
+                    return 'Please upload a PDF or DOCX document before submitting your application.';
+                }
+
+                const extension = file.name.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(extension)) {
+                    return 'Invalid file type. Please upload a PDF or DOCX document.';
+                }
+
+                if (file.size > maxFileSize) {
+                    return 'Uploaded file must be 5MB or smaller.';
+                }
+
+                return '';
+            }
+
+            if (form && fileInput) {
+                form.addEventListener('submit', function (event) {
+                    const errorMessage = validateFile(fileInput.files[0]);
+                    if (errorMessage) {
+                        event.preventDefault();
+                        errorEl.textContent = errorMessage;
+                        errorEl.style.display = 'block';
+                        fileInput.focus();
+                    } else {
+                        errorEl.style.display = 'none';
+                        errorEl.textContent = '';
+                    }
+                });
+            }
+        });
+    </script>
 </div>
 {% endblock %}
