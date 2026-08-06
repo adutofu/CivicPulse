@@ -232,6 +232,16 @@
             padding: 0.8rem 2rem;
             gap: 1.5rem;
         }
+
+        .desktop-nav-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1 1 auto;
+            gap: 1.2rem;
+            min-width: 0;
+        }
+
         .logo-svg {
             flex: 0 0 auto;
         }
@@ -262,6 +272,16 @@
         /* ---- NAV (single source of truth — no duplicate rules) ---- */
         nav {
             flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.3rem;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .desktop-nav {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -380,6 +400,192 @@
             flex-wrap: nowrap;
             margin-left: auto;
             flex-shrink: 0;
+        }
+
+        .desktop-buttons {
+            display: flex;
+        }
+
+        .mobile-notification-section {
+            display: none;
+            padding: 0.75rem 0 1rem;
+            border-bottom: 1px solid rgba(21, 101, 255, 0.12);
+            margin-bottom: 1rem;
+        }
+
+        .mobile-notification-section .notification-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 0.85rem;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            width: 46px;
+            height: 46px;
+            border: 1px solid rgba(21, 101, 255, 0.2);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.92);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            padding: 0;
+            color: var(--text-primary);
+            z-index: 1100;
+        }
+
+        .mobile-menu-toggle span {
+            width: 20px;
+            height: 2.5px;
+            border-radius: 999px;
+            background: var(--brand-cyan);
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+            transform: translateY(6.5px) rotate(45deg);
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+            transform: translateY(-6.5px) rotate(-45deg);
+        }
+
+        .mobile-nav-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 18, 37, 0.38);
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 1000;
+        }
+
+        .mobile-nav-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mobile-nav-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: min(88vw, 360px);
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: -12px 0 40px rgba(0, 0, 0, 0.12);
+            border-left: 1px solid rgba(21, 101, 255, 0.12);
+            transform: translateX(105%);
+            transition: transform 0.3s ease;
+            z-index: 1101;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .mobile-nav-drawer.open {
+            transform: translateX(0);
+        }
+
+        .mobile-nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(21, 101, 255, 0.15);
+            margin-bottom: 1rem;
+        }
+
+        .mobile-nav-title {
+            font-weight: 800;
+            color: var(--brand-cyan-deep);
+        }
+
+        .mobile-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .mobile-notification-btn {
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-header-actions .notification-badge {
+            top: -4px;
+            right: -4px;
+        }
+
+        .mobile-menu-close {
+            border: none;
+            background: var(--brand-cyan-glow);
+            color: var(--brand-cyan-deep);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-size: 1.35rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .mobile-nav-links,
+        .mobile-nav-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .mobile-nav-links a,
+        .mobile-nav-actions a,
+        .mobile-nav-actions button {
+            width: 100%;
+            text-decoration: none;
+        }
+
+        .mobile-nav-links a {
+            padding: 0.8rem 0.9rem;
+            border-radius: 14px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: rgba(21, 101, 255, 0.04);
+        }
+
+        .mobile-nav-links a:hover {
+            background: var(--brand-cyan-glow);
+            color: var(--brand-cyan-deep);
+        }
+
+        .mobile-nav-actions {
+            margin-top: 1rem;
+        }
+
+        .mobile-nav-actions .btn-login,
+        .mobile-nav-actions .btn-signup,
+        .mobile-nav-actions .btn-dashboard,
+        .mobile-nav-actions .btn-report,
+        .mobile-nav-actions .btn-logout,
+        .mobile-nav-actions .btn-profile-avatar {
+            text-align: center;
+            width: 100%;
+            justify-content: center;
         }
 
         .btn-login,
@@ -656,10 +862,23 @@
         /* Responsive — nav collapses gracefully below 860px */
         @media (max-width: 860px) {
             .header-container {
-                flex-wrap: wrap;
-                justify-content: center;
-                text-align: center;
-                gap: 1rem;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                gap: 0.75rem;
+            }
+
+            .desktop-nav-wrap {
+                display: none;
+            }
+
+            .desktop-nav,
+            .desktop-buttons {
+                display: none !important;
+            }
+
+            .mobile-menu-toggle {
+                display: flex !important;
+                flex-shrink: 0;
             }
 
             nav {
@@ -675,10 +894,11 @@
             }
 
             .notification-container {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                margin-top: 0.5rem;
+                display: none !important;
+            }
+
+            .mobile-notification-section {
+                display: block;
             }
 
             .notification-dropdown {
@@ -692,6 +912,14 @@
                 left: auto;
                 right: 0;
                 transform: none;
+            }
+        }
+
+        @media (min-width: 861px) {
+            .mobile-menu-toggle,
+            .mobile-nav-backdrop,
+            .mobile-nav-drawer {
+                display: none !important;
             }
         }
 
@@ -795,7 +1023,7 @@
                 border-radius: var(--radius-lg);
                 width: 360px;
                 max-height: 420px;
-                z-index: 1000;
+                z-index: 1202;
                 box-shadow: var(--shadow-lg);
                 -webkit-backdrop-filter: blur(16px);
                 backdrop-filter: blur(16px);
@@ -1268,63 +1496,134 @@
                 </svg>
             </div>
             {% block header_navigation %}
-            <nav>
-                <a href="/">Home</a>
-                <a href="{% url 'about' %}">About</a>
-                <a href="{% url 'contact' %}">Contact</a>
-                <a href="{% url 'analytics_dashboard' %}">Analytics</a>
-                {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
-                <a href="{% url 'community_complaints' %}">Community</a>
-                {% endif %}
+            <div class="desktop-nav-wrap">
+                <nav class="desktop-nav">
+                    <a href="/">Home</a>
+                    <a href="{% url 'about' %}">About</a>
+                    <a href="{% url 'contact' %}">Contact</a>
+                    <a href="{% url 'analytics_dashboard' %}">Analytics</a>
+                    {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                    <a href="{% url 'community_complaints' %}">Community</a>
+                    {% endif %}
 
-                {% if user.is_authenticated and user.profile.user_type == 'citizen' or user.profile.verification_status == 'not_applicable' or user.is_staff %}
-                <div class="nav-more" id="nav-more">
-                    <button type="button" class="nav-more-toggle" id="nav-more-toggle">
-                        More <span class="nav-more-caret">▾</span>
-                    </button>
-                    <div class="nav-more-dropdown">
-                        {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
-                        <a href="{% url 'activity_feed' %}">Feed</a>
+                    {% if user.is_authenticated and user.profile.user_type == 'citizen' or user.profile.verification_status == 'not_applicable' or user.is_staff %}
+                    <div class="nav-more" id="nav-more">
+                        <button type="button" class="nav-more-toggle" id="nav-more-toggle">
+                            More <span class="nav-more-caret">▾</span>
+                        </button>
+                        <div class="nav-more-dropdown">
+                            {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                            <a href="{% url 'activity_feed' %}">Feed</a>
+                            {% endif %}
+                            {% if user.profile.verification_status == 'not_applicable' %}
+                            <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
+                            {% endif %}
+                            {% if user.is_staff %}
+                            <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
+                            <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </nav>
+                <div class="nav-buttons desktop-buttons">
+                    {% if user.is_authenticated %}
+                    {% if user.profile.user_type == 'govt' %}
+                    <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
+                    <a href="{% url 'activity_feed' %}">Feed</a>
+                    {% else %}
+                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
+                    {% endif %}
+                    <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
+                    <a href="{% url 'profile' %}" class="btn-profile-avatar">
+                        <span class="avatar-circle">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                            {% else %}
+                                {{ user.username|first|upper }}
+                            {% endif %}
+                        </span>
+                        My Profile
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn-login">Login</a>
+                    <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav-drawer" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div id="mobile-nav-backdrop" class="mobile-nav-backdrop" aria-hidden="true"></div>
+
+            <aside id="mobile-nav-drawer" class="mobile-nav-drawer" aria-hidden="true">
+                <div class="mobile-nav-header">
+                    <span class="mobile-nav-title">CivicPulse Menu</span>
+                    <div class="mobile-header-actions">
+                        {% if user.is_authenticated %}
+                        <button id="notification-btn-mobile" class="notification-btn mobile-notification-btn" type="button" aria-expanded="false" aria-haspopup="true">
+                            <span class="bell-icon">🔔</span>
+                            <span class="notification-badge" style="display: none;">0</span>
+                        </button>
                         {% endif %}
-                        {% if user.profile.verification_status == 'not_applicable' %}
-                        <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
-                        {% endif %}
-                        {% if user.is_staff %}
-                        <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
-                        <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
-                        {% endif %}
+                        <button id="mobile-menu-close" class="mobile-menu-close" type="button" aria-label="Close menu">×</button>
                     </div>
                 </div>
-                {% endif %}
-            </nav>
-            <div class="nav-buttons">
-                {% if user.is_authenticated %}
-                {% if user.profile.user_type == 'govt' %}
-                <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
-                <a href="{% url 'activity_feed' %}">Feed</a>
-                {% else %}
-                <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
-                {% endif %}
-                <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                <a href="{% url 'profile' %}" class="btn-profile-avatar">
-                    <span class="avatar-circle">
-                        {% if user.profile.profile_picture %}
-                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
-                        {% else %}
-                            {{ user.username|first|upper }}
-                        {% endif %}
-                    </span>
-                    My Profile
-                </a>
-                <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-logout">Logout</button>
-                </form>
-                {% else %}
-                <a href="{% url 'login' %}" class="btn-login">Login</a>
-                <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
-                {% endif %}
-            </div>
+                <nav class="mobile-nav-links">
+                    <a href="/">Home</a>
+                    <a href="{% url 'about' %}">About</a>
+                    <a href="{% url 'contact' %}">Contact</a>
+                    <a href="{% url 'analytics_dashboard' %}">Analytics</a>
+                    {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                    <a href="{% url 'community_complaints' %}">Community</a>
+                    {% endif %}
+                    {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                    <a href="{% url 'activity_feed' %}">Feed</a>
+                    {% endif %}
+                    {% if user.profile.verification_status == 'not_applicable' %}
+                    <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
+                    {% endif %}
+                    {% if user.is_staff %}
+                    <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
+                    <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
+                    {% endif %}
+                </nav>
+                <div class="mobile-nav-actions">
+                    {% if user.is_authenticated %}
+                    {% if user.profile.user_type == 'govt' %}
+                    <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
+                    {% else %}
+                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
+                    {% endif %}
+                    <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
+                    <a href="{% url 'profile' %}" class="btn-profile-avatar">
+                        <span class="avatar-circle">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                            {% else %}
+                                {{ user.username|first|upper }}
+                            {% endif %}
+                        </span>
+                        My Profile
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-logout">Logout</button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn-login">Login</a>
+                    <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
+                    {% endif %}
+                </div>
+            </aside>
             {% endblock %}
 
             {% if user.is_authenticated %}
@@ -1436,14 +1735,17 @@
 
             bindEvents() {
                 this.notificationBtn = document.getElementById('notification-btn');
+                this.notificationBtns = Array.from(document.querySelectorAll('.notification-btn'));
                 this.notificationDropdown = document.getElementById('notification-dropdown');
                 this.notificationList = document.getElementById('notification-list');
                 const markAllBtn = document.getElementById('mark-all-read-btn');
 
-                if (this.notificationBtn) {
-                    this.notificationBtn.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        this.toggleDropdown();
+                if (this.notificationBtns.length) {
+                    this.notificationBtns.forEach((btn) => {
+                        btn.addEventListener('click', (event) => {
+                            event.stopPropagation();
+                            this.toggleDropdown();
+                        });
                     });
                 }
 
@@ -1466,8 +1768,8 @@
                 }
 
                 document.addEventListener('click', (event) => {
-                    if (this.notificationDropdown && !this.notificationDropdown.contains(event.target) &&
-                        this.notificationBtn && !this.notificationBtn.contains(event.target)) {
+                    const clickedNotificationButton = this.notificationBtns.some((btn) => btn.contains(event.target));
+                    if (this.notificationDropdown && !this.notificationDropdown.contains(event.target) && !clickedNotificationButton) {
                         this.closeDropdown();
                     }
                 });
@@ -1559,6 +1861,9 @@
                 if (!this.notificationDropdown) return;
                 this.isDropdownOpen = !this.isDropdownOpen;
                 this.notificationDropdown.style.display = this.isDropdownOpen ? 'block' : 'none';
+                this.notificationBtns.forEach((btn) => {
+                    btn.setAttribute('aria-expanded', String(this.isDropdownOpen));
+                });
                 if (this.isDropdownOpen) {
                     this.loadNotifications();
                 }
@@ -1569,6 +1874,9 @@
                     this.notificationDropdown.style.display = 'none';
                 }
                 this.isDropdownOpen = false;
+                this.notificationBtns.forEach((btn) => {
+                    btn.setAttribute('aria-expanded', 'false');
+                });
             }
 
             async handleNotificationClick(notificationId, complaintId) {
@@ -1635,14 +1943,17 @@
             }
 
             updateBadge() {
-                const badge = document.getElementById('notification-badge');
-                if (!badge) return;
-                if (this.unreadCount > 0) {
-                    badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
-                    badge.style.display = 'inline-flex';
-                } else {
-                    badge.style.display = 'none';
-                }
+                const badges = document.querySelectorAll('.notification-badge');
+                if (!badges.length) return;
+
+                badges.forEach((badge) => {
+                    if (this.unreadCount > 0) {
+                        badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
+                        badge.style.display = 'inline-flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                });
             }
 
             displayError(message) {
@@ -1725,6 +2036,54 @@
             }, { threshold: 0.4 });
 
             counters.forEach(el => observer.observe(el));
+        });
+    </script>
+
+    <!-- Shared responsive mobile navigation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileNavDrawer = document.getElementById('mobile-nav-drawer');
+            const mobileNavBackdrop = document.getElementById('mobile-nav-backdrop');
+
+            if (!mobileMenuToggle || !mobileNavDrawer) {
+                return;
+            }
+
+            function setMobileMenuState(isOpen) {
+                mobileNavDrawer.classList.toggle('open', isOpen);
+                mobileNavBackdrop?.classList.toggle('open', isOpen);
+                mobileMenuToggle.setAttribute('aria-expanded', String(isOpen));
+                mobileNavDrawer.setAttribute('aria-hidden', String(!isOpen));
+                document.body.style.overflow = isOpen ? 'hidden' : '';
+            }
+
+            mobileMenuToggle.addEventListener('click', function (event) {
+                event.stopPropagation();
+                const isOpen = mobileNavDrawer.classList.contains('open');
+                setMobileMenuState(!isOpen);
+            });
+
+            mobileMenuClose?.addEventListener('click', function () {
+                setMobileMenuState(false);
+            });
+
+            mobileNavBackdrop?.addEventListener('click', function () {
+                setMobileMenuState(false);
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!mobileNavDrawer.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    setMobileMenuState(false);
+                }
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    setMobileMenuState(false);
+                }
+            });
         });
     </script>
 

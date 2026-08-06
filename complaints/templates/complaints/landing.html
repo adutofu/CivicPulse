@@ -5,114 +5,6 @@
 
 {% block body_class %}page-landing{% endblock %}
 
-{% block header_navigation %}
-            <!-- Desktop Navigation -->
-            <nav class="desktop-nav">
-                <a href="/">Home</a>
-                <a href="{% url 'about' %}">About</a>
-                <a href="{% url 'contact' %}">Contact</a>
-                <a href="{% url 'analytics_dashboard' %}">Analytics</a>
-                {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
-                <a href="{% url 'community_complaints' %}">Community</a>
-                {% endif %}
-
-                {% if user.is_authenticated and user.profile.user_type == 'citizen' or user.profile.verification_status == 'not_applicable' or user.is_staff %}
-                <div class="nav-more" id="nav-more">
-                    <button type="button" class="nav-more-toggle" id="nav-more-toggle">
-                        More <span class="nav-more-caret">▾</span>
-                    </button>
-                    <div class="nav-more-dropdown">
-                        {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
-                        <a href="{% url 'activity_feed' %}">Feed</a>
-                        {% if user.profile.verification_status == 'not_applicable' %}
-                        <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
-                        {% endif %}
-                        {% endif %}
-                        {% if user.is_staff %}
-                        <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
-                        {% if user.is_superuser %}
-                        <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
-                        {% endif %}
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-            </nav>
-            
-            <div class="nav-buttons desktop-buttons">
-                {% if user.is_authenticated %}
-                {% if user.profile.user_type == 'govt' %}
-                <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
-                {% else %}
-                <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
-                {% endif %}
-                <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                <a href="{% url 'profile' %}" class="btn-profile-avatar">
-                    <span class="avatar-circle">
-                        {% if user.profile.profile_picture %}
-                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
-                        {% else %}
-                            {{ user.username|first|upper }}
-                        {% endif %}
-                    </span>
-                    My Profile
-                </a>
-                <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-logout">Logout</button>
-                </form>
-                {% else %}
-                <a href="{% url 'login' %}" class="btn-login">Login</a>
-                <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
-                {% endif %}
-            </div>
-
-
-            <!-- Hamburger Menu Button -->
-            <button id="mobile-hamburger-btn" class="hamburger-btn" aria-label="Toggle Navigation Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-
-            <!-- Mobile Dropdown Navigation Menu -->
-            <div id="mobile-nav-menu" class="mobile-nav-menu">
-                <nav class="mobile-nav-links">
-                    <a href="/">Home</a>
-                    <a href="{% url 'about' %}">About</a>
-                    <a href="{% url 'contact' %}">Contact</a>
-                    {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
-                    <a href="{% url 'community_complaints' %}">Community</a>
-                    {% if user.profile.verification_status == 'not_applicable' %}
-                    <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
-                    {% endif %}
-                    {% endif %}
-                    {% if user.is_staff %}
-                    <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
-                    <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
-                    {% endif %}
-                </nav>
-                <div class="mobile-nav-buttons">
-                    {% if user.is_authenticated %}
-                    {% if user.profile.user_type == 'govt' %}
-                    <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
-                    {% else %}
-                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
-                    {% endif %}
-                    <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                    <a href="{% url 'profile' %}" class="btn-dashboard">My Profile</a>
-                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-logout">Logout</button>
-                    </form>
-                    {% else %}
-                    <a href="{% url 'login' %}" class="btn-login">Login</a>
-                    <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
-                    {% endif %}
-                </div>
-            </div>
-{% endblock %}
-
 {% block extra_css %}
 <style>
     /* ----- PROFESSIONAL WEBSITE DESIGN SYSTEM (Cyan/Light Theme) ----- */
@@ -381,31 +273,6 @@
         .service-number { font-size: 24px; }
     }
 
-    /* ----- MOBILE HAMBURGER (Kept intact and combined) ----- */
-    @media (min-width: 601px) {
-        .hamburger-btn { display: none !important; }
-        .mobile-nav-menu { display: none !important; }
-    }
-    @media (max-width: 600px) {
-        .desktop-nav, .desktop-buttons { display: none !important; }
-        .header-container { position: relative !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; flex-wrap: nowrap !important; padding: 0 1rem !important; }
-        .logo-svg { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; order: 2; z-index: 1; }
-        .logo-svg svg { height: 40px !important; }
-        .hamburger-btn { display: flex !important; flex-direction: column; justify-content: space-between; width: 26px; height: 18px; background: transparent; border: none; cursor: pointer; z-index: 1100; padding: 0; order: 1; position: relative; }
-        .hamburger-btn span { display: block; width: 100%; height: 2.5px; background-color: var(--text-primary); border-radius: 4px; transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1); }
-        .hamburger-btn.active span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); background-color: var(--error-red); }
-        .hamburger-btn.active span:nth-child(2) { opacity: 0; }
-        .hamburger-btn.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); background-color: var(--error-red); }
-        .mobile-nav-menu { position: fixed; top: 0; left: -100%; width: 100%; height: 100vh; background: rgba(255,255,255,0.98); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 1050; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: left 0.35s cubic-bezier(0.16, 1, 0.3, 1); padding: 2.5rem; }
-        .mobile-nav-menu.active { left: 0; }
-        .mobile-nav-links { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; margin-bottom: 2rem; width: 100%; }
-        .mobile-nav-links a { font-size: 1.2rem; font-weight: 600; color: var(--text-primary); text-decoration: none; }
-        .mobile-nav-links a:hover { color: var(--brand-cyan); }
-        .mobile-nav-buttons { display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 260px; align-items: center; }
-        .mobile-nav-buttons a, .mobile-nav-buttons form, .mobile-nav-buttons button { width: 100%; text-align: center; }
-        .mobile-nav-buttons .btn-login, .mobile-nav-buttons .btn-signup, .mobile-nav-buttons .btn-dashboard, .mobile-nav-buttons .btn-report, .mobile-nav-buttons .btn-logout { width: 100%; padding: 0.75rem 1.25rem; font-size: 1rem; display: block; border-radius: 40px; }
-        body.menu-open { overflow: hidden; }
-    }
 </style>
 {% endblock %}
 
@@ -891,32 +758,5 @@
     window.addEventListener('load', getGPSAndWeather);
     document.getElementById('refreshLocationBtn')?.addEventListener('click', getGPSAndWeather);
 
-    // ---------- MOBILE HAMBURGER ----------
-    (function() {
-        const hamburgerBtn = document.getElementById('mobile-hamburger-btn');
-        const mobileMenu = document.getElementById('mobile-nav-menu');
-        if (hamburgerBtn && mobileMenu) {
-            hamburgerBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                hamburgerBtn.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-                document.body.classList.toggle('menu-open');
-            });
-            document.addEventListener('click', function(e) {
-                if (!mobileMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-                    hamburgerBtn.classList.remove('active');
-                    mobileMenu.classList.remove('active');
-                    document.body.classList.remove('menu-open');
-                }
-            });
-            mobileMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', function() {
-                    hamburgerBtn.classList.remove('active');
-                    mobileMenu.classList.remove('active');
-                    document.body.classList.remove('menu-open');
-                });
-            });
-        }
-    })();
 </script>
 {% endblock %}
