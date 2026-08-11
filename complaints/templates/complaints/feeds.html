@@ -300,10 +300,10 @@
                                                 <span class="feed-time">{{ activity.created_at|timesince }} ago</span>
                                                 
                                                 <div class="feed-actions-wrapper">
-                                                    <button class="feed-share-btn" data-url="{% url 'complaint_detail' complaint.id %}" aria-label="Share">🔗</button>
-                                                    <button class="feed-more-btn" aria-label="More Options">⋯</button>
+                                                    <button class="feed-share-btn" data-url="{% url 'complaint_detail' complaint.id %}" aria-label="Share"><ion-icon name="link-outline"></ion-icon></button>
+                                                    <button class="feed-more-btn" aria-label="More Options"><ion-icon name="ellipsis-horizontal-outline"></ion-icon></button>
                                                     <div class="feed-more-dropdown">
-                                                        <a href="{% url 'flag_complaint' complaint.id %}" class="danger">🚩 Report / Flag</a>
+                                                        <a href="{% url 'flag_complaint' complaint.id %}" class="danger"><ion-icon name="flag-outline" style="vertical-align:-2px;"></ion-icon> Report / Flag</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -335,16 +335,16 @@
 
                                             <div class="feed-footer">
                                                 <button class="feed-stat interactive-btn" data-action="upvote" data-complaint-id="{{ complaint.id }}">
-                                                    <span class="stat-icon">👍</span> 
+                                                    <span class="stat-icon"><ion-icon name="thumbs-up-outline"></ion-icon></span> 
                                                     <span id="upvote-count-{{ complaint.id }}">{{ complaint.upvotes }}</span>
                                                 </button>
-                                                
+
                                                 <button class="feed-stat interactive-btn" data-action="follow" data-complaint-id="{{ complaint.id }}">
-                                                    <span class="stat-icon">➕</span> Follow
+                                                    <span class="stat-icon"><ion-icon name="add-outline"></ion-icon></span> Follow
                                                 </button>
-                                                
+
                                                 <button class="feed-stat interactive-btn" data-action="repost" data-complaint-id="{{ complaint.id }}">
-                                                    <span class="stat-icon">🔁</span> 
+                                                    <span class="stat-icon"><ion-icon name="repeat-outline"></ion-icon></span> 
                                                     <span id="repost-count-{{ complaint.id }}">{{ complaint.reposts.count }}</span>
                                                 </button>
 
@@ -369,13 +369,13 @@
                                                     {% elif activity.type == 'upvote' %}pill-upvote
                                                     {% elif activity.type == 'follow' %}pill-follow
                                                     {% elif activity.type == 'repost' %}pill-repost{% endif %}">
-                                                    {% if activity.type == 'comment' %}💬 Commented
-                                                    {% elif activity.type == 'upvote' %}👍 Upvoted
-                                                    {% elif activity.type == 'follow' %}🔔 Following
-                                                    {% elif activity.type == 'repost' %}🔁 Reposted{% endif %}
+                                                    {% if activity.type == 'comment' %}<ion-icon name="chatbubble-outline" style="vertical-align:-2px;"></ion-icon> Commented
+                                                    {% elif activity.type == 'upvote' %}<ion-icon name="thumbs-up-outline" style="vertical-align:-2px;"></ion-icon> Upvoted
+                                                    {% elif activity.type == 'follow' %}<ion-icon name="notifications-outline" style="vertical-align:-2px;"></ion-icon> Following
+                                                    {% elif activity.type == 'repost' %}<ion-icon name="repeat-outline" style="vertical-align:-2px;"></ion-icon> Reposted{% endif %}
                                                 </span>
                                                 <div class="feed-actions-wrapper" style="margin-left: 0.5rem;">
-                                                    <button class="feed-share-btn" data-url="{% url 'complaint_detail' complaint.id %}" aria-label="Share">🔗</button>
+                                                    <button class="feed-share-btn" data-url="{% url 'complaint_detail' complaint.id %}" aria-label="Share"><ion-icon name="link-outline"></ion-icon></button>
                                                 </div>
                                             </div>
                                             
@@ -406,16 +406,16 @@
 
                                             <div class="feed-footer">
                                                 <button class="feed-stat interactive-btn" data-action="upvote" data-complaint-id="{{ complaint.id }}">
-                                                    <span class="stat-icon">👍</span> 
+                                                    <span class="stat-icon"><ion-icon name="thumbs-up-outline"></ion-icon></span> 
                                                     <span id="upvote-count-{{ complaint.id }}">{{ complaint.upvotes }}</span>
                                                 </button>
-                                                
+
                                                 <button class="feed-stat interactive-btn" data-action="follow" data-complaint-id="{{ complaint.id }}">
-                                                    <span class="stat-icon">➕</span> Follow
+                                                    <span class="stat-icon"><ion-icon name="add-outline"></ion-icon></span> Follow
                                                 </button>
-                                                
+
                                                 <button class="feed-stat interactive-btn" data-action="repost" data-complaint-id="{{ complaint.id }}">
-                                                    <span class="stat-icon">🔁</span> 
+                                                    <span class="stat-icon"><ion-icon name="repeat-outline"></ion-icon></span> 
                                                     <span id="repost-count-{{ complaint.id }}">{{ complaint.reposts.count }}</span>
                                                 </button>
 
@@ -439,7 +439,7 @@
                 
                 <!-- SIDEBAR: Trending -->
                 <div class="sidebar-card fade-in-up">
-                    <h4>🔥 Trending Now</h4>
+                    <h4><ion-icon name="flame-outline" style="vertical-align:-2px;"></ion-icon> Trending Now</h4>
                     {% if top_issues %}
                         {% for issue in top_issues %}
                         <div class="sidebar-trend-item">
@@ -457,7 +457,7 @@
 
                 <!-- SIDEBAR: Top Hero -->
                 <div class="sidebar-card fade-in-up">
-                    <h4>🏆 Top Civic Hero</h4>
+                    <h4><ion-icon name="trophy-outline" style="vertical-align:-2px;"></ion-icon> Top Civic Hero</h4>
                     {% if top_hero %}
                     <div style="display:flex; align-items:center; gap:0.8rem;">
                         <div class="feed-avatar" style="width: 44px; height: 44px; font-size:1rem; background: linear-gradient(135deg, #f59e0b, #d97706);">
@@ -475,7 +475,7 @@
 
                 <!-- SIDEBAR: Govt Notice -->
                 <div class="sidebar-card fade-in-up" style="border-left: 4px solid var(--accent-green);">
-                    <h4 style="border:none; padding-bottom:0; margin-bottom:0.3rem;">📢 Official Notice</h4>
+                    <h4 style="border:none; padding-bottom:0; margin-bottom:0.3rem;"><ion-icon name="megaphone-outline" style="vertical-align:-2px;"></ion-icon> Official Notice</h4>
                     {% if latest_notice %}
                     <div style="font-size:0.85rem; color:var(--text-secondary); line-height:1.4;">
                         <strong>{{ latest_notice.title }}.</strong> {{ latest_notice.content }}
@@ -563,10 +563,10 @@
                 else if (action === 'follow') {
                     button.classList.toggle('active-follow', data.following);
                     if (data.following) {
-                        button.innerHTML = `<span class="stat-icon">🔔</span> Following`;
+                        button.innerHTML = `<span class="stat-icon"><ion-icon name="notifications-outline"></ion-icon></span> Following`;
                         actionMsg = 'You are now following this complaint.';
                     } else {
-                        button.innerHTML = `<span class="stat-icon">➕</span> Follow`;
+                        button.innerHTML = `<span class="stat-icon"><ion-icon name="add-outline"></ion-icon></span> Follow`;
                         actionMsg = 'You unfollowed this complaint.';
                     }
                 } 
