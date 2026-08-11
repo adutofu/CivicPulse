@@ -327,9 +327,9 @@
                                                 </span>
                                                 {% endif %}
                                                 {% if complaint.ward %}
-                                                <span class="feed-location">📍 {{ complaint.ward.ward }}, {{ complaint.ward.lga }}, {{ complaint.ward.state }}</span>
+                                                <span class="feed-location"><ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.ward.ward }}, {{ complaint.ward.lga }}, {{ complaint.ward.state }}</span>
                                                 {% elif complaint.address_text %}
-                                                <span class="feed-location">📍 {{ complaint.address_text }}</span>
+                                                <span class="feed-location"><ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.address_text }}</span>
                                                 {% endif %}
                                             </div>
 

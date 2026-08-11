@@ -181,10 +181,10 @@
                 <!-- Action Bar -->
                 <div class="action-bar">
                     <button class="btn-outline-cyan upvote-btn" data-complaint-id="{{ complaint.id }}">
-                        👍 <span class="upvote-count">{{ complaint.upvotes }}</span>
+                        <ion-icon name="thumbs-up-outline"></ion-icon> <span class="upvote-count">{{ complaint.upvotes }}</span>
                     </button>
                     <button class="btn-outline-cyan repost-btn" data-complaint-id="{{ complaint.id }}">
-                        🔁 <span class="repost-count">{{ complaint.reposts.count }}</span>
+                        <ion-icon name="repeat-outline"></ion-icon> <span class="repost-count">{{ complaint.reposts.count }}</span>
                     </button>
                     <button class="btn-outline-cyan follow-btn" data-complaint-id="{{ complaint.id }}">
                         {% if request.user in complaint.followers.all %}
@@ -194,7 +194,7 @@
                         {% endif %}
                     </button>
                     <button class="btn-outline-danger flag-complaint-btn" data-complaint-id="{{ complaint.id }}" data-bs-toggle="modal" data-bs-target="#flagComplaintModal">
-                        🚩 Report
+                        <ion-icon name="flag-outline" style="vertical-align:-2px;"></ion-icon> Report
                     </button>
                     <span class="badge-upvotes"><ion-icon name="chatbubble-ellipses-outline"></ion-icon> {{ complaint.comments.count }}</span>
                     <!-- ===== Status Badge ===== -->

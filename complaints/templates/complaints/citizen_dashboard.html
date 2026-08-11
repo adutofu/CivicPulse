@@ -337,7 +337,7 @@
                         {% with category=complaint.get_category_display short_desc=complaint.description|truncatechars:50 %}
                             <li>
                                 <a href="{% url 'complaint_detail' complaint.id %}">{{ category }} · {{ short_desc }}</a>
-                                <span class="upvote-pill">⬆ {{ complaint.upvotes }}</span>
+                                <span class="upvote-pill"><ion-icon name="arrow-up-circle-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.upvotes }}</span>
                             </li>
                         {% endwith %}
                         {% endfor %}
