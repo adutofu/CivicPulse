@@ -97,6 +97,11 @@ class Notification(models.Model):
         ('comment_reply', 'Comment Reply'),
         ('mention', 'Mention'),
         ('repost', 'Repost'),
+        ('follow', 'Follow'),
+        ('flag', 'Flag'),
+        ('upvote', 'Upvote'),
+        ('community_priority', 'Community Priority'),
+        ('escalation', 'Escalation'),
         ('new_rating', 'New Rating'),
     ]
     
@@ -353,6 +358,9 @@ class Flag(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     resolved = models.BooleanField(default=False)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='flags', null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"Flag for complaint #{self.complaint.id} by {self.reported_by.username}"

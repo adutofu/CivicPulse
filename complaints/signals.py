@@ -2,8 +2,7 @@ from django.db.models import F
 from django.db.models.signals import post_save, post_delete
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-from .models import Profile, Vote, Complaint
-from .models import ComplaintFollower, Notification, User
+from .models import Profile, Vote, Complaint, ComplaintFollower, Notification
 
 
 @receiver(post_save, sender=User)
@@ -35,13 +34,6 @@ def notify_followers_on_update(sender, instance, created, **kwargs):
     if kwargs.get('raw'):
         return
 
-
-# Only notify followers when the complaint is updated (not on creation)
-@receiver(post_save, sender=Complaint)
-def notify_followers_on_update(sender, instance, created, **kwargs):
-    if kwargs.get('raw'):
-        return
-
     # Only notify followers when the complaint is UPDATED (not on creation)
     if not created:
         followers = ComplaintFollower.objects.filter(complaint=instance).exclude(user=instance.citizen)
@@ -53,9 +45,10 @@ def notify_followers_on_update(sender, instance, created, **kwargs):
                 message += f" Response: {instance.government_response[:60]}..."
             for follower in followers:
                 Notification.objects.create(
-                    recipient=follower.user,
+                    user=follower.user,
                     complaint=instance,
                     notification_type='status_change',
+                    title='Complaint Updated',
                     message=message
                 )    
 
@@ -68,8 +61,9 @@ def notify_govt_on_new_complaint(sender, instance, created, **kwargs):
         gov_users = User.objects.filter(profile__user_type='govt')
         for user in gov_users:
             Notification.objects.create(
-                recipient=user,
+                user=user,
                 complaint=instance,
                 notification_type='new_complaint',
+                title='New Complaint Reported',
                 message=f"New complaint #{instance.id} reported by {instance.citizen.username}"
             )

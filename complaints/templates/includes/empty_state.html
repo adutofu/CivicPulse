@@ -3,9 +3,9 @@
 <div class="empty-state text-center py-5 my-3">
     <div class="empty-state-icon" style="font-size: 4rem; line-height: 1; margin-bottom: 1rem;">
         {% if icon %}
-            {{ icon }}
+            <ion-icon name="{{ icon }}" aria-hidden="true"></ion-icon>
         {% else %}
-            📭
+            <ion-icon name="mail-outline" aria-hidden="true"></ion-icon>
         {% endif %}
     </div>
     <h5 class="empty-state-title" style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem;">

@@ -6,6 +6,12 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
+
+            <div id="locationStatus" class="location-status">
+                <span id="locationStatusText">📍 Detecting your location…</span>
+                <button type="button" id="retryLocationBtn" class="btn-retry-location">Try Again</button>
+            </div>
+
             <div id="map"></div>
             <input type="hidden" name="latitude" id="lat">
             <input type="hidden" name="longitude" id="lng">
@@ -27,6 +33,56 @@
         border-radius: 20px;
         box-shadow: var(--shadow-md);
         padding: 2rem;
+    }
+
+    .location-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        background: var(--brand-cyan-glow);
+        border: 1px solid var(--brand-cyan);
+        border-radius: 12px;
+        padding: 0.65rem 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: var(--brand-cyan-deep);
+        font-weight: 600;
+    }
+
+    .location-status.status-success {
+        background: rgba(52, 199, 89, 0.12);
+        border-color: var(--accent-green);
+        color: #1F8A3B;
+    }
+
+    .location-status.status-failed {
+        background: rgba(255, 159, 10, 0.1);
+        border-color: #B36B00;
+        color: #B36B00;
+    }
+
+    .btn-retry-location {
+        background: #FFFFFF;
+        border: 1.5px solid currentColor;
+        color: inherit;
+        border-radius: 30px;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        display: none;
+    }
+
+    .btn-retry-location:hover {
+        background: currentColor;
+        filter: brightness(0.95);
+    }
+
+    .btn-retry-location.visible {
+        display: inline-block;
     }
 
     #map {
@@ -101,6 +157,10 @@
         .full-width-mobile {
             width: 100%;
         }
+
+        .location-status {
+            font-size: 0.8rem;
+        }
     }
 </style>
 
@@ -110,10 +170,15 @@
 <script>
     const defaultLat = 9.0765;
     const defaultLng = 7.3986;
+
+    // enableHighAccuracy: true actually engages the phone's GPS chip instead of
+    // the faster-but-coarser Wi-Fi/cell-tower positioning. GPS cold starts
+    // (indoors, weak signal, first fix of the session) can take well over 10
+    // seconds, so the timeout needs real room to let that happen.
     const geolocationOptions = {
-        enableHighAccuracy: false,
-        timeout: 4000,
-        maximumAge: 300000
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
     };
 
     var map = L.map('map').setView([defaultLat, defaultLng], 13);
@@ -124,6 +189,18 @@
 
     var marker;
     var userPickedManually = false;
+
+    const statusBox = document.getElementById('locationStatus');
+    const statusText = document.getElementById('locationStatusText');
+    const retryBtn = document.getElementById('retryLocationBtn');
+
+    function setStatus(mode, text) {
+        statusBox.classList.remove('status-success', 'status-failed');
+        if (mode === 'success') statusBox.classList.add('status-success');
+        if (mode === 'failed') statusBox.classList.add('status-failed');
+        statusText.textContent = text;
+        retryBtn.classList.toggle('visible', mode === 'failed');
+    }
 
     function setMarker(lat, lng, zoom = 15) {
         if (marker) map.removeLayer(marker);
@@ -136,24 +213,42 @@
     map.on('click', function (e) {
         userPickedManually = true;
         setMarker(e.latlng.lat, e.latlng.lng, 16);
+        setStatus('success', '📍 Location set manually on the map');
     });
 
     // Seed the form immediately with a safe fallback point so the submission is never blocked on location discovery.
     setMarker(defaultLat, defaultLng, 13);
 
-    if (navigator.geolocation) {
+    function detectLocation() {
+        if (!navigator.geolocation) {
+            setStatus('failed', '⚠️ Your browser doesn\'t support location detection — tap the map to set it manually.');
+            return;
+        }
+
+        setStatus('detecting', '📍 Detecting your location…');
+
         navigator.geolocation.getCurrentPosition(
             function (position) {
                 if (userPickedManually) return;
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
                 setMarker(lat, lng, 15);
+                setStatus('success', '📍 Location detected');
             },
             function (error) {
                 console.log('Geolocation unavailable or denied:', error.message);
+                if (userPickedManually) return;
+                setStatus('failed', '⚠️ Couldn\'t detect your location — tap the map to set it manually, or try again.');
             },
             geolocationOptions
         );
     }
+
+    retryBtn.addEventListener('click', function () {
+        userPickedManually = false;
+        detectLocation();
+    });
+
+    detectLocation();
 </script>
 {% endblock %}

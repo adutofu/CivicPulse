@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .models import Complaint, Notification, Vote
+from .models import Complaint, Comment, ComplaintFollower, Notification, Vote
 
 
 class NotificationSystemTests(TestCase):
@@ -103,3 +103,21 @@ class NotificationSystemTests(TestCase):
         self.complaint.refresh_from_db()
         self.assertEqual(self.complaint.upvotes, 0)
         self.assertFalse(Vote.objects.filter(user=self.govt, complaint=self.complaint).exists())
+
+    def test_api_follow_notifies_owner(self):
+        other_user = User.objects.create_user(username='follower', password='secret')
+        self.client.login(username='follower', password='secret')
+
+        response = self.client.post(reverse('api_follow'), {'complaint_id': self.complaint.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Notification.objects.filter(user=self.citizen, notification_type='follow', complaint=self.complaint).exists())
+
+    def test_api_comment_notifies_owner_and_followers(self):
+        follower = User.objects.create_user(username='follower', password='secret')
+        ComplaintFollower.objects.create(complaint=self.complaint, user=follower)
+        self.client.login(username='follower', password='secret')
+
+        response = self.client.post(reverse('api_comment'), {'complaint_id': self.complaint.id, 'text': 'Looks good'})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Notification.objects.filter(user=self.citizen, notification_type='comment_added', complaint=self.complaint).exists())
+        self.assertTrue(Notification.objects.filter(user=follower, notification_type='comment_added', complaint=self.complaint).exists())

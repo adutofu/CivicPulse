@@ -16,7 +16,7 @@ urlpatterns = [
 
     path('signup/', views.signup, name='signup'),           # Signup form (public)
     path('login/', views.custom_login.as_view(), name='login'),       # Custom login view
-    path('logout/', LogoutView.as_view(next_page='landing', http_method_names=['get', 'post']), name='logout'),
+    path('logout/', views.custom_logout, name='logout'),
     path('about/', views.about, name='about'),              # About page
     path('contact/', views.contact, name='contact'),        # Contact page
     path('my-complaints/', views.citizen_dashboard, name='citizen_dashboard'),  # citizen view of all own complaints

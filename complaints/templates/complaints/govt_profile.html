@@ -440,7 +440,7 @@
 {% block body_class %}has-page-hero{% endblock %}
 
 {% block content %}
-    {% include "includes/page_hero.html" with icon="🏛️" title="Government Profile" subtitle="Complaints tailored to your ministry and coverage area." %}
+    {% include "includes/page_hero.html" with icon="business-outline" title="Government Profile" subtitle="Complaints tailored to your ministry and coverage area." %}
 
     <div class="container py-4">
 
@@ -576,7 +576,7 @@
 
                 </div>
             {% else %}
-                {% include "includes/empty_state.html" with icon="📋" title="No complaints in your coverage area yet" message="Once citizens report issues in your assigned state and LGA, they'll appear here." %}
+                {% include "includes/empty_state.html" with icon="clipboard-outline" title="No complaints in your coverage area yet" message="Once citizens report issues in your assigned state and LGA, they'll appear here." %}
             {% endif %}
         </div>
 
@@ -632,7 +632,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {% include "includes/empty_state.html" with icon="⚡" title="No recent activity" message="Your interactions and reported issues will appear here as you use the platform." %}
+                {% include "includes/empty_state.html" with icon="flash-outline" title="No recent activity" message="Your interactions and reported issues will appear here as you use the platform." %}
             {% endif %}
         </div>
 
@@ -667,7 +667,7 @@
             </div>
             {% endwith %}
             {% if pending_count == 0 %}
-                {% include "includes/empty_state.html" with icon="⏳" title="No pending complaints" message="Everything in your coverage area has been resolved. Nice work." %}
+                {% include "includes/empty_state.html" with icon="time-outline" title="No pending complaints" message="Everything in your coverage area has been resolved. Nice work." %}
             {% endif %}
         </div>
 
@@ -702,7 +702,7 @@
                 {% endfor %}
             </div>
             {% if resolved_count == 0 %}
-                {% include "includes/empty_state.html" with icon="✅" title="No resolved complaints yet" message="Resolved issues from your coverage area will show up here." %}
+                {% include "includes/empty_state.html" with icon="checkmark-done-outline" title="No resolved complaints yet" message="Resolved issues from your coverage area will show up here." %}
             {% endif %}
         </div>
 

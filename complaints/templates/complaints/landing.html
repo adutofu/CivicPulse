@@ -388,7 +388,7 @@
                 <!-- Weather -->
                 <div class="weather-card">
                     <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.2rem;">
-                        <span style="font-weight:600;font-size:1.1rem;">📍 <span id="locationDisplay">Detecting...</span></span>
+                        <span style="font-weight:600;font-size:1.1rem;">📍<span id="locationDisplay">Detecting...</span></span>
                         <button id="refreshLocationBtn" style="background:transparent;border:1px solid var(--border-dim);border-radius:40px;padding:0.3rem 1rem;color:var(--text-secondary);cursor:pointer;">⟳ Update</button>
                     </div>
                     <div id="weatherContent"><div style="text-align:center;padding:2rem;color:var(--text-secondary);">Loading weather...</div></div>
@@ -413,7 +413,7 @@
                         {% endwith %}
                         {% endfor %}
                     {% else %}
-                        {% include "includes/empty_state.html" with icon="🔥" title="No trending issues yet" message="Top community issues will appear here as citizens start voting." %}
+                        {% include "includes/empty_state.html" with icon="flame-outline" title="No trending issues yet" message="Top community issues will appear here as citizens start voting." %}
                     {% endif %}
                 </div>
                 <div style="margin-top:1rem;text-align:right;">
@@ -728,31 +728,93 @@
     function getGPSAndWeather() {
         const locationDisplay = document.getElementById('locationDisplay');
         const weatherContent = document.getElementById('weatherContent');
+        const mapOverlay = document.getElementById('mapLoadingOverlay');
 
         if (!navigator.geolocation) {
             locationDisplay.innerHTML = 'Location unavailable';
             weatherContent.innerHTML = '<div style="text-align:center;">⚠️ Enable location access to see local weather.</div>';
-            document.getElementById('mapLoadingOverlay').classList.add('hidden');
+            mapOverlay.classList.add('hidden');
             return;
         }
 
-        navigator.geolocation.getCurrentPosition(pos => {
-            const { latitude, longitude } = pos.coords;
+        let gotLocation = false;
+        let watchId = null;
+
+        const updateLocation = (latitude, longitude) => {
+            gotLocation = true;
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
             map.flyTo([latitude, longitude], 16, { duration: 1.2 });
             updateUserLocation(latitude, longitude);
             loadNearbyComplaints(latitude, longitude);
             loadWardBoundary(latitude, longitude);
-            document.getElementById('mapLoadingOverlay').classList.add('hidden');
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
-                .then(r => r.json()).then(data => {
-                    const city = data.address?.city || data.address?.town || 'Your location';
+                .then(r => r.json())
+                .then(data => {
+                    const city = data.address?.city || data.address?.town || data.address?.village || 'Your location';
                     fetchWeatherForLocation(latitude, longitude, city);
-                }).catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
-        }, () => {
-            locationDisplay.innerHTML = 'Location permission denied';
-            weatherContent.innerHTML = '<div style="text-align:center;">⚠️ Allow location access to show your local weather.</div>';
-            document.getElementById('mapLoadingOverlay').classList.add('hidden');
-        }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+                })
+                .catch(() => fetchWeatherForLocation(latitude, longitude, 'Your location'));
+            mapOverlay.classList.add('hidden');
+        };
+
+        const showLocationError = (error) => {
+            const errorMessage = error && error.message ? error.message : '';
+            if (error.code === 1) {
+                locationDisplay.innerHTML = 'Location permission denied';
+                weatherContent.innerHTML = '<div style="text-align:center;">⚠️ Allow location access to show your local weather.</div>';
+            } else if (error.code === 2) {
+                locationDisplay.innerHTML = 'Location unavailable';
+                weatherContent.innerHTML = '<div style="text-align:center;">⚠️ Your device could not determine its location. Try again or enable location services.</div>';
+            } else if (error.code === 3) {
+                locationDisplay.innerHTML = 'Location request timed out';
+                weatherContent.innerHTML = '<div style="text-align:center;">⚠️ Could not get location fast enough. Please try again.</div>';
+            } else {
+                locationDisplay.innerHTML = 'Unable to get location';
+                weatherContent.innerHTML = `<div style="text-align:center;">⚠️ ${errorMessage || 'Location access failed.'}</div>`;
+            }
+            mapOverlay.classList.add('hidden');
+        };
+
+        const successHandler = (pos) => {
+            if (!pos || !pos.coords) {
+                return;
+            }
+            const { latitude, longitude } = pos.coords;
+            if (latitude && longitude) {
+                updateLocation(latitude, longitude);
+            }
+        };
+
+        const errorHandler = (error) => {
+            console.warn('Geolocation error:', error);
+            if (!gotLocation && watchId === null) {
+                watchId = navigator.geolocation.watchPosition(successHandler, watchHandler, {
+                    enableHighAccuracy: false,
+                    timeout: 30000,
+                    maximumAge: 120000
+                });
+                return;
+            }
+            if (!gotLocation) {
+                showLocationError(error);
+            }
+        };
+
+        const watchHandler = (error) => {
+            console.warn('Geolocation watch error:', error);
+            if (!gotLocation) {
+                showLocationError(error);
+            }
+        };
+
+        watchId = navigator.geolocation.watchPosition(successHandler, watchHandler, {
+            enableHighAccuracy: false,
+            timeout: 30000,
+            maximumAge: 120000
+        });
     }
 
     window.addEventListener('load', getGPSAndWeather);

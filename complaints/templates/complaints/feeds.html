@@ -251,7 +251,7 @@
 {% block body_class %}has-page-hero{% endblock %}
 
 {% block content %}
-    {% include "includes/page_hero.html" with icon="📡" title="Activity Feed" subtitle="See what's happening in your community – recent reports, comments, upvotes, and follows." %}
+    {% include "includes/page_hero.html" with icon="radio-outline" title="Activity Feed" subtitle="See what's happening in your community – recent reports, comments, upvotes, and follows." %}
 
     <div class="container py-4">
         <div class="feed-layout-grid">
@@ -429,7 +429,7 @@
                         {% endfor %}
                     {% else %}
                         {% url 'report_complaint' as report_url %}
-                        {% include "includes/empty_state.html" with icon="📡" title="No activity yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
+                        {% include "includes/empty_state.html" with icon="radio-outline" title="No activity yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
                     {% endif %}
                 </div>
             </div>

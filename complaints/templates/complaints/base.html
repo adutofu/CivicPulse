@@ -17,6 +17,17 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        ion-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+        }
+
+        .page-hero-icon ion-icon,
+        .empty-state-icon ion-icon {
+            font-size: inherit;
+        }
         /* ----- GLOBAL LIGHT NIGERIAN CIVIC THEME ----- */
         :root {
             --primary: #1565FF;
@@ -184,6 +195,49 @@
         .page-wave-bottom {
             margin-top: 2rem;
             margin-bottom: -1px;
+        }
+
+        .page-messages {
+            position: relative;
+            z-index: 1100;
+            width: 100%;
+            padding: 0.75rem 1.25rem 0;
+        }
+
+        .message-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .message {
+            padding: 0.95rem 1rem;
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.08);
+            background: rgba(255,255,255,0.95);
+            box-shadow: var(--shadow-md);
+            font-weight: 600;
+        }
+
+        .message-success {
+            border-color: rgba(52, 199, 89, 0.2);
+            background: rgba(52, 199, 89, 0.1);
+            color: #0f5132;
+        }
+
+        .message-error,
+        .message-danger {
+            border-color: rgba(255, 59, 48, 0.2);
+            background: rgba(255, 59, 48, 0.08);
+            color: #842029;
+        }
+
+        .message-info {
+            border-color: rgba(0, 122, 255, 0.2);
+            background: rgba(0, 122, 255, 0.08);
+            color: #0f3e82;
         }
 
         .content-layer {
@@ -1649,6 +1703,15 @@
     </header>
 
     <main>
+        <div class="page-messages">
+            {% if messages %}
+                <div class="message-stack">
+                    {% for message in messages %}
+                        <div class="message message-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
         {% block content %}
             <!-- Child template content goes here -->
         {% endblock %}
@@ -1708,6 +1771,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
     <!-- Notification System JavaScript (unchanged) -->
     <script>
@@ -1719,10 +1785,10 @@
                 this.isDropdownOpen = false;
                 this.pollingInterval = null;
                 this.urls = {
-                    unreadCount: '{% url "notification-unread-count" %}',
-                    notifications: '{% url "notification-list" %}',
-                    markAllRead: '{% url "notification-mark-all-read" %}',
-                    markReadTemplate: '{% url "notification-mark-read" pk=0 %}',
+                    unreadCount: '{% url "get_unread_count" %}',
+                    notifications: '{% url "get_notifications" %}',
+                    markAllRead: '{% url "mark_all_read" %}',
+                    markReadTemplate: '{% url "mark_notification_read" notification_id=0 %}',
                 };
                 this.init();
             }

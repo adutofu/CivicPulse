@@ -139,7 +139,7 @@
 
 {% block content %}
     <!-- ========== PAGE HERO ========== -->
-    {% include "includes/page_hero.html" with icon="🏛️" title="Government Dashboard" subtitle="All citizen complaints – review, update, and track progress." %}
+    {% include "includes/page_hero.html" with icon="business-outline" title="Government Dashboard" subtitle="All citizen complaints – review, update, and track progress." %}
 
     <div class="container py-4">
         <!-- ─── Dashboard Greeting ─── -->
@@ -227,7 +227,7 @@
                     {% empty %}
                     <tr>
                         <td colspan="9">
-                            {% include "includes/empty_state.html" with icon="📋" title="No complaints reported yet" message="Citizens haven't reported any issues. Check back later." %}
+                            {% include "includes/empty_state.html" with icon="clipboard-outline" title="No complaints reported yet" message="Citizens haven't reported any issues. Check back later." %}
                         </td>
                     </tr>
                     {% endfor %}

@@ -161,7 +161,7 @@
 
 {% block content %}
     <!-- ========== PAGE HERO ========== -->
-    {% include "includes/page_hero.html" with icon="💬" title="Community Feed" subtitle="Connect with fellow citizens – upvote, comment, follow, and flag." %}
+    {% include "includes/page_hero.html" with icon="chatbubbles-outline" title="Community Feed" subtitle="Connect with fellow citizens – upvote, comment, follow, and flag." %}
 
     <!-- ========== COMMUNITY FEED CONTENT ========== -->
     <div class="container py-4">
@@ -196,7 +196,7 @@
                     <button class="btn-outline-danger flag-complaint-btn" data-complaint-id="{{ complaint.id }}" data-bs-toggle="modal" data-bs-target="#flagComplaintModal">
                         🚩 Report
                     </button>
-                    <span class="badge-upvotes"><i class="fas fa-comment"></i> {{ complaint.comments.count }}</span>
+                    <span class="badge-upvotes"><ion-icon name="chatbubble-ellipses-outline"></ion-icon> {{ complaint.comments.count }}</span>
                     <!-- ===== Status Badge ===== -->
                     <span class="badge-status 
                         {% if complaint.status == 'pending' %}badge-pending
@@ -259,7 +259,7 @@
             <!-- ===== Empty State – fixed ===== -->
             {% url 'report_complaint' as report_url %}
             <div class="text-center py-4">
-                {% include "includes/empty_state.html" with icon="📢" title="No complaints yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
+                {% include "includes/empty_state.html" with icon="megaphone-outline" title="No complaints yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
             </div>
         {% endfor %}
 

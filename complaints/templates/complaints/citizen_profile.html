@@ -328,7 +328,7 @@
 {% block body_class %}has-page-hero{% endblock %}
 
 {% block content %}
-    {% include "includes/page_hero.html" with icon="👤" title="My Profile" subtitle="Your reports, engagement, and account settings — all in one place." %}
+    {% include "includes/page_hero.html" with icon="person-outline" title="My Profile" subtitle="Your reports, engagement, and account settings — all in one place." %}
 
     <div class="container py-4">
 
@@ -461,7 +461,7 @@
                 </div>
             {% else %}
                 {% url 'report_complaint' as report_url %}
-                {% include "includes/empty_state.html" with icon="📝" title="You haven't reported any issues yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
+                {% include "includes/empty_state.html" with icon="pencil-outline" title="You haven't reported any issues yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
             {% endif %}
         </div>
 
@@ -494,7 +494,7 @@
                 </div>
             {% else %}
                 {% url 'community_complaints' as community_url %}
-                {% include "includes/empty_state.html" with icon="👍" title="No upvoted complaints yet" message="Browse the community feed and upvote issues that matter to you." action_url=community_url action_label="Browse Community" %}
+                {% include "includes/empty_state.html" with icon="thumbs-up-outline" title="No upvoted complaints yet" message="Browse the community feed and upvote issues that matter to you." action_url=community_url action_label="Browse Community" %}
             {% endif %}
         </div>
 
@@ -526,7 +526,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {% include "includes/empty_state.html" with icon="🔁" title="You haven't reposted anything yet" message="Share a complaint from the community feed to boost its visibility." %}
+                {% include "includes/empty_state.html" with icon="repeat-outline" title="You haven't reposted anything yet" message="Share a complaint from the community feed to boost its visibility." %}
             {% endif %}
         </div>
 
@@ -558,7 +558,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {% include "includes/empty_state.html" with icon="🔔" title="You're not following any complaints yet" message="Follow a complaint to get notified as its status changes." %}
+                {% include "includes/empty_state.html" with icon="notifications-outline" title="You're not following any complaints yet" message="Follow a complaint to get notified as its status changes." %}
             {% endif %}
         </div>
 
@@ -590,7 +590,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {% include "includes/empty_state.html" with icon="🚩" title="No escalated complaints" message="If a report isn't resolved in a reasonable time, you can escalate it to a higher authority from its detail page." %}
+                {% include "includes/empty_state.html" with icon="flag-outline" title="No escalated complaints" message="If a report isn't resolved in a reasonable time, you can escalate it to a higher authority from its detail page." %}
             {% endif %}
         </div>
         <!-- ===== PHASE 3: ACTIVITY PANEL ===== -->
@@ -645,7 +645,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {% include "includes/empty_state.html" with icon="⚡" title="No recent activity" message="Your interactions and reported issues will appear here as you use the platform." %}
+                {% include "includes/empty_state.html" with icon="flash-outline" title="No recent activity" message="Your interactions and reported issues will appear here as you use the platform." %}
             {% endif %}
         </div>
     </div>

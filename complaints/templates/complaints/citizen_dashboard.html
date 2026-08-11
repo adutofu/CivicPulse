@@ -226,7 +226,7 @@
 
 {% block content %}
     <!-- ========== PAGE HERO ========== -->
-    {% include "includes/page_hero.html" with icon="📋" title="My Complaints" subtitle="Track your reported issues – see status, upvotes, and updates." %}
+    {% include "includes/page_hero.html" with icon="clipboard-outline" title="My Complaints" subtitle="Track your reported issues – see status, upvotes, and updates." %}
 
     <div class="container py-4">
         <!-- ─── Dashboard Greeting ─── -->
@@ -318,7 +318,7 @@
                     {% url 'report_complaint' as report_url %}
                     <tr>
                         <td colspan="8">
-                            {% include "includes/empty_state.html" with icon="📝" title="You haven't reported any issues yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
+                            {% include "includes/empty_state.html" with icon="pencil-outline" title="You haven't reported any issues yet" message="Be the first to report an issue in your community." action_url=report_url action_label="Report an Issue" %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -343,7 +343,7 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    {% include "includes/empty_state.html" with icon="👍" title="No upvoted complaints yet" message="Top voted issues will appear here once citizens start voting." %}
+                    {% include "includes/empty_state.html" with icon="thumbs-up-outline" title="No upvoted complaints yet" message="Top voted issues will appear here once citizens start voting." %}
                 {% endif %}
             </div>
         </div>

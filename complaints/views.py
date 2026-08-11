@@ -255,6 +255,7 @@ def signup(request):
             user = form.save()
             # Profile will be auto-created via signal (citizen by default)
             auth_login(request, user)  # log the user in immediately
+            messages.success(request, 'Welcome! Your account has been created.')
             return redirect('dashboard')
     else:
         form = UserCreationForm()
@@ -263,8 +264,19 @@ def signup(request):
 class custom_login(LoginView):
     template_name = 'registration/login.html'
     redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Welcome back! You are signed in.')
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy('dashboard')
+
+@login_required
+def custom_logout(request):
+    auth_logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('landing')
 
 # ---------- Protected Dashboard ----------
 @login_required
@@ -297,6 +309,7 @@ def report_complaint(request):
                 complaint.ward = matched_ward  # stays None if point falls outside all known wards
 
             complaint.save()
+            messages.success(request, 'Your complaint has been submitted successfully.')
 
             notify_mentions(complaint.description, request.user, complaint)
             
@@ -356,8 +369,12 @@ def get_trending_complaints(request):
 def repost_complaint(request, complaint_id):
     complaint = get_object_or_404(Complaint, id=complaint_id)
     if request.method == 'POST':
-        Repost.objects.get_or_create(complaint=complaint, user=request.user)
-        # Update repost count (cached or via signal)
+        repost, created = Repost.objects.get_or_create(complaint=complaint, user=request.user)
+        if not created:
+            repost.delete()
+            messages.info(request, 'You have removed your repost.')
+        else:
+            messages.success(request, 'Complaint reposted successfully.')
         return redirect('complaint_detail', complaint_id=complaint.id)
 
 
@@ -375,36 +392,35 @@ def flag_complaint(request, complaint_id):
             reason=reason,
             description=description
         )
-        # Notify staff / admins (could be via email or in-app)
-        # Optionally, hide the complaint from public view until reviewed
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'flag',
+                f"Your complaint #{complaint.id} was reported for review."
+            )
+        messages.success(request, 'Complaint reported successfully. Moderators will review it shortly.')
         return redirect('complaint_detail', complaint_id=complaint.id)
 
 
 # Escalation features
 #An “Escalate” button visible on complaint details if status hasn’t progressed.
 @login_required
-def escalate_complaint(request, complaint_id):
-    complaint = get_object_or_404(Complaint, id=complaint_id)
-    if request.method == 'POST':
-        reason = request.POST.get('reason')
-        target_authority = request.POST.get('target_authority')
-        complaint.escalations.create(
-            escalated_by=request.user,
-            reason=reason,
-            target_authority=target_authority,
-        )
-        # Change complaint status to 'escalated'
-        complaint.status = 'escalated'
-        complaint.save()
-        # Notify relevant authorities
-        return redirect('complaint_detail', complaint_id=complaint.id)
-
-@login_required
 def toggle_follow(request, complaint_id):
     complaint = get_object_or_404(Complaint, id=complaint_id)
     follower, created = ComplaintFollower.objects.get_or_create(complaint=complaint, user=request.user)
     if not created:
         follower.delete()  # unfollow
+        messages.info(request, 'You have unfollowed the complaint.')
+    else:
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'follow',
+                f"{request.user.username} started following your complaint #{complaint.id}."
+            )
+        messages.success(request, 'You are now following this complaint.')
     return redirect('complaint_detail', complaint_id=complaint.id)
 
 
@@ -602,7 +618,7 @@ def complaint_detail(request, complaint_id):
     complaint = get_object_or_404(Complaint, id=complaint_id)
     extra_images = complaint.extra_images.all()
     form = ExtraImageForm()
-    is_owner = request.user == complaint.citizen
+    is_owner = request.user.is_authenticated and complaint.citizen == request.user
     
     if request.method == 'POST' and 'add_image' in request.POST and is_owner:
         form = ExtraImageForm(request.POST, request.FILES)
@@ -640,6 +656,21 @@ def api_upvote(request):
         upvoted = False
     else:
         upvoted = True
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'upvote',
+                f"{request.user.username} upvoted your complaint #{complaint.id}."
+            )
+            follower_users = ComplaintFollower.objects.filter(complaint=complaint).exclude(user__in=[request.user, complaint.citizen])
+            for follower in follower_users:
+                send_notification(
+                    follower.user,
+                    complaint,
+                    'upvote',
+                    f"{request.user.username} upvoted a complaint you follow: #{complaint.id}."
+                )
     
     complaint.refresh_from_db()  # get fresh upvotes count
     threshold = getattr(settings, 'COMMUNITY_PRIORITY_THRESHOLD', 5)
@@ -672,6 +703,13 @@ def api_follow(request):
         following = False
     else:
         following = True
+        if complaint.citizen != request.user:
+            send_notification(
+                complaint.citizen,
+                complaint,
+                'follow',
+                f"{request.user.username} started following your complaint #{complaint.id}."
+            )
     return JsonResponse({'following': following})
 
 @login_required
@@ -688,13 +726,29 @@ def api_comment(request):
         text=text,
         parent=parent
     )
-    # Notify owner, parent, mentions
+    # Notify owner, parent, mentions, and followers
     if complaint.citizen != request.user:
-        send_notification(complaint.citizen, complaint, 'comment_added',
-                          f"New comment on {complaint.id} from {request.user.username}")
+        send_notification(
+            complaint.citizen,
+            complaint,
+            'comment_added',
+            f"{request.user.username} commented on your complaint #{complaint.id}."
+        )
     if parent and parent.author != request.user:
-        send_notification(parent.author, complaint, 'comment_reply',
-                          f"{request.user.username} replied to your comment")
+        send_notification(
+            parent.author,
+            complaint,
+            'comment_reply',
+            f"{request.user.username} replied to your comment on complaint #{complaint.id}."
+        )
+    follower_users = ComplaintFollower.objects.filter(complaint=complaint).exclude(user__in=[request.user, complaint.citizen])
+    for follower in follower_users:
+        send_notification(
+            follower.user,
+            complaint,
+            'comment_added',
+            f"{request.user.username} commented on a complaint you follow: #{complaint.id}."
+        )
     notify_mentions(text, request.user, complaint)
     return JsonResponse({
         'id': comment.id,
@@ -712,6 +766,13 @@ def api_flag_complaint(request):
     description = request.POST.get('description', '')
     complaint = get_object_or_404(Complaint, id=complaint_id)
     Flag.objects.create(complaint=complaint, reported_by=request.user,reason=reason, description=description)
+    if complaint.citizen != request.user:
+        send_notification(
+            complaint.citizen,
+            complaint,
+            'flag',
+            f"Your complaint #{complaint.id} was reported for review."
+        )
     return JsonResponse({'status': 'flagged'})
 
 @login_required
@@ -750,7 +811,7 @@ def add_comment(request, complaint_id):
                 complaint.citizen,
                 complaint,
                 'comment_added',
-                f"New comment on your complaint #{complaint.id}"
+                f"{request.user.username} commented on your complaint #{complaint.id}."
             )
         # Notify parent comment author (if any)
         if parent and parent.author != request.user:
@@ -758,7 +819,15 @@ def add_comment(request, complaint_id):
                 parent.author,
                 complaint,
                 'comment_reply',
-                f"{request.user.username} replied to your comment"
+                f"{request.user.username} replied to your comment on complaint #{complaint.id}."
+            )
+        follower_users = ComplaintFollower.objects.filter(complaint=complaint).exclude(user__in=[request.user, complaint.citizen])
+        for follower in follower_users:
+            send_notification(
+                follower.user,
+                complaint,
+                'comment_added',
+                f"{request.user.username} commented on a complaint you follow: #{complaint.id}."
             )
         notify_mentions(text, request.user, complaint)
         
@@ -931,6 +1000,11 @@ def escalate_complaint(request, complaint_id):
         complaint.escalated_at = timezone.now()
         complaint.escalated_by = request.user
         complaint.save()
+        complaint.escalations.create(
+            escalated_by=request.user,
+            reason=reason,
+            target_authority='Higher Authorities'
+        )
         
         # Notify all staff users (higher authority)
         from django.contrib.auth.models import User
@@ -959,13 +1033,12 @@ def toggle_repost(request, complaint_id):
         reposted = False
     else:
         reposted = True
-        # Notify complaint owner (if not the reposter)
         if complaint.citizen != request.user:
             send_notification(
                 complaint.citizen,
                 complaint,
                 'repost',
-                f"{request.user.username} reposted your complaint #{complaint.id}"
+                f"{request.user.username} reposted your complaint #{complaint.id}."
             )
     return redirect('complaint_detail', complaint_id=complaint.id)
 
@@ -1259,9 +1332,9 @@ def delete_account(request):
 
 @staff_member_required
 def moderation_queue(request):
-    complaint_flags = Flag.objects.filter(resolved=False).select_related('complaint', 'reported_by')
+    complaint_flags = Flag.objects.filter(resolved=False, comment__isnull=True).select_related('complaint', 'reported_by')
     comment_flags = Flag.objects.filter(resolved=False, comment__isnull=False).select_related('comment', 'reported_by')
-    return render(request, 'admin/moderation.html', {'complaints_flags': complaint_flags, 'comment_flags': comment_flags})
+    return render(request, 'admin/moderation.html', {'complaint_flags': complaint_flags, 'comment_flags': comment_flags})
 
 
 

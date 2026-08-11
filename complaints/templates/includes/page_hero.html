@@ -34,7 +34,7 @@
     </div>
 
     <div class="container page-hero-inner fade-in-up">
-        {% if icon %}<div class="page-hero-icon">{{ icon }}</div>{% endif %}
+        {% if icon %}<div class="page-hero-icon"><ion-icon name="{{ icon }}" aria-hidden="true"></ion-icon></div>{% endif %}
         <h1 class="page-hero-title">{{ title }}</h1>
         {% if subtitle %}<p class="page-hero-subtitle">{{ subtitle }}</p>{% endif %}
 
