@@ -305,22 +305,22 @@
     <div class="container-wide">
         <div class="stats-grid">
             <div class="stat-block">
-                <span class="stat-icon">✅</span>
+                <span class="stat-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></span>
                 <div class="stat-number" id="counter1b" data-count-to="{{ resolved_issues|default:0 }}">0</div>
                 <div class="stat-label">Issues Resolved</div>
             </div>
             <div class="stat-block">
-                <span class="stat-icon">👥</span>
+                <span class="stat-icon"><ion-icon name="people-outline"></ion-icon></span>
                 <div class="stat-number" id="counter2b" data-count-to="{{ active_citizens|default:0 }}">0</div>
                 <div class="stat-label">Active Citizens</div>
             </div>
             <div class="stat-block">
-                <span class="stat-icon">⬆️</span>
+                <span class="stat-icon"><ion-icon name="arrow-up-circle-outline"></ion-icon></span>
                 <div class="stat-number" id="counter3b" data-count-to="{{ total_upvotes|default:0 }}">0</div>
                 <div class="stat-label">Community Upvotes</div>
             </div>
             <div class="stat-block">
-                <span class="stat-icon">⚡</span>
+                <span class="stat-icon"><ion-icon name="flash-outline"></ion-icon></span>
                 <div class="stat-number" id="counter4b" data-count-to="{{ response_rate|default:0 }}">0</div>
                 <div class="stat-label">Response Rate</div>
             </div>
@@ -337,10 +337,10 @@
     <div class="container-wide">
         <div class="section-label" style="margin-bottom: 0.3rem;">Trusted by</div>
         <div class="trust-badges-row">
-            <span class="trust-badge">🏛️ FCDA</span>
-            <span class="trust-badge">💡 Ibadan Municipal</span>
-            <span class="trust-badge">🌳 Oyo State Govt</span>
-            <span class="trust-badge">🏗️ Julius Berger</span>
+            <span class="trust-badge"><ion-icon name="business-outline"></ion-icon> FCDA</span>
+            <span class="trust-badge"><ion-icon name="bulb-outline"></ion-icon> Ibadan Municipal</span>
+            <span class="trust-badge"><ion-icon name="leaf-outline"></ion-icon> Oyo State Govt</span>
+            <span class="trust-badge"><ion-icon name="construct-outline"></ion-icon> Julius Berger</span>
         </div>
     </div>
 </section>
@@ -356,19 +356,19 @@
                 <h2 class="section-headline" style="font-size: 1.6rem;">Report, Track, Transform</h2>
                 <div class="step-card">
                     <span class="step-number">01</span>
-                    <span class="step-icon">📸</span>
+                    <span class="step-icon"><ion-icon name="camera-outline"></ion-icon></span>
                     <div class="step-title">Snap & Report</div>
                     <div class="step-desc">Take a photo, add location, describe the issue.</div>
                 </div>
                 <div class="step-card">
                     <span class="step-number">02</span>
-                    <span class="step-icon">🤖</span>
+                    <span class="step-icon"><ion-icon name="sparkles-outline"></ion-icon></span>
                     <div class="step-title">Verify & Route</div>
                     <div class="step-desc">AI + community votes validate & assign the right agency.</div>
                 </div>
                 <div class="step-card">
                     <span class="step-number">03</span>
-                    <span class="step-icon">✅</span>
+                    <span class="step-icon"><ion-icon name="checkmark-done-circle-outline"></ion-icon></span>
                     <div class="step-title">Resolve & Notify</div>
                     <div class="step-desc">Government fixes, you get a "Job Done" alert.</div>
                 </div>
@@ -388,8 +388,8 @@
                 <!-- Weather -->
                 <div class="weather-card">
                     <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.2rem;">
-                        <span style="font-weight:600;font-size:1.1rem;">📍<span id="locationDisplay">Detecting...</span></span>
-                        <button id="refreshLocationBtn" style="background:transparent;border:1px solid var(--border-dim);border-radius:40px;padding:0.3rem 1rem;color:var(--text-secondary);cursor:pointer;">⟳ Update</button>
+                        <span style="font-weight:600;font-size:1.1rem;"><ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> <span id="locationDisplay">Detecting...</span></span>
+                        <button id="refreshLocationBtn" style="background:transparent;border:1px solid var(--border-dim);border-radius:40px;padding:0.3rem 1rem;color:var(--text-secondary);cursor:pointer;"><ion-icon name="refresh-outline" style="vertical-align:-2px;"></ion-icon> Update</button>
                     </div>
                     <div id="weatherContent"><div style="text-align:center;padding:2rem;color:var(--text-secondary);">Loading weather...</div></div>
                 </div>
@@ -398,7 +398,7 @@
             <!-- RIGHT COLUMN: Trending Now -->
             <div class="priority-sidebar">
                 <div class="section-label">Trending Now</div>
-                <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; margin-bottom: 1rem;">🔥 Community Priority Issues</h3>
+                <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; margin-bottom: 1rem;"><ion-icon name="flame-outline" style="vertical-align:-3px;"></ion-icon> Community Priority Issues</h3>
                 <div style="flex:1;">
                     {% if top_issues %}
                         {% for issue in top_issues %}
@@ -433,7 +433,7 @@
             <!-- Left Column: Top Civic Heroes -->
             <div class="leaderboard-card" style="background-image: url('{% static 'images/Topcivic-background.png' %}');">
                 <div class="section-eyebrow" style="color: #1a365d;">THIS MONTH</div>
-                <h3 class="card-title">🏆 TOP CIVIC HEROES LEADERBOARD</h3>
+                <h3 class="card-title"><ion-icon name="trophy-outline" style="vertical-align:-3px;"></ion-icon> TOP CIVIC HEROES LEADERBOARD</h3>
                 
                 <div class="leaderboard-list">
                     {% for hero in top_citizens %}
@@ -456,7 +456,7 @@
 
             <!-- Right Column: Emergency Contacts -->
             <div class="emergency-card">
-                <div class="section-eyebrow emergency-eyebrow">🚨 EMERGENCY</div>
+                <div class="section-eyebrow emergency-eyebrow"><ion-icon name="alert-outline" style="vertical-align:-2px;"></ion-icon> EMERGENCY</div>
                 <h3 class="card-title emergency-title">Call For Help</h3>
                 
                 <div class="emergency-grid">
@@ -515,25 +515,25 @@
         <p class="section-desc">Government responses & impact metrics from your area.</p>
         <div class="updates-grid">
             <div class="update-item">
-                <span class="update-icon">🛣️</span>
+                <span class="update-icon"><ion-icon name="trail-sign-outline"></ion-icon></span>
                 <div class="update-category">Infrastructure</div>
                 <div class="update-title">Wuse road reconstruction underway</div>
                 <div class="update-desc">189 reports triggered immediate FCDA intervention. Completion expected in 12 days.</div>
             </div>
             <div class="update-item">
-                <span class="update-icon">⚡</span>
+                <span class="update-icon"><ion-icon name="flash-outline"></ion-icon></span>
                 <div class="update-category">Smart Lighting</div>
                 <div class="update-title">Solar LED project: Phase 1 active</div>
                 <div class="update-desc">Central district now illuminated with 340 hybrid streetlights. 98% satisfaction.</div>
             </div>
             <div class="update-item">
-                <span class="update-icon">🗑️</span>
+                <span class="update-icon"><ion-icon name="trash-outline"></ion-icon></span>
                 <div class="update-category">Waste & Sanitation</div>
                 <div class="update-title">Smart bin sensors deployed</div>
                 <div class="update-desc">AI-powered waste collection reduced overflow by 57% in high-density zones.</div>
             </div>
             <div class="update-item">
-                <span class="update-icon">📈</span>
+                <span class="update-icon"><ion-icon name="trending-up-outline"></ion-icon></span>
                 <div class="update-category">Transparency Score</div>
                 <div class="update-title">Government response rate: 82%</div>
                 <div class="update-desc">1,243 issues resolved in Q1 — citizen trust index +21% vs last year.</div>
@@ -636,7 +636,7 @@
         iconAnchor: [12, 12]
     });
     const userMarker = L.marker([userLat, userLng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
-    userMarker.bindPopup('<b>📍 You are here</b>');
+    userMarker.bindPopup('<b><ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> You are here</b>');
 
     function updateUserLocation(lat, lng) {
         userLat = lat;
@@ -658,7 +658,7 @@
                         <b>${c.category}</b><br>
                         ${c.description}<br>
                         <span style="color:#007AFF;">${c.status}</span><br>
-                        <a href="${directionsUrl}" target="_blank" rel="noopener" style="color:#007AFF;font-weight:600;">🧭 Get Directions</a>
+                        <a href="${directionsUrl}" target="_blank" rel="noopener" style="color:#007AFF;font-weight:600;"><ion-icon name="navigate-outline" style="vertical-align:-2px;"></ion-icon> Get Directions</a>
                     `);
                     marker.on('mouseover', function () { this.openPopup(); });
                     nearbyMarkers.push(marker);
@@ -679,7 +679,7 @@
                 wardLayer = L.geoJSON(data.boundary, {
                     style: { color: '#007AFF', weight: 2, fillColor: '#007AFF', fillOpacity: 0.08 }
                 }).addTo(map);
-                label.textContent = `📍 ${data.ward} Ward, ${data.lga} LGA, ${data.state} State`;
+                label.innerHTML = `<ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> ${data.ward} Ward, ${data.lga} LGA, ${data.state} State`;
                 label.style.display = 'block';
             })
             .catch(err => console.warn('Ward boundary unavailable:', err));
