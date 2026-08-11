@@ -355,15 +355,15 @@
                 <!-- === PHASE 1: LOCATION PILL === -->
                 {% with latest_complaint=my_complaints.first %}
                     {% if latest_complaint.ward %}
-                        <div class="profile-location">📍 {{ latest_complaint.ward.ward }}, {{ latest_complaint.ward.lga }}, {{ latest_complaint.ward.state }}</div>
+                        <div class="profile-location"><ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> {{ latest_complaint.ward.ward }}, {{ latest_complaint.ward.lga }}, {{ latest_complaint.ward.state }}</div>
                     {% elif latest_complaint.address_text %}
-                        <div class="profile-location">📍 {{ latest_complaint.address_text }}</div>
+                        <div class="profile-location"><ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> {{ latest_complaint.address_text }}</div>
                     {% endif %}
                 {% endwith %}
                 <!-- ================================ -->
 
                 <div class="profile-joined">
-                    <span>🗓️</span> Joined {{ user.date_joined|date:"F Y" }}
+                    <ion-icon name="calendar-outline" style="vertical-align:-3px;"></ion-icon> Joined {{ user.date_joined|date:"F Y" }}
                 </div>
             </div>
 
@@ -371,9 +371,9 @@
                 <!-- === PHASE 1: SHARE BUTTON === -->
                 <div class="profile-actions-row">
                     <button class="btn-icon-sm" id="copyProfileLinkBtn" title="Share Profile" aria-label="Share Profile">
-                        🔗
+                        <ion-icon name="link-outline"></ion-icon>
                     </button>
-                    <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center; flex: 1;">⚙️ Edit Profile</a>
+                    <a href="{% url 'profile_settings' %}" class="btn-cyan-sm" style="padding: 0.55rem 1.2rem; text-align:center; flex: 1;"><ion-icon name="settings-outline" style="vertical-align:-2px;"></ion-icon> Edit Profile</a>
                 </div>
                 <!-- ================================= -->
                 <a href="{% url 'delete_account' %}" class="btn-outline-danger-sm">Delete Account</a>
@@ -383,38 +383,38 @@
                 <!-- ========== STATS ========== -->
         <div class="profile-stats-grid">
             <div class="glass-card stat-card hover-lift">
-                <div class="stat-icon">📋</div>
+                <div class="stat-icon"><ion-icon name="clipboard-outline"></ion-icon></div>
                 <div class="stat-number" data-count-to="{{ my_complaints.count }}">0</div>
                 <div class="stat-label">Reported</div>
             </div>
             <div class="glass-card stat-card hover-lift">
-                <div class="stat-icon">👍</div>
+                <div class="stat-icon"><ion-icon name="thumbs-up-outline"></ion-icon></div>
                 <div class="stat-number" data-count-to="{{ upvoted_complaints.count }}">0</div>
                 <div class="stat-label">Upvoted</div>
             </div>
             <div class="glass-card stat-card hover-lift">
-                <div class="stat-icon">🔁</div>
+                <div class="stat-icon"><ion-icon name="refresh-outline"></ion-icon></div>
                 <div class="stat-number" data-count-to="{{ reposted_complaints.count }}">0</div>
                 <div class="stat-label">Reposted</div>
             </div>
             <div class="glass-card stat-card hover-lift">
-                <div class="stat-icon">🔔</div>
+                <div class="stat-icon"><ion-icon name="notifications-outline"></ion-icon></div>
                 <div class="stat-number" data-count-to="{{ followed_complaints.count }}">0</div>
                 <div class="stat-label">Following</div>
             </div>
             <div class="glass-card stat-card hover-lift">
-                <div class="stat-icon">🚩</div>
+                <div class="stat-icon"><ion-icon name="flag-outline"></ion-icon></div>
                 <div class="stat-number" data-count-to="{{ escalated_complaints.count }}">0</div>
                 <div class="stat-label">Escalated</div>
             </div>
             <!-- ===== PHASE 2: NEW CITIZEN STATS ===== -->
             <div class="glass-card stat-card hover-lift">
-                <div class="stat-icon">⭐</div>
+                <div class="stat-icon"><ion-icon name="star-outline"></ion-icon></div>
                 <div class="stat-number" data-count-to="{{ avg_rating_received|floatformat:1 }}">0</div>
                 <div class="stat-label">Avg. Rating</div>
             </div>
             <div class="glass-card stat-card hover-lift">
-                <div class="stat-icon">✅</div>
+                <div class="stat-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
                 <div class="stat-number" data-count-to="{{ resolution_rate }}">0</div>
                 <div class="stat-label">Resolution Rate</div>
             </div>
@@ -428,7 +428,7 @@
             <button type="button" class="tab-btn" data-tab="followed">Following <span class="tab-count">{{ followed_complaints.count }}</span></button>
             <button type="button" class="tab-btn" data-tab="escalated">Escalated <span class="tab-count">{{ escalated_complaints.count }}</span></button>
             <!-- === PHASE 3: ACTIVITY TAB === -->
-            <button type="button" class="tab-btn" data-tab="activity">⚡ Activity</button>
+            <button type="button" class="tab-btn" data-tab="activity"><ion-icon name="flash-outline" style="vertical-align:-2px;"></ion-icon> Activity</button>
         </div>
 
         <!-- ===== My Complaints ===== -->
@@ -452,7 +452,7 @@
                         </div>
                         <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
                         <div class="card-footer">
-                            <span>⬆ {{ complaint.upvotes }} · {{ complaint.created_at|date:"M d, Y" }}</span>
+                            <span><ion-icon name="arrow-up-circle-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.upvotes }} · {{ complaint.created_at|date:"M d, Y" }}</span>
                             <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
                         </div>
                     </div>
@@ -485,7 +485,7 @@
                         </div>
                         <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
                         <div class="card-footer">
-                            <span>⬆ {{ complaint.upvotes }} · by {{ complaint.citizen.username }}</span>
+                            <span><ion-icon name="arrow-up-circle-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.upvotes }} · by {{ complaint.citizen.username }}</span>
                             <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
                         </div>
                     </div>
@@ -518,7 +518,7 @@
                         </div>
                         <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
                         <div class="card-footer">
-                            <span>🔁 by {{ complaint.citizen.username }}</span>
+                            <span><ion-icon name="repeat-outline" style="vertical-align:-2px;"></ion-icon> by {{ complaint.citizen.username }}</span>
                             <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
                         </div>
                     </div>
@@ -550,7 +550,7 @@
                         </div>
                         <p class="card-desc">{{ complaint.description|truncatechars:70 }}</p>
                         <div class="card-footer">
-                            <span>🔔 tracking updates</span>
+                            <span><ion-icon name="notifications-outline" style="vertical-align:-2px;"></ion-icon> tracking updates</span>
                             <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
                         </div>
                     </div>
@@ -582,7 +582,7 @@
                         </div>
                         <p class="card-desc">{{ complaint.escalation_reason|default:"No reason provided"|truncatechars:70 }}</p>
                         <div class="card-footer">
-                            <span>🚩 {{ complaint.escalated_at|date:"M d, Y" }}</span>
+                            <span><ion-icon name="flag-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.escalated_at|date:"M d, Y" }}</span>
                             <a href="{% url 'complaint_detail' complaint.id %}">View →</a>
                         </div>
                     </div>
@@ -615,7 +615,7 @@
                                         </div>
                                         {% endif %}
                                         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--glass-border); padding-top:0.5rem;">
-                                            <span style="font-size:0.75rem; color:var(--text-muted);">⬆ {{ complaint.upvotes }}</span>
+                                            <span style="font-size:0.75rem; color:var(--text-muted);"><ion-icon name="arrow-up-circle-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.upvotes }}</span>
                                             <a href="{{ act.url }}" style="color:var(--brand-cyan); font-weight:600; text-decoration:none; font-size:0.8rem;">View →</a>
                                         </div>
                                     </div>
@@ -634,7 +634,7 @@
                                         </div>
                                         <p style="font-size:0.9rem; margin-bottom:0.5rem; color:var(--text-secondary);">{{ act.message }}</p>
                                         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--glass-border); padding-top:0.5rem;">
-                                            <span style="font-size:0.75rem; color:var(--text-muted);">⬆ {{ complaint.upvotes }}</span>
+                                            <span style="font-size:0.75rem; color:var(--text-muted);"><ion-icon name="arrow-up-circle-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.upvotes }}</span>
                                             <a href="{{ act.url }}" style="color:var(--brand-cyan); font-weight:600; text-decoration:none; font-size:0.8rem;">View →</a>
                                         </div>
                                     </div>
@@ -680,7 +680,7 @@
                     navigator.clipboard.writeText(currentUrl).then(() => {
                         // Quick visual feedback
                         const originalText = this.innerHTML;
-                        this.innerHTML = '✅';
+                        this.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon>';
                         setTimeout(() => {
                             this.innerHTML = originalText;
                         }, 2000);
