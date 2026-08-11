@@ -1563,7 +1563,7 @@
                     {% if user.is_authenticated and user.profile.user_type == 'citizen' or user.profile.verification_status == 'not_applicable' or user.is_staff %}
                     <div class="nav-more" id="nav-more">
                         <button type="button" class="nav-more-toggle" id="nav-more-toggle">
-                            More <span class="nav-more-caret">▾</span>
+                            More <ion-icon name="chevron-down-outline" class="nav-more-caret"></ion-icon>
                         </button>
                         <div class="nav-more-dropdown">
                             {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
@@ -1624,11 +1624,13 @@
                     <div class="mobile-header-actions">
                         {% if user.is_authenticated %}
                         <button id="notification-btn-mobile" class="notification-btn mobile-notification-btn" type="button" aria-expanded="false" aria-haspopup="true">
-                            <span class="bell-icon">🔔</span>
+                            <ion-icon name="notifications-outline" class="bell-icon"></ion-icon>
                             <span class="notification-badge" style="display: none;">0</span>
                         </button>
                         {% endif %}
-                        <button id="mobile-menu-close" class="mobile-menu-close" type="button" aria-label="Close menu">×</button>
+                        <button id="mobile-menu-close" class="mobile-menu-close" type="button" aria-label="Close menu">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
                     </div>
                 </div>
                 <nav class="mobile-nav-links">
@@ -1684,7 +1686,7 @@
             <div class="notification-container">
                 <button id="notification-btn" class="notification-btn" type="button" aria-expanded="false"
                     aria-haspopup="true">
-                    <span class="bell-icon">🔔</span>
+                    <ion-icon name="notifications-outline" class="bell-icon"></ion-icon>
                     <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
                 </button>
                 <div id="notification-dropdown" class="notification-dropdown" style="display: none;"
@@ -1729,10 +1731,10 @@
                 <h4>CivicPulse</h4>
                 <p>Radical transparency. Real-time civic engagement. Built for resilient communities.</p>
                 <div class="social-links">
-                    <a href="#">𝕏</a>
-                    <a href="#">f</a>
-                    <a href="#">📷</a>
-                    <a href="#">▶</a>
+                    <a href="#"><ion-icon name="logo-twitter"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-facebook"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-instagram"></ion-icon></a>
+                    <a href="#"><ion-icon name="logo-youtube"></ion-icon></a>
                 </div>
             </div>
             <div class="footer-section">
