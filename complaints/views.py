@@ -546,7 +546,12 @@ def update_complaint(request, complaint_id):
 
 @login_required
 def apply_govt_official(request):
+    if request.user.is_staff:
+        messages.error(request, "Admin accounts cannot apply to become a government official.")
+        return redirect('admin_dashboard')
+
     profile = request.user.profile
+
 
     # prevent duplicate applications while one is already pending or approved
     if profile.verification_status == 'pending':
