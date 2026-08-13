@@ -1,0 +1,423 @@
+{% extends 'complaints/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* ================= ADMIN THEME ACCENT ================= */
+    .admin-badge-strip {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.9rem 1.4rem;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, rgba(255, 149, 0, 0.1), rgba(179, 107, 0, 0.06));
+        border: 1px solid rgba(255, 149, 0, 0.25);
+        border-radius: var(--radius-lg);
+        color: #B36B00;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .admin-badge-strip ion-icon {
+        font-size: 1.3rem;
+    }
+
+    /* ================= STATS GRID ================= */
+    .admin-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .admin-stats-grid .stat-card {
+        text-align: center;
+        align-items: center;
+    }
+
+    .admin-stats-grid .stat-icon {
+        color: var(--brand-cyan);
+        font-size: 1.5rem;
+    }
+
+    .admin-stats-grid .stat-card.warning .stat-icon {
+        color: #B36B00;
+    }
+
+    .admin-stats-grid .stat-card.warning .stat-number {
+        color: #B36B00;
+    }
+
+    /* ================= SPLIT PANELS ================= */
+    .admin-split-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .admin-panel {
+        padding: 1.4rem;
+    }
+
+    .admin-panel h4 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.7rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .admin-panel h4 ion-icon {
+        color: var(--brand-cyan);
+        font-size: 1.2rem;
+    }
+
+    .admin-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid var(--border-dim);
+        font-size: 0.85rem;
+    }
+
+    .admin-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .admin-list-item .item-title {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .admin-list-item .item-meta {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .admin-list-item a {
+        color: var(--brand-cyan);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+    .admin-panel-footer {
+        margin-top: 1rem;
+        text-align: right;
+    }
+
+    .admin-panel-footer a {
+        color: var(--brand-cyan);
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 0.82rem;
+    }
+
+    /* ================= USER MANAGEMENT TABLE ================= */
+    .admin-users-panel {
+        padding: 1.4rem;
+    }
+
+    .admin-users-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.7rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .admin-users-header h4 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .admin-users-header h4 ion-icon {
+        color: var(--brand-cyan);
+        font-size: 1.2rem;
+    }
+
+    .btn-export-csv {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--brand-cyan);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 40px;
+        padding: 0.5rem 1.2rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .btn-export-csv:hover {
+        background: var(--brand-cyan-deep);
+        transform: translateY(-2px);
+    }
+
+    .admin-users-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-users-table th {
+        text-align: left;
+        color: var(--brand-cyan);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.6rem 0.5rem;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .admin-users-table td {
+        padding: 0.65rem 0.5rem;
+        border-bottom: 1px solid var(--border-dim);
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        vertical-align: middle;
+    }
+
+    .admin-users-table tr:hover {
+        background: rgba(0, 122, 255, 0.03);
+    }
+
+    .role-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.2rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .role-citizen { background: var(--brand-cyan-glow); color: var(--brand-cyan-deep); }
+    .role-govt { background: rgba(52, 199, 89, 0.14); color: #1F8A3B; }
+
+    .status-pill-active { color: #1F8A3B; font-weight: 700; }
+    .status-pill-inactive { color: var(--error-red); font-weight: 700; }
+
+    .btn-toggle-active {
+        background: transparent;
+        border: 1.5px solid var(--border-dim);
+        color: var(--text-secondary);
+        border-radius: 40px;
+        padding: 0.3rem 0.9rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-toggle-active:hover {
+        border-color: var(--error-red);
+        color: var(--error-red);
+        background: rgba(255, 59, 48, 0.06);
+    }
+
+    .btn-toggle-active.reactivate:hover {
+        border-color: #1F8A3B;
+        color: #1F8A3B;
+        background: rgba(52, 199, 89, 0.06);
+    }
+
+    .table-scroll {
+        overflow-x: auto;
+    }
+
+    @media (max-width: 900px) {
+        .admin-split-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}has-page-hero{% endblock %}
+
+{% block content %}
+    {% include "includes/page_hero.html" with icon="shield-checkmark-outline" title="Admin Dashboard" subtitle="Platform oversight — moderation, verification, and user management." %}
+
+    <div class="container py-4">
+
+        <div class="admin-badge-strip fade-in-up">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+            You're signed in as an Administrator — this view is separate from citizen and government accounts.
+        </div>
+
+        <!-- ========== STATS ========== -->
+        <div class="admin-stats-grid">
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon"><ion-icon name="people-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ total_citizens }}">0</div>
+                <div class="stat-label">Citizens</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon"><ion-icon name="business-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ total_govt_officials }}">0</div>
+                <div class="stat-label">Govt Officials</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon"><ion-icon name="clipboard-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ total_complaints }}">0</div>
+                <div class="stat-label">Total Complaints</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ resolved_complaints }}">0</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+            <div class="glass-card stat-card hover-lift">
+                <div class="stat-icon"><ion-icon name="hourglass-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ pending_complaints }}">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="glass-card stat-card hover-lift warning">
+                <div class="stat-icon"><ion-icon name="alert-circle-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ escalated_complaints }}">0</div>
+                <div class="stat-label">Escalated</div>
+            </div>
+            <div class="glass-card stat-card hover-lift warning">
+                <div class="stat-icon"><ion-icon name="flag-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ pending_moderation }}">0</div>
+                <div class="stat-label">Pending Moderation</div>
+            </div>
+            <div class="glass-card stat-card hover-lift warning">
+                <div class="stat-icon"><ion-icon name="document-text-outline"></ion-icon></div>
+                <div class="stat-number" data-count-to="{{ pending_govt_applications }}">0</div>
+                <div class="stat-label">Pending Applications</div>
+            </div>
+        </div>
+
+        <!-- ========== MODERATION + APPLICATIONS PREVIEW ========== -->
+        <div class="admin-split-grid">
+            <div class="glass-card admin-panel fade-in-up">
+                <h4><ion-icon name="flag-outline"></ion-icon> Moderation Queue</h4>
+                {% if recent_complaint_flags or recent_comment_flags %}
+                    {% for flag in recent_complaint_flags %}
+                    <div class="admin-list-item">
+                        <div>
+                            <div class="item-title">Complaint #{{ flag.complaint.id }} — {{ flag.get_reason_display }}</div>
+                            <div class="item-meta">Reported by {{ flag.reported_by.username }}</div>
+                        </div>
+                        <a href="{% url 'moderation_queue' %}">Review →</a>
+                    </div>
+                    {% endfor %}
+                    {% for flag in recent_comment_flags %}
+                    <div class="admin-list-item">
+                        <div>
+                            <div class="item-title">Comment on #{{ flag.comment.complaint.id }} — {{ flag.get_reason_display }}</div>
+                            <div class="item-meta">Reported by {{ flag.reported_by.username }}</div>
+                        </div>
+                        <a href="{% url 'moderation_queue' %}">Review →</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="item-meta">No content flagged for review right now.</div>
+                {% endif %}
+                <div class="admin-panel-footer">
+                    <a href="{% url 'moderation_queue' %}">Open Moderation Queue →</a>
+                </div>
+            </div>
+
+            <div class="glass-card admin-panel fade-in-up">
+                <h4><ion-icon name="document-text-outline"></ion-icon> Govt Applications</h4>
+                {% if recent_applications %}
+                    {% for application in recent_applications %}
+                    <div class="admin-list-item">
+                        <div>
+                            <div class="item-title">{{ application.user.username }}</div>
+                            <div class="item-meta">{{ application.agency|default:"No agency listed" }} · Applied {{ application.applied_at|date:"M d, Y" }}</div>
+                        </div>
+                        <a href="{% url 'review_govt_application' profile_id=application.id %}">Review →</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="item-meta">No pending government applications.</div>
+                {% endif %}
+                <div class="admin-panel-footer">
+                    <a href="{% url 'govt_applications_list' %}">Open Applications List →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== USER MANAGEMENT ========== -->
+        <div class="glass-card admin-users-panel fade-in-up">
+            <div class="admin-users-header">
+                <h4><ion-icon name="people-outline"></ion-icon> User Management</h4>
+                <a href="{% url 'admin_export_complaints_csv' %}" class="btn-export-csv">
+                    <ion-icon name="download-outline"></ion-icon> Export Complaints CSV
+                </a>
+            </div>
+
+            <div class="table-scroll">
+                <table class="admin-users-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in all_users %}
+                        <tr>
+                            <td>{{ u.username }}</td>
+                            <td>
+                                <span class="role-pill {% if u.profile.user_type == 'govt' %}role-govt{% else %}role-citizen{% endif %}">
+                                    {{ u.profile.get_user_type_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if u.is_active %}
+                                    <span class="status-pill-active">Active</span>
+                                {% else %}
+                                    <span class="status-pill-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ u.date_joined|date:"M d, Y" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'admin_toggle_user_active' user_id=u.id %}">
+                                    {% csrf_token %}
+                                    {% if u.is_active %}
+                                        <button type="submit" class="btn-toggle-active">Deactivate</button>
+                                    {% else %}
+                                        <button type="submit" class="btn-toggle-active reactivate">Reactivate</button>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                {% include "includes/empty_state.html" with icon="people-outline" title="No users yet" message="Citizens and government officials will appear here as they join." %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

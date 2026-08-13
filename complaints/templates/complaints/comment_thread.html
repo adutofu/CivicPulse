@@ -1,0 +1,45 @@
+{% load static %}
+<div class="comment-node" data-comment-id="{{ comment.id }}" data-depth="{{ depth }}"
+     style="margin-left: {% if depth > 6 %}132{% else %}{% widthratio depth 1 22 %}{% endif %}px;">
+    <div class="comment-card">
+        <div class="comment-avatar">{{ comment.author.username|first|upper }}</div>
+        <div class="comment-body">
+            <div class="comment-top-row">
+                <span class="comment-author">{{ comment.author.username }}</span>
+                <span class="comment-dot">·</span>
+                <span class="comment-time">{{ comment.created_at|timesince }} ago</span>
+            </div>
+            <p class="comment-text">{{ comment.text }}</p>
+            <div class="comment-actions">
+                <button type="button" class="comment-reply-btn" data-comment-id="{{ comment.id }}" data-author="{{ comment.author.username }}">
+                    <ion-icon name="arrow-undo-outline"></ion-icon> Reply
+                </button>
+                {% if user.is_authenticated %}
+                <button type="button" class="comment-flag-btn" data-comment-id="{{ comment.id }}">
+                    <ion-icon name="flag-outline"></ion-icon> Flag
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Inline reply box, hidden until "Reply" is clicked -->
+            <div class="comment-reply-form" id="reply-form-{{ comment.id }}" style="display:none;">
+                <textarea class="comment-reply-textarea" rows="2" placeholder="Reply to {{ comment.author.username }}..."></textarea>
+                <div class="comment-reply-form-actions">
+                    <button type="button" class="comment-reply-cancel" data-comment-id="{{ comment.id }}">Cancel</button>
+                    <button type="button" class="comment-reply-submit"
+                            data-complaint-id="{{ comment.complaint_id }}"
+                            data-parent-id="{{ comment.id }}">
+                        Post Reply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recursive children: each reply renders through this same partial -->
+    <div class="comment-children" id="children-{{ comment.id }}">
+        {% for reply in comment.comment_set.all %}
+            {% include "includes/comment_thread.html" with comment=reply depth=depth|add:1 %}
+        {% endfor %}
+    </div>
+</div>

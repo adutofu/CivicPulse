@@ -1556,11 +1556,11 @@
                     <a href="{% url 'about' %}">About</a>
                     <a href="{% url 'contact' %}">Contact</a>
                     <a href="{% url 'analytics_dashboard' %}">Analytics</a>
-                    {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                    {% if not user.is_staff and user.is_authenticated and user.profile.user_type == 'citizen' %}
                     <a href="{% url 'community_complaints' %}">Community</a>
                     {% endif %}
 
-                    {% if user.is_authenticated and user.profile.user_type == 'citizen' or user.profile.verification_status == 'not_applicable' or user.is_staff %}
+                    {% if not user.is_staff and user.is_authenticated and user.profile.user_type == 'citizen' or not user.is_staff and user.profile.verification_status == 'not_applicable' %}
                     <div class="nav-more" id="nav-more">
                         <button type="button" class="nav-more-toggle" id="nav-more-toggle">
                             More <ion-icon name="chevron-down-outline" class="nav-more-caret"></ion-icon>
@@ -1572,22 +1572,23 @@
                             {% if user.profile.verification_status == 'not_applicable' %}
                             <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
                             {% endif %}
-                            {% if user.is_staff %}
-                            <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
-                            <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
-                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
                 </nav>
                 <div class="nav-buttons desktop-buttons">
                     {% if user.is_authenticated %}
-                    {% if user.profile.user_type == 'govt' %}
+                    {% if user.is_staff %}
+                    <a href="{% url 'admin_dashboard' %}" class="btn-dashboard">Admin Dashboard</a>
+                    <span class="btn-profile-avatar" style="cursor: default;">
+                        <span class="avatar-circle" style="background: linear-gradient(135deg, #FF9500, #B36B00);">
+                            <ion-icon name="shield-checkmark-outline"></ion-icon>
+                        </span>
+                        Administrator
+                    </span>
+                    {% elif user.profile.user_type == 'govt' %}
                     <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
                     <a href="{% url 'activity_feed' %}">Feed</a>
-                    {% else %}
-                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
-                    {% endif %}
                     <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
                     <a href="{% url 'profile' %}" class="btn-profile-avatar">
                         <span class="avatar-circle">
@@ -1599,6 +1600,20 @@
                         </span>
                         My Profile
                     </a>
+                    {% else %}
+                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
+                    <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
+                    <a href="{% url 'profile' %}" class="btn-profile-avatar">
+                        <span class="avatar-circle">
+                            {% if user.profile.profile_picture %}
+                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                            {% else %}
+                                {{ user.username|first|upper }}
+                            {% endif %}
+                        </span>
+                        My Profile
+                    </a>
+                    {% endif %}
                     <form action="{% url 'logout' %}" method="post" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn-logout">Logout</button>
@@ -1638,27 +1653,26 @@
                     <a href="{% url 'about' %}">About</a>
                     <a href="{% url 'contact' %}">Contact</a>
                     <a href="{% url 'analytics_dashboard' %}">Analytics</a>
-                    {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                    {% if not user.is_staff and user.is_authenticated and user.profile.user_type == 'citizen' %}
                     <a href="{% url 'community_complaints' %}">Community</a>
                     {% endif %}
-                    {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
+                    {% if not user.is_staff and user.is_authenticated and user.profile.user_type == 'citizen' %}
                     <a href="{% url 'activity_feed' %}">Feed</a>
                     {% endif %}
-                    {% if user.profile.verification_status == 'not_applicable' %}
+                    {% if not user.is_staff and user.profile.verification_status == 'not_applicable' %}
                     <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
-                    {% endif %}
-                    {% if user.is_staff %}
-                    <a href="{% url 'govt_applications_list' %}">Govt Applications</a>
-                    <a href="{% url 'moderation_queue' %}">Moderation Queue</a>
                     {% endif %}
                 </nav>
                 <div class="mobile-nav-actions">
                     {% if user.is_authenticated %}
-                    {% if user.profile.user_type == 'govt' %}
+                    {% if user.is_staff %}
+                    <a href="{% url 'admin_dashboard' %}" class="btn-dashboard">Admin Dashboard</a>
+                    {% elif user.profile.user_type == 'govt' %}
                     <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
                     {% else %}
                     <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
                     {% endif %}
+                    {% if not user.is_staff %}
                     <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
                     <a href="{% url 'profile' %}" class="btn-profile-avatar">
                         <span class="avatar-circle">
@@ -1670,6 +1684,7 @@
                         </span>
                         My Profile
                     </a>
+                    {% endif %}
                     <form action="{% url 'logout' %}" method="post" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn-logout">Logout</button>

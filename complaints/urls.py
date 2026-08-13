@@ -56,6 +56,7 @@ urlpatterns = [
     # Admin Dashboard
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-dashboard/user/<int:user_id>/toggle-active/', views.admin_toggle_user_active, name='admin_toggle_user_active'),
+    path('admin-dashboard/export/complaints/', views.admin_export_complaints_csv, name='admin_export_complaints_csv'),
 
     # Moderation endpoints (Admin / Superuser only)
     path('moderation/', views.moderation_queue, name='moderation_queue'),
