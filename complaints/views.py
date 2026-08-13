@@ -1341,6 +1341,66 @@ def delete_account(request):
 
 
 
+# ---------- Admin Dashboard ----------
+
+@staff_member_required
+def admin_dashboard(request):
+    # Platform-wide stats
+    total_citizens = Profile.objects.filter(user_type='citizen').count()
+    total_govt_officials = Profile.objects.filter(user_type='govt', verification_status='approved').count()
+    total_complaints = Complaint.objects.count()
+    resolved_complaints = Complaint.objects.filter(status='resolved').count()
+    pending_complaints = Complaint.objects.exclude(status='resolved').count()
+    escalated_complaints = Complaint.objects.filter(status='escalated').count()
+    pending_moderation = Flag.objects.filter(resolved=False).count()
+    pending_govt_applications = Profile.objects.filter(verification_status='pending').count()
+
+    # Recent activity for quick review
+    recent_complaint_flags = Flag.objects.filter(resolved=False, comment__isnull=True).select_related('complaint', 'reported_by').order_by('-created_at')[:5]
+    recent_comment_flags = Flag.objects.filter(resolved=False, comment__isnull=False).select_related('comment', 'reported_by').order_by('-created_at')[:5]
+    recent_applications = Profile.objects.filter(verification_status='pending').select_related('user').order_by('-applied_at')[:5]
+
+    # User management: everyone except other staff accounts
+    all_users = User.objects.filter(is_staff=False).select_related('profile').order_by('-date_joined')
+
+    context = {
+        'total_citizens': total_citizens,
+        'total_govt_officials': total_govt_officials,
+        'total_complaints': total_complaints,
+        'resolved_complaints': resolved_complaints,
+        'pending_complaints': pending_complaints,
+        'escalated_complaints': escalated_complaints,
+        'pending_moderation': pending_moderation,
+        'pending_govt_applications': pending_govt_applications,
+        'recent_complaint_flags': recent_complaint_flags,
+        'recent_comment_flags': recent_comment_flags,
+        'recent_applications': recent_applications,
+        'all_users': all_users,
+    }
+    return render(request, 'complaints/admin_dashboard.html', context)
+
+
+@staff_member_required
+@require_POST
+def admin_toggle_user_active(request, user_id):
+    target_user = get_object_or_404(User, id=user_id)
+
+    if target_user.is_staff:
+        messages.error(request, "You cannot manage another admin account from here.")
+        return redirect('admin_dashboard')
+
+    if target_user == request.user:
+        messages.error(request, "You cannot deactivate your own account.")
+        return redirect('admin_dashboard')
+
+    target_user.is_active = not target_user.is_active
+    target_user.save()
+
+    status = "activated" if target_user.is_active else "deactivated"
+    messages.success(request, f"{target_user.username}'s account has been {status}.")
+    return redirect('admin_dashboard')
+
+
 @staff_member_required
 def moderation_queue(request):
     complaint_flags = Flag.objects.filter(resolved=False, comment__isnull=True).select_related('complaint', 'reported_by')
