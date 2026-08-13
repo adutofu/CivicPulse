@@ -281,6 +281,9 @@ def custom_logout(request):
 # ---------- Protected Dashboard ----------
 @login_required
 def dashboard(request):
+    if request.user.is_staff:
+        return redirect('admin_dashboard')
+
     profile = request.user.profile
     if profile.user_type == 'govt':
         complaints = Complaint.objects.all().order_by('-created_at')
