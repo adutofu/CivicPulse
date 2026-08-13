@@ -46,10 +46,10 @@ urlpatterns = [
     # ---------- Map and spatial endpoints ----------
     path('api/nearby-complaints/', views.get_nearby_complaints, name='get_nearby_complaints'),
     # Notification API endpoints
-    path('api/notifications/', views.get_notifications, name='get_notifications'),
-    path('api/notifications/unread-count/', views.get_unread_count, name='get_unread_count'),
-    path('api/notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
-    path('api/notifications/mark-all-read/', views.mark_all_read, name='mark_all_read'),
+    path('notifications-api/', views.get_notifications, name='get_notifications'),
+    path('notifications-api/unread-count/', views.get_unread_count, name='get_unread_count'),
+    path('notifications-api/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications-api/mark-all-read/', views.mark_all_read, name='mark_all_read'),
     path('api/ward-boundary/', views.get_ward_boundary, name='get_ward_boundary'),
     path('feed/', views.activity_feed, name='activity_feed'),
 

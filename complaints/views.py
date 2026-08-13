@@ -17,6 +17,8 @@ from django.conf import settings
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Sum, Avg, F
+import csv
+from django.http import HttpResponse
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1399,6 +1401,32 @@ def admin_toggle_user_active(request, user_id):
     status = "activated" if target_user.is_active else "deactivated"
     messages.success(request, f"{target_user.username}'s account has been {status}.")
     return redirect('admin_dashboard')
+
+
+@staff_member_required
+def admin_export_complaints_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="civicpulse_complaints.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Citizen', 'Category', 'Status', 'Upvotes', 'Ward', 'LGA', 'State', 'Created At', 'Resolved'])
+
+    complaints = Complaint.objects.select_related('citizen', 'ward').order_by('-created_at')
+    for c in complaints:
+        writer.writerow([
+            c.id,
+            c.citizen.username,
+            c.get_category_display(),
+            c.get_status_display(),
+            c.upvotes,
+            c.ward.ward if c.ward else '',
+            c.ward.lga if c.ward else '',
+            c.ward.state if c.ward else '',
+            c.created_at.strftime('%Y-%m-%d %H:%M'),
+            'Yes' if c.status == 'resolved' else 'No',
+        ])
+
+    return response
 
 
 @staff_member_required
