@@ -53,6 +53,9 @@ urlpatterns = [
     path('api/ward-boundary/', views.get_ward_boundary, name='get_ward_boundary'),
     path('feed/', views.activity_feed, name='activity_feed'),
 
+    # Admin Dashboard
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard/user/<int:user_id>/toggle-active/', views.admin_toggle_user_active, name='admin_toggle_user_active'),
 
     # Moderation endpoints (Admin / Superuser only)
     path('moderation/', views.moderation_queue, name='moderation_queue'),
