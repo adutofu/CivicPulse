@@ -119,7 +119,7 @@
                 <div class="analytics-card text-center">
                     <div class="number" data-count-to="{{ total_escalated }}">0</div>
                     <div class="label">Escalated</div>
-                    <div class="change negative">⚠️ Needs attention</div>
+                    <div class="change negative"><ion-icon name="warning-outline" style="vertical-align:-2px;"></ion-icon> Needs attention</div>
                 </div>
             </div>
             <div class="col-md-3 col-6">
@@ -162,7 +162,7 @@
         <div class="row g-4 mb-4">
             <div class="col-md-6">
                 <div class="analytics-card">
-                    <h5 style="font-weight: 700;">📂 Complaints by Category</h5>
+                    <h5 style="font-weight: 700;"><ion-icon name="folder-outline" style="vertical-align:-3px;"></ion-icon> Complaints by Category</h5>
                     <div class="chart-container">
                         <canvas id="categoryChart"></canvas>
                     </div>
@@ -170,7 +170,7 @@
             </div>
             <div class="col-md-6">
                 <div class="analytics-card">
-                    <h5 style="font-weight: 700;">📊 Complaints by Status</h5>
+                    <h5 style="font-weight: 700;"><ion-icon name="pie-chart-outline" style="vertical-align:-3px;"></ion-icon> Complaints by Status</h5>
                     <div class="chart-container">
                         <canvas id="statusChart"></canvas>
                     </div>
@@ -181,7 +181,7 @@
         <div class="row g-4 mb-4">
             <div class="col-12">
                 <div class="analytics-card">
-                    <h5 style="font-weight: 700;">📈 Daily Complaint Trend</h5>
+                    <h5 style="font-weight: 700;"><ion-icon name="trending-up-outline" style="vertical-align:-3px;"></ion-icon> Daily Complaint Trend</h5>
                     <div class="chart-container" style="height: 220px;">
                         <canvas id="trendChart"></canvas>
                     </div>
@@ -191,7 +191,7 @@
 
         <div class="col-md-6">
             <div class="analytics-card">
-                <h5 style="font-weight: 700;">⭐ Rating Distribution</h5>
+                <h5 style="font-weight: 700;"><ion-icon name="star-outline" style="vertical-align:-3px;"></ion-icon> Rating Distribution</h5>
                 <div class="chart-container">
                     <canvas id="ratingChart"></canvas>
                 </div>
@@ -202,7 +202,7 @@
         <div class="row g-4">
             <div class="col-md-6">
                 <div class="analytics-card">
-                    <h5 style="font-weight: 700;">🔥 Most Upvoted Complaints</h5>
+                    <h5 style="font-weight: 700;"><ion-icon name="flame-outline" style="vertical-align:-3px;"></ion-icon> Most Upvoted Complaints</h5>
                     <div>
                         {% for complaint in top_complaints %}
                         <div class="top-item">
@@ -211,7 +211,7 @@
                                 <div class="text-muted small">{{ complaint.description|truncatechars:60 }}</div>
                             </div>
                             <div>
-                                <span class="badge bg-info">⬆ {{ complaint.upvotes }}</span>
+                                <span class="badge bg-info"><ion-icon name="arrow-up-circle-outline" style="vertical-align:-2px;"></ion-icon> {{ complaint.upvotes }}</span>
                                 <a href="{% url 'complaint_detail' complaint.id %}" class="btn btn-sm btn-outline-cyan ms-2">View</a>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
             </div>
             <div class="col-md-6">
                 <div class="analytics-card">
-                    <h5 style="font-weight: 700;">👤 Most Active Citizens</h5>
+                    <h5 style="font-weight: 700;"><ion-icon name="person-outline" style="vertical-align:-3px;"></ion-icon> Most Active Citizens</h5>
                     <div>
                         {% for user in active_citizens %}
                         <div class="top-item">

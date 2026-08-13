@@ -2,106 +2,196 @@
 
 {% block extra_css %}
 <style>
-    .btn-cyan:hover {
-        background: #00D4FF;
-        color: #0B0F1A;
-        box-shadow: 0 0 12px rgba(0,212,255,0.5);
+    .update-card {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        padding: 2rem;
+    }
+
+    .update-card h2 {
+        color: var(--brand-cyan);
+        font-weight: 700;
+    }
+
+    .update-card strong {
+        color: var(--brand-cyan);
+    }
+
+    .update-card p {
+        color: var(--text-secondary);
+    }
+
+    .update-card .summary-photo img {
+        max-width: 150px;
+        border-radius: 12px;
+        border: 1px solid var(--glass-border);
+        margin-top: 0.4rem;
+    }
+
+    .update-card label {
+        color: var(--brand-cyan);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .update-card .form-control,
+    .update-card .form-select {
+        background-color: #FFFFFF;
+        color: var(--text-primary);
+        border: 1.5px solid var(--border-dim);
+        border-radius: 16px;
+        padding: 0.65rem 0.9rem;
+        transition: var(--transition);
+    }
+
+    .update-card .form-control:focus,
+    .update-card .form-select:focus {
+        outline: none;
+        border-color: var(--brand-cyan);
+        box-shadow: 0 0 0 3px var(--brand-cyan-glow);
+    }
+
+    .update-card .form-text {
+        color: var(--text-muted);
+        margin-top: 0.4rem;
+        font-size: 0.85rem;
+    }
+
+    .update-card .resolved-photo-preview img {
+        max-width: 200px;
+        border-radius: 12px;
+        border: 1px solid var(--glass-border);
+        margin-top: 0.3rem;
+    }
+
+    .update-card .resolved-photo-preview p {
+        color: var(--brand-cyan);
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+    }
+
+    .btn-save-changes {
+        background: var(--brand-cyan);
+        border: none;
+        color: #FFFFFF;
+        border-radius: 40px;
+        padding: 0.65rem 1.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-save-changes:hover {
+        background: var(--brand-cyan-deep);
         transform: translateY(-2px);
+        box-shadow: 0 0 12px var(--brand-cyan-glow);
     }
-    .btn-outline:hover {
-        background: rgba(108, 117, 125, 0.2);
-        color: #fff;
-        border-color: #adb5bd;
+
+    .btn-cancel-update {
+        background: transparent;
+        border: 1.5px solid var(--border-dim);
+        color: var(--text-secondary);
+        border-radius: 40px;
+        padding: 0.65rem 1.8rem;
+        text-decoration: none;
+        font-weight: 700;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-cancel-update:hover {
+        background: var(--text-secondary);
+        color: #FFFFFF;
         transform: translateY(-2px);
-    }
-    /* Override any Bootstrap default styles */
-    .form-text {
-        color: #A0D6FF !important;
-        opacity: 1;
-    }
-    label, strong[style*="color: #00D4FF"] {
-        color: #00D4FF !important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="card glass-card p-4" style="background: rgba(18, 25, 45, 0.8); backdrop-filter: blur(12px); border: 1px solid #00D4FF; border-radius: 24px;">
-        <h2 class="mb-4" style="color: #00D4FF; font-weight: 700;">✏️ Update Complaint #{{ complaint.id }}</h2>
-        
-        <!-- Complaint summary labels (all forced cyan) -->
+    <div class="update-card fade-in-up">
+        <h2 class="mb-4"><ion-icon name="create-outline" style="vertical-align:-3px;"></ion-icon> Update Complaint #{{ complaint.id }}</h2>
+
+        <!-- Complaint summary -->
         <div class="row mb-4">
             <div class="col-md-6">
-                <p><strong style="color: #00D4FF;">📂 Category:</strong> {{ complaint.get_category_display }}</p>
-                <p><strong style="color: #00D4FF;">📝 Original Description:</strong> {{ complaint.description }}</p>
-                <p><strong style="color: #00D4FF;">👤 Citizen:</strong> {{ complaint.citizen.username }}</p>
+                <p><strong><ion-icon name="folder-outline" style="vertical-align:-2px;"></ion-icon> Category:</strong> {{ complaint.get_category_display }}</p>
+                <p><strong><ion-icon name="document-text-outline" style="vertical-align:-2px;"></ion-icon> Original Description:</strong> {{ complaint.description }}</p>
+                <p><strong><ion-icon name="person-outline" style="vertical-align:-2px;"></ion-icon> Citizen:</strong> {{ complaint.citizen.username }}</p>
             </div>
             <div class="col-md-6">
-                <p><strong style="color: #00D4FF;">📍 Location:</strong> 
+                <p><strong><ion-icon name="location-outline" style="vertical-align:-2px;"></ion-icon> Location:</strong>
                     {% if complaint.latitude and complaint.longitude %}
                         {{ complaint.latitude }}, {{ complaint.longitude }}
                     {% else %}
-                        <span style="color: #A0D6FF;">Not provided</span>
+                        <span style="color: var(--text-muted);">Not provided</span>
                     {% endif %}
                 </p>
-                <p><strong style="color: #00D4FF;">📅 Reported on:</strong> {{ complaint.created_at|date:"F j, Y" }}</p>
+                <p><strong><ion-icon name="calendar-outline" style="vertical-align:-2px;"></ion-icon> Reported on:</strong> {{ complaint.created_at|date:"F j, Y" }}</p>
                 {% if complaint.photo %}
-                    <p><strong style="color: #00D4FF;">📸 Original photo:</strong><br>
-                    <img src="{{ complaint.photo.url }}" style="max-width: 150px; border-radius: 12px; border: 1px solid #00D4FF;"></p>
+                    <p class="summary-photo"><strong><ion-icon name="camera-outline" style="vertical-align:-2px;"></ion-icon> Original photo:</strong><br>
+                    <img src="{{ complaint.photo.url }}" alt="Original complaint photo"></p>
                 {% endif %}
             </div>
         </div>
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            
+
             <!-- Change Status -->
             <div class="mb-4">
-                <label for="status" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">🔧 Change Status</label>
-                <select name="status" id="status" class="form-select" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">
+                <label for="status"><ion-icon name="build-outline" style="vertical-align:-2px;"></ion-icon> Change Status</label>
+                <select name="status" id="status" class="form-select">
                     <option value="pending" {% if complaint.status == 'pending' %}selected{% endif %}>Pending</option>
                     <option value="acknowledged" {% if complaint.status == 'acknowledged' %}selected{% endif %}>Acknowledged</option>
                     <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In Progress</option>
                     <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Resolved</option>
                 </select>
-                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Update the progress of this complaint.</div>
+                <div class="form-text">Update the progress of this complaint.</div>
             </div>
 
             <!-- Government Response -->
             <div class="mb-4">
-                <label for="response" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">💬 Government Response</label>
-                <textarea name="response" id="response" rows="4" class="form-control" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">{{ complaint.government_response|default:'' }}</textarea>
-                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Add official remarks, action plan, or resolution details.</div>
+                <label for="response"><ion-icon name="chatbubble-outline" style="vertical-align:-2px;"></ion-icon> Government Response</label>
+                <textarea name="response" id="response" rows="4" class="form-control">{{ complaint.government_response|default:'' }}</textarea>
+                <div class="form-text">Add official remarks, action plan, or resolution details.</div>
             </div>
 
             <!-- Contractor / Agency -->
             <div class="mb-4">
-                <label for="contractor" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">👷 Contractor / Agency</label>
-                <input type="text" name="contractor" id="contractor" class="form-control" value="{{ complaint.contractor|default:'' }}" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">
-                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Who carried out the work (e.g., "FCDA", "Julius Berger")</div>
+                <label for="contractor"><ion-icon name="construct-outline" style="vertical-align:-2px;"></ion-icon> Contractor / Agency</label>
+                <input type="text" name="contractor" id="contractor" class="form-control" value="{{ complaint.contractor|default:'' }}">
+                <div class="form-text">Who carried out the work (e.g., "FCDA", "Julius Berger")</div>
             </div>
 
             <!-- After/Resolved Photo -->
             <div class="mb-4">
-                <label for="resolved_photo" class="form-label fw-bold" style="color: #00D4FF; margin-bottom: 0.5rem;">📷 After/Resolved Photo</label>
-                <input type="file" name="resolved_photo" id="resolved_photo" class="form-control" accept="image/*" style="background-color: #1A2332; color: #F0F4FA; border: 1px solid #00D4FF; border-radius: 16px; padding: 0.6rem;">
+                <label for="resolved_photo"><ion-icon name="image-outline" style="vertical-align:-2px;"></ion-icon> After/Resolved Photo</label>
+                <input type="file" name="resolved_photo" id="resolved_photo" class="form-control" accept="image/*">
                 {% if complaint.resolved_photo %}
-                    <div class="mt-2">
-                        <p style="color: #00D4FF; margin-bottom: 0.3rem;">Current after photo:</p>
-                        <img src="{{ complaint.resolved_photo.url }}" style="max-width: 200px; border-radius: 12px; border: 1px solid #00D4FF;">
+                    <div class="mt-2 resolved-photo-preview">
+                        <p>Current after photo:</p>
+                        <img src="{{ complaint.resolved_photo.url }}" alt="Resolved complaint photo">
                     </div>
                 {% endif %}
-                <div class="form-text" style="color: #A0D6FF; margin-top: 0.4rem;">Upload a picture showing the resolved issue.</div>
+                <div class="form-text">Upload a picture showing the resolved issue.</div>
             </div>
 
             <!-- Buttons -->
             <div class="mt-4 d-flex gap-3">
-                <button type="submit" class="btn-cyan" style="background: transparent; border: 1.5px solid #00D4FF; color: #00D4FF; border-radius: 40px; padding: 0.6rem 1.8rem; font-weight: 600; transition: 0.2s; cursor: pointer;">✅ Save Changes</button>
-                <a href="{% url 'dashboard' %}" class="btn-outline" style="background: transparent; border: 1.5px solid #6c757d; color: #adb5bd; border-radius: 40px; padding: 0.6rem 1.8rem; text-decoration: none; font-weight: 600; transition: 0.2s;">Cancel</a>
+                <button type="submit" class="btn-save-changes"><ion-icon name="checkmark-circle-outline"></ion-icon> Save Changes</button>
+                <a href="{% url 'dashboard' %}" class="btn-cancel-update">Cancel</a>
             </div>
         </form>
     </div>
 </div>
 {% endblock %}
-
