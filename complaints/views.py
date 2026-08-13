@@ -1114,6 +1114,9 @@ def rate_complaint(request, complaint_id):
 # ---------- Profile Page ---------- 
 @login_required
 def profile_view(request):
+    if request.user.is_staff:
+        return redirect('admin_dashboard')
+
     profile = request.user.profile
 
     # --- PHASE 3: GENERATE USER ACTIVITIES ---
