@@ -638,11 +638,14 @@ def complaint_detail(request, complaint_id):
             extra_image.save()
             return redirect('complaint_detail', complaint_id=complaint.id)
     
+    top_level_comments = complaint.comments.filter(parent__isnull=True).order_by('created_at')
+
     return render(request, 'complaints/complaint_detail.html', {
         'complaint': complaint,
         'extra_images': extra_images,
         'form': form,
         'is_owner': is_owner,
+        'top_level_comments': top_level_comments,
     })
 
 @login_required
@@ -768,6 +771,18 @@ def api_comment(request):
         'parent_id': comment.parent.id if comment.parent else None
     })
 
+
+@login_required
+def get_comment_thread(request, complaint_id):
+    """Returns the rendered nested comment thread for a complaint (used for AJAX refresh)."""
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    top_level_comments = complaint.comments.filter(parent__isnull=True).order_by('created_at')
+    return render(request, 'includes/comment_list.html', {
+        'complaint': complaint,
+        'top_level_comments': top_level_comments,
+    })
+
+
 @login_required
 @require_POST
 def api_flag_complaint(request):
@@ -842,6 +857,17 @@ def add_comment(request, complaint_id):
         notify_mentions(text, request.user, complaint)
         
         return redirect('complaint_detail', complaint_id=complaint.id)
+
+
+@login_required
+def get_comment_thread(request, complaint_id):
+    """Returns the rendered nested comment thread for a complaint (used for AJAX refresh)."""
+    complaint = get_object_or_404(Complaint, id=complaint_id)
+    top_level_comments = complaint.comments.filter(parent__isnull=True).order_by('created_at')
+    return render(request, 'includes/comment_list.html', {
+        'complaint': complaint,
+        'top_level_comments': top_level_comments,
+    })
 
 
 # ---------- Notification API Views ----------

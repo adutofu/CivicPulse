@@ -211,6 +211,222 @@
         padding-left: 0.8rem;
     }
 
+
+    /* ================= NESTED COMMENT THREAD ================= */
+    .comment-thread-root {
+        margin-top: 0.5rem;
+    }
+
+    .comment-node {
+        margin-top: 0.9rem;
+        position: relative;
+    }
+
+    .comment-node[data-depth="0"] {
+        margin-left: 0 !important;
+    }
+
+    .comment-card {
+        display: flex;
+        gap: 0.7rem;
+        align-items: flex-start;
+    }
+
+    .comment-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-cyan), var(--primary-dark));
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .comment-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .comment-body {
+        flex: 1;
+        min-width: 0;
+        background: var(--surface-dark, #F5F7FA);
+        border-radius: 16px;
+        padding: 0.65rem 0.9rem;
+    }
+
+    .comment-top-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.15rem;
+    }
+
+    .comment-author {
+        font-weight: 700;
+        color: var(--brand-cyan);
+        font-size: 0.85rem;
+    }
+
+    .comment-dot {
+        color: var(--text-muted);
+        font-size: 0.7rem;
+    }
+
+    .comment-time {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    }
+
+    .comment-text {
+        color: var(--text-primary);
+        font-size: 0.88rem;
+        line-height: 1.4;
+        margin: 0.15rem 0 0.4rem;
+        word-break: break-word;
+    }
+
+    .comment-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .comment-reply-btn,
+    .comment-flag-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: var(--transition);
+    }
+
+    .comment-reply-btn:hover {
+        color: var(--brand-cyan);
+    }
+
+    .comment-flag-btn:hover {
+        color: var(--error-red);
+    }
+
+    .comment-reply-form {
+        margin-top: 0.6rem;
+    }
+
+    .comment-reply-textarea {
+        width: 100%;
+        border: 1.5px solid var(--border-dim);
+        border-radius: 12px;
+        padding: 0.5rem 0.7rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        resize: vertical;
+        min-height: 50px;
+    }
+
+    .comment-reply-textarea:focus {
+        outline: none;
+        border-color: var(--brand-cyan);
+        box-shadow: 0 0 0 3px var(--brand-cyan-glow);
+    }
+
+    .comment-reply-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-top: 0.4rem;
+    }
+
+    .comment-reply-cancel {
+        background: transparent;
+        border: 1.5px solid var(--border-dim);
+        color: var(--text-secondary);
+        border-radius: 30px;
+        padding: 0.3rem 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .comment-reply-submit {
+        background: var(--brand-cyan);
+        border: none;
+        color: #FFFFFF;
+        border-radius: 30px;
+        padding: 0.3rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .comment-reply-submit:hover {
+        background: var(--brand-cyan-deep);
+    }
+
+    .comment-children {
+        border-left: 2px solid var(--border-dim);
+        padding-left: 0.4rem;
+    }
+
+    .comment-empty-state {
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        padding: 0.5rem 0;
+    }
+
+    .new-comment-box textarea {
+        width: 100%;
+        border: 1.5px solid var(--border-dim);
+        border-radius: 14px;
+        padding: 0.6rem 0.9rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        resize: vertical;
+        min-height: 60px;
+    }
+
+    .new-comment-box textarea:focus {
+        outline: none;
+        border-color: var(--brand-cyan);
+        box-shadow: 0 0 0 3px var(--brand-cyan-glow);
+    }
+
+    .new-comment-submit {
+        background: var(--brand-cyan);
+        border: none;
+        color: #FFFFFF;
+        border-radius: 40px;
+        padding: 0.5rem 1.4rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .new-comment-submit:hover {
+        background: var(--brand-cyan-deep);
+        transform: translateY(-1px);
+    }
+
+
+
     .modal-content {
         background: var(--surface-card);
         border: 1px solid var(--border-dim);
@@ -435,53 +651,20 @@
             </div>
         </div>
 
-        <!-- ========== COMMENTS SECTION ========== -->
+        <!-- ========== COMMENTS SECTION (nested, unlimited depth) ========== -->
         <div class="mt-4">
             <h4 style="color: var(--brand-cyan);"><ion-icon name="chatbubble-outline" style="vertical-align:-3px;"></ion-icon> Comments</h4>
             {% if user.is_authenticated %}
-                <form method="post" action="{% url 'add_comment' complaint.id %}" class="mb-3">
-                    {% csrf_token %}
-                    <input type="hidden" name="parent_id" id="parent_id" value="">
-                    <div class="mb-2">
-                        <textarea name="text" class="form-control" rows="2" placeholder="Write a comment... (use @username to mention)"></textarea>
-                    </div>
-                    <button type="submit" class="btn-cyan-sm">Post Comment</button>
-                </form>
+                <div class="new-comment-box mb-3" id="new-comment-box-{{ complaint.id }}">
+                    <textarea rows="2" placeholder="Write a comment... (use @username to mention)"></textarea>
+                    <button type="button" class="new-comment-submit">Post Comment</button>
+                </div>
             {% else %}
                 <p><a href="{% url 'login' %}">Log in</a> to comment.</p>
             {% endif %}
 
-            <!-- List comments (top‑level) -->
             <div class="mt-3">
-                {% for comment in complaint.comments.all %}
-                    {% if not comment.parent %}
-                        <div class="comment">
-                            <div class="comment-meta">
-                                <span class="comment-author">{{ comment.author.username }}</span>
-                                <span class="comment-date">{{ comment.created_at|date:"M d, Y H:i" }}</span>
-                            </div>
-                            <div class="comment-text">{{ comment.text }}</div>
-                            {% if user.is_authenticated %}
-                                <a href="#" class="reply-link" data-comment-id="{{ comment.id }}"><ion-icon name="arrow-undo-outline" style="vertical-align:-2px;"></ion-icon> Reply</a>
-                            {% endif %}
-                            
-                            <!-- Replies -->
-                            <div class="replies mt-2">
-                                {% for reply in comment.comment_set.all %}
-                                    <div class="comment" style="background:var(--surface-card); border:1px solid var(--border-dim);">
-                                        <div class="comment-meta">
-                                            <span class="comment-author">{{ reply.author.username }}</span>
-                                            <span class="comment-date">{{ reply.created_at|date:"M d, Y H:i" }}</span>
-                                        </div>
-                                        <div class="comment-text">{{ reply.text }}</div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-                {% empty %}
-                    <p class="text-muted">No comments yet. Be the first!</p>
-                {% endfor %}
+                {% include "includes/comment_list.html" with complaint=complaint top_level_comments=top_level_comments %}
             </div>
         </div>
 
@@ -563,7 +746,11 @@
 </div>
 
 <!-- JavaScript for reply link -->
-<script>
+
+<!-- Nested comment system -->
+{% load static %}
+<script src="{% static 'js/comments.js' %}"></script>
+<script><!-- Nested comment system -->
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.reply-link').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -605,6 +792,13 @@
                 }
             });
         });
+    });
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        window.CivicPulseComments.init({{ complaint.id }});
     });
 </script>
 

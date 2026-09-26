@@ -1,0 +1,8 @@
+{% load static %}
+<div class="comment-thread-root" id="comment-thread-{{ complaint.id }}" data-complaint-id="{{ complaint.id }}">
+    {% for comment in top_level_comments %}
+        {% include "includes/comment_thread.html" with comment=comment depth=0 %}
+    {% empty %}
+        <p class="comment-empty-state">No comments yet. Be the first to share your thoughts!</p>
+    {% endfor %}
+</div>

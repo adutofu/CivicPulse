@@ -93,7 +93,7 @@
     .hero-grid {
         max-width: 1200px !important; /* Tightened */
         margin: 0 auto; padding: 2.5rem 2rem !important; /* Reduced padding */
-        display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2.5rem; /* Reduced gap */
+        display: grid; grid-template-columns: 1fr; gap: 2.5rem; /* Reduced gap */
         align-items: center; position: relative; z-index: 2; width: 100%;
     }
     .hero-content h1 {
@@ -286,15 +286,6 @@
             <div class="hero-buttons">
                 <a href="{% url 'signup' %}" class="btn-primary">Start Reporting</a>
                 <a href="{% url 'login' %}" class="btn-secondary" style="border-color:white; color:white;">Government Login</a>
-            </div>
-        </div>
-        <div class="hero-card">
-            <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.5); margin-bottom:0.5rem;">Live Impact</div>
-            <div class="stat-row">
-                <div><div class="stat-number-lg" id="counter1" data-count-to="{{ resolved_issues|default:0 }}">0</div><div class="stat-label-lg">Issues Resolved</div></div>
-                <div><div class="stat-number-lg" id="counter2" data-count-to="{{ active_citizens|default:0 }}">0</div><div class="stat-label-lg">Active Citizens</div></div>
-                <div><div class="stat-number-lg" id="counter3" data-count-to="{{ total_upvotes|default:0 }}">0</div><div class="stat-label-lg">Community Upvotes</div></div>
-                <div><div class="stat-number-lg" id="counter4" data-count-to="{{ response_rate|default:0 }}">0</div><div class="stat-label-lg">Response Rate</div></div>
             </div>
         </div>
     </div>
@@ -596,10 +587,10 @@
 
     // Counter groups: hero card and stats section
     const counterGroups = [
-        ['counter1', 'counter1b', resolved],
-        ['counter2', 'counter2b', citizens],
-        ['counter3', 'counter3b', saved],
-        ['counter4', 'counter4b', rate]
+        [null, 'counter1b', resolved],
+        [null, 'counter2b', citizens],
+        [null, 'counter3b', saved],
+        [null, 'counter4b', rate]
     ];
 
     function startAllCounters() {

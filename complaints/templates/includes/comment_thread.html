@@ -1,8 +1,14 @@
 {% load static %}
 <div class="comment-node" data-comment-id="{{ comment.id }}" data-depth="{{ depth }}"
-     style="margin-left: {% if depth > 6 %}132{% else %}{% widthratio depth 1 22 %}{% endif %}px;">
+    <div>style="margin-left: {% if depth > 6 %}132{% else %}{% widthratio depth 1 22 %}{% endif %}px;"> </div>
     <div class="comment-card">
-        <div class="comment-avatar">{{ comment.author.username|first|upper }}</div>
+        <div class="comment-avatar">
+            {% if comment.author.profile.profile_picture %}
+                <img src="{{ comment.author.profile.profile_picture.url }}" alt="{{ comment.author.username }}">
+            {% else %}
+                {{ comment.author.username|first|upper }}
+            {% endif %}
+        </div>
         <div class="comment-body">
             <div class="comment-top-row">
                 <span class="comment-author">{{ comment.author.username }}</span>

@@ -1,6 +1,6 @@
 {% extends 'complaints/base.html' %}
 {% load static %}
-
+{% load comment_extras %}
 {% block extra_css %}
 <style>
     .community-card {
@@ -118,6 +118,8 @@
         margin-left: 1.5rem;
         display: none;
     }
+
+
     .reply-form textarea {
         width: 100%;
         border-radius: 16px;
@@ -154,6 +156,214 @@
             padding: 0.15rem 0.6rem;
         }
     }
+
+
+        /* ================= NESTED COMMENT THREAD ================= */
+    .comment-thread-root {
+        margin-top: 0.5rem;
+    }
+
+    .comment-node {
+        margin-top: 0.9rem;
+        position: relative;
+    }
+
+    .comment-node[data-depth="0"] {
+        margin-left: 0 !important;
+    }
+
+    .comment-card {
+        display: flex;
+        gap: 0.7rem;
+        align-items: flex-start;
+    }
+
+    .comment-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-cyan), var(--primary-dark));
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .comment-body {
+        flex: 1;
+        min-width: 0;
+        background: var(--surface-dark, #F5F7FA);
+        border-radius: 16px;
+        padding: 0.65rem 0.9rem;
+    }
+
+    .comment-top-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.15rem;
+    }
+
+    .comment-author {
+        font-weight: 700;
+        color: var(--brand-cyan);
+        font-size: 0.85rem;
+    }
+
+    .comment-dot {
+        color: var(--text-muted);
+        font-size: 0.7rem;
+    }
+
+    .comment-time {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    }
+
+    .comment-text {
+        color: var(--text-primary);
+        font-size: 0.88rem;
+        line-height: 1.4;
+        margin: 0.15rem 0 0.4rem;
+        word-break: break-word;
+    }
+
+    .comment-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .comment-reply-btn,
+    .comment-flag-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: var(--transition);
+    }
+
+    .comment-reply-btn:hover {
+        color: var(--brand-cyan);
+    }
+
+    .comment-flag-btn:hover {
+        color: var(--error-red);
+    }
+
+    .comment-reply-form {
+        margin-top: 0.6rem;
+    }
+
+    .comment-reply-textarea {
+        width: 100%;
+        border: 1.5px solid var(--border-dim);
+        border-radius: 12px;
+        padding: 0.5rem 0.7rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        resize: vertical;
+        min-height: 50px;
+    }
+
+    .comment-reply-textarea:focus {
+        outline: none;
+        border-color: var(--brand-cyan);
+        box-shadow: 0 0 0 3px var(--brand-cyan-glow);
+    }
+
+    .comment-reply-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-top: 0.4rem;
+    }
+
+    .comment-reply-cancel {
+        background: transparent;
+        border: 1.5px solid var(--border-dim);
+        color: var(--text-secondary);
+        border-radius: 30px;
+        padding: 0.3rem 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .comment-reply-submit {
+        background: var(--brand-cyan);
+        border: none;
+        color: #FFFFFF;
+        border-radius: 30px;
+        padding: 0.3rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .comment-reply-submit:hover {
+        background: var(--brand-cyan-deep);
+    }
+
+    .comment-children {
+        border-left: 2px solid var(--border-dim);
+        padding-left: 0.4rem;
+    }
+
+    .comment-empty-state {
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        padding: 0.5rem 0;
+    }
+
+    .new-comment-box textarea {
+        width: 100%;
+        border: 1.5px solid var(--border-dim);
+        border-radius: 14px;
+        padding: 0.6rem 0.9rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        resize: vertical;
+        min-height: 60px;
+    }
+
+    .new-comment-box textarea:focus {
+        outline: none;
+        border-color: var(--brand-cyan);
+        box-shadow: 0 0 0 3px var(--brand-cyan-glow);
+    }
+
+    .new-comment-submit {
+        background: var(--brand-cyan);
+        border: none;
+        color: #FFFFFF;
+        border-radius: 40px;
+        padding: 0.5rem 1.4rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: var(--transition);
+    }
+
+    .new-comment-submit:hover {
+        background: var(--brand-cyan-deep);
+        transform: translateY(-1px);
+    }
+
 </style>
 {% endblock %}
 
@@ -206,52 +416,18 @@
                         {{ complaint.get_status_display }}
                     </span>
                 </div>
-                <!-- Comments section -->
+                                <!-- Comments section (nested, unlimited depth) -->
                 <div class="comment-section">
-                    <div class="comments-list">
-                        {% for comment in complaint.comments.all %}
-                            {% if not comment.parent %}
-                            <div class="comment-item" data-comment-id="{{ comment.id }}">
-                                <div class="meta">
-                                    <span class="author">{{ comment.author.username }}</span>
-                                    <span class="time">{{ comment.created_at|date:"M d, H:i" }}</span>
-                                </div>
-                                <div class="text">{{ comment.text }}</div>
-                                <div class="actions">
-                                    <button class="reply-btn" data-comment-id="{{ comment.id }}">Reply</button>
-                                    <button class="flag-comment-btn" data-comment-id="{{ comment.id }}" data-bs-toggle="modal" data-bs-target="#flagCommentModal">
-                                        Flag
-                                    </button>
-                                </div>
-                                <!-- Replies -->
-                                <div class="replies-list ms-4">
-                                    {% for reply in comment.comment_set.all %}
-                                    <div class="comment-item" data-comment-id="{{ reply.id }}">
-                                        <div class="meta">
-                                            <span class="author">{{ reply.author.username }}</span>
-                                            <span class="time">{{ reply.created_at|date:"M d, H:i" }}</span>
-                                        </div>
-                                        <div class="text">{{ reply.text }}</div>
-                                        <button class="flag-comment-btn" data-comment-id="{{ reply.id }}" data-bs-toggle="modal" data-bs-target="#flagCommentModal">Flag</button>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <!-- Reply form (hidden) -->
-                                <div class="reply-form" data-parent-id="{{ comment.id }}">
-                                    <textarea class="reply-text" rows="1" placeholder="Write a reply..."></textarea>
-                                    <button class="btn-outline-cyan submit-reply" data-complaint-id="{{ complaint.id }}" data-parent-id="{{ comment.id }}">Post reply</button>
-                                </div>
-                            </div>
-                            {% endif %}
-                        {% empty %}
-                            <p class="text-muted">No comments yet.</p>
-                        {% endfor %}
+                    {% if user.is_authenticated %}
+                    <div class="new-comment-box mb-2" id="new-comment-box-{{ complaint.id }}">
+                        <textarea rows="1" placeholder="Write a comment... (use @username)"></textarea>
+                        <button type="button" class="new-comment-submit">Post Comment</button>
                     </div>
-                    <!-- New comment form -->
-                    <div class="new-comment-form mt-2">
-                        <textarea class="comment-textarea form-control" rows="1" placeholder="Write a comment... (use @username)"></textarea>
-                        <button class="btn-cyan-sm submit-comment mt-1" data-complaint-id="{{ complaint.id }}">Post comment</button>
-                    </div>
+                    {% else %}
+                    <p class="text-muted small"><a href="{% url 'login' %}">Log in</a> to comment.</p>
+                    {% endif %}
+
+                    {% include "includes/comment_list.html" with complaint=complaint top_level_comments=complaint.comments.all|top_level %}
                 </div>
             </div>
         </div>
@@ -321,6 +497,7 @@
         </div>
     </div>
 
+    <script src="{% static 'js/comments.js' %}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Helper: get CSRF token
@@ -557,9 +734,16 @@
             });
         });
 
-        // Initial binding
-        bindReplyEvents();
+                // Initial binding
         bindFlagCommentEvents();
+
+        // Nested comment system — one shared thread manager, initialized per complaint card
+        document.querySelectorAll('.community-card').forEach(function (card) {
+            const complaintId = card.dataset.complaintId;
+            if (complaintId && window.CivicPulseComments) {
+                window.CivicPulseComments.init(complaintId);
+            }
+        });
     });
     </script>
 {% endblock %}
