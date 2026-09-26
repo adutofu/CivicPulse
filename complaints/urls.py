@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/upvote/', views.api_upvote, name='api_upvote'),
     path('api/follow/', views.api_follow, name='api_follow'),
     path('api/comment/', views.api_comment, name='api_comment'),
+    path('complaint/<int:complaint_id>/comments/', views.get_comment_thread, name='get_comment_thread'),
     path('api/flag-complaint/', views.api_flag_complaint, name='api_flag_complaint'),
     path('api/flag-comment/', views.api_flag_comment, name='api_flag_comment'),
     path('complaint/<int:complaint_id>/rate/', views.rate_complaint, name='rate_complaint'),
