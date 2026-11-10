@@ -2333,20 +2333,75 @@
     </script>
 
     <!-- "More" nav dropdown toggle -->
+        <!-- Combined Nav Dropdowns Toggle -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const navMore = document.getElementById('nav-more');
             const navMoreToggle = document.getElementById('nav-more-toggle');
+            const userDropdown = document.getElementById('user-dropdown');
+            const userDropdownToggle = document.getElementById('user-dropdown-toggle');
 
+            // Toggle "More" Menu
             if (navMore && navMoreToggle) {
                 navMoreToggle.addEventListener('click', function (event) {
                     event.stopPropagation();
                     navMore.classList.toggle('open');
+                    
+                    // Close user dropdown if open
+                    if (userDropdown) {
+                        userDropdown.classList.remove('open');
+                        userDropdownToggle?.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+
+            // Toggle "User Profile" Menu
+            if (userDropdown && userDropdownToggle) {
+                userDropdownToggle.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    userDropdown.classList.toggle('open');
+                    const isOpen = userDropdown.classList.contains('open');
+                    userDropdownToggle.setAttribute('aria-expanded', String(isOpen));
+                    
+                    // Close "More" dropdown if open
+                    if (navMore) {
+                        navMore.classList.remove('open');
+                    }
+                });
+            }
+
+            // Close everything when clicking outside
+            document.addEventListener('click', function (event) {
+                if (navMore && !navMore.contains(event.target)) {
+                    navMore.classList.remove('open');
+                }
+                if (userDropdown && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.remove('open');
+                    userDropdownToggle?.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+    </script>
+
+        <!-- User Profile Dropdown Toggle -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userDropdown = document.getElementById('user-dropdown');
+            const userDropdownToggle = document.getElementById('user-dropdown-toggle');
+
+            if (userDropdown && userDropdownToggle) {
+                userDropdownToggle.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    userDropdown.classList.toggle('open');
+                    const isOpen = userDropdown.classList.contains('open');
+                    userDropdownToggle.setAttribute('aria-expanded', String(isOpen));
                 });
 
+                // Close when clicking outside
                 document.addEventListener('click', function (event) {
-                    if (!navMore.contains(event.target)) {
-                        navMore.classList.remove('open');
+                    if (!userDropdown.contains(event.target)) {
+                        userDropdown.classList.remove('open');
+                        userDropdownToggle.setAttribute('aria-expanded', 'false');
                     }
                 });
             }
