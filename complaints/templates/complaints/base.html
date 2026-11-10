@@ -2332,7 +2332,6 @@
         });
     </script>
 
-    <!-- "More" nav dropdown toggle -->
         <!-- Combined Nav Dropdowns Toggle -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -2383,30 +2382,7 @@
         });
     </script>
 
-        <!-- User Profile Dropdown Toggle -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const userDropdown = document.getElementById('user-dropdown');
-            const userDropdownToggle = document.getElementById('user-dropdown-toggle');
-
-            if (userDropdown && userDropdownToggle) {
-                userDropdownToggle.addEventListener('click', function (event) {
-                    event.stopPropagation();
-                    userDropdown.classList.toggle('open');
-                    const isOpen = userDropdown.classList.contains('open');
-                    userDropdownToggle.setAttribute('aria-expanded', String(isOpen));
-                });
-
-                // Close when clicking outside
-                document.addEventListener('click', function (event) {
-                    if (!userDropdown.contains(event.target)) {
-                        userDropdown.classList.remove('open');
-                        userDropdownToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-        });
-    </script>
+    
 
     {% block extra_js %}{% endblock %}
 </body>
