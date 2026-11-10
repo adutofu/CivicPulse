@@ -1816,33 +1816,44 @@
                 </nav>
                 <div class="mobile-nav-actions">
                     {% if user.is_authenticated %}
-                    {% if user.is_staff %}
-                    <a href="{% url 'admin_dashboard' %}" class="btn-dashboard">Admin Dashboard</a>
-                    {% elif user.profile.user_type == 'govt' %}
-                    <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
-                    {% else %}
-                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
-                    {% endif %}
-                    {% if not user.is_staff %}
-                    <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                    <a href="{% url 'profile' %}" class="btn-profile-avatar">
-                        <span class="avatar-circle">
-                            {% if user.profile.profile_picture %}
-                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin_dashboard' %}" class="btn-dashboard">Admin Dashboard</a>
+                        {% else %}
+                            <!-- Mobile Primary Action -->
+                            <a href="{% url 'report_complaint' %}" class="btn-report" style="width: 100%; text-align: center;">Report Issue</a>
+                            
+                            <!-- Mobile Links -->
+                            {% if user.profile.user_type == 'govt' %}
+                                <a href="{% url 'dashboard' %}" class="btn-dashboard" style="width: 100%; text-align: center;">Govt Dashboard</a>
                             {% else %}
-                                {{ user.username|first|upper }}
+                                <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard" style="width: 100%; text-align: center;">My Complaints</a>
                             {% endif %}
-                        </span>
-                        My Profile
-                    </a>
-                    {% endif %}
-                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-logout">Logout</button>
-                    </form>
+                            
+                            {% if user.profile.user_type == 'citizen' or user.profile.user_type == 'govt' %}
+                                <a href="{% url 'activity_feed' %}" class="btn-dashboard" style="width: 100%; text-align: center;">Feed</a>
+                            {% endif %}
+                            
+                            <a href="{% url 'profile' %}" class="btn-profile-avatar" style="width: 100%; justify-content: center;">
+                                <span class="avatar-circle">
+                                    {% if user.profile.profile_picture %}
+                                        <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                                    {% else %}
+                                        {{ user.username|first|upper }}
+                                    {% endif %}
+                                </span>
+                                My Profile
+                            </a>
+                            
+                            <div class="dropdown-divider" style="margin: 1rem 0;"></div>
+                            
+                            <form action="{% url 'logout' %}" method="post" style="width: 100%;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-logout" style="width: 100%;">Logout</button>
+                            </form>
+                        {% endif %}
                     {% else %}
-                    <a href="{% url 'login' %}" class="btn-login">Login</a>
-                    <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
+                        <a href="{% url 'login' %}" class="btn-login">Login</a>
+                        <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
                     {% endif %}
                 </div>
             </aside>
