@@ -634,6 +634,7 @@
         .mobile-nav-actions .btn-login,
         .mobile-nav-actions .btn-signup,
         .mobile-nav-actions .btn-dashboard,
+        .mobile-nav-actions .btn-feed,
         .mobile-nav-actions .btn-report,
         .mobile-nav-actions .btn-logout,
         .mobile-nav-actions .btn-profile-avatar {
@@ -645,6 +646,7 @@
         .btn-login,
         .btn-signup,
         .btn-dashboard,
+        .btn-feed,
         .btn-report,
         .btn-logout {
             padding: 0.45rem 1.15rem;
@@ -659,6 +661,7 @@
 
         .btn-login,
         .btn-dashboard,
+        .btn-feed,
         .btn-report {
             background: #FFFFFF;
             border: 1.5px solid var(--brand-cyan);
@@ -667,6 +670,7 @@
 
         .btn-login:hover,
         .btn-dashboard:hover,
+        .btn-feed:hover,
         .btn-report:hover {
             background: var(--brand-cyan);
             color: #FFFFFF;
@@ -995,6 +999,7 @@
             .btn-login,
             .btn-signup,
             .btn-dashboard,
+            .btn-feed,
             .btn-report,
             .btn-logout {
                 width: auto;
@@ -1160,6 +1165,148 @@
             text-align: center;
             color: var(--text-muted);
         }
+
+
+        /* ============================================================
+        NAVBAR REDESIGN — CLEAN & FOCUSED
+        ============================================================ */
+
+        /* 1. Make "Report Issue" the hero button */
+        .btn-report {
+            background: var(--brand-cyan);
+            color: #FFFFFF;
+            border: 1.5px solid var(--brand-cyan);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+        .btn-report:hover {
+            background: var(--brand-cyan-deep);
+            border-color: var(--brand-cyan-deep);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+        }
+
+        /* 2. Clean up "My Complaints" / "Dashboard" buttons */
+        .btn-dashboard {
+            background: transparent;
+            border: none;
+            color: var(--brand-cyan);
+            font-weight: 600;
+            padding: 0.45rem 0.75rem;
+        }
+        .btn-dashboard:hover {
+            background: var(--brand-cyan-glow);
+            color: var(--brand-cyan-deep);
+            box-shadow: none;
+            border-radius: 8px;
+        }
+
+        /* 3. User Profile Dropdown */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .user-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: transparent;
+            border: 1.5px solid transparent;
+            padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+            border-radius: 34px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-dropdown-toggle:hover {
+            background: var(--brand-cyan-glow);
+            border-color: var(--brand-cyan);
+        }
+
+        .user-dropdown-toggle .avatar-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-cyan), var(--primary-dark));
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .user-dropdown-toggle .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-dropdown-toggle ion-icon {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .user-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: #FFFFFF;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            min-width: 200px;
+            z-index: 1100;
+            padding: 0.5rem 0;
+        }
+
+        .user-dropdown.open .user-dropdown-menu {
+            display: block;
+            animation: fadeInUp 0.2s ease both;
+        }
+
+        .user-dropdown-menu a,
+        .user-dropdown-menu button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.7rem 1.2rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-dropdown-menu a:hover,
+        .user-dropdown-menu button:hover {
+            background: var(--brand-cyan-glow);
+            color: var(--brand-cyan-deep);
+        }
+
+        .user-dropdown-menu .dropdown-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.06);
+            margin: 0.4rem 0;
+        }
+
+        .user-dropdown-menu .text-danger {
+            color: var(--error-red) !important;
+        }
+
+        .user-dropdown-menu .text-danger:hover {
+            background: rgba(255, 59, 48, 0.1) !important;
+            color: var(--error-red) !important;
+        }
+
 
         /* ============================================================
            CIVICPULSE DESIGN SYSTEM — PHASE 1
@@ -1552,75 +1699,79 @@
             {% block header_navigation %}
             <div class="desktop-nav-wrap">
                 <nav class="desktop-nav">
-                    <a href="/">Home</a>
-                    <a href="{% url 'about' %}">About</a>
-                    <a href="{% url 'contact' %}">Contact</a>
+                    <!-- Removed Home, as the logo links to it -->
                     <a href="{% url 'analytics_dashboard' %}">Analytics</a>
                     {% if not user.is_staff and user.is_authenticated and user.profile.user_type == 'citizen' %}
-                    <a href="{% url 'community_complaints' %}">Community</a>
+                        <a href="{% url 'community_complaints' %}">Community</a>
                     {% endif %}
 
-                    {% if not user.is_staff and user.is_authenticated and user.profile.user_type == 'citizen' or not user.is_staff and user.profile.verification_status == 'not_applicable' %}
                     <div class="nav-more" id="nav-more">
                         <button type="button" class="nav-more-toggle" id="nav-more-toggle">
                             More <ion-icon name="chevron-down-outline" class="nav-more-caret"></ion-icon>
                         </button>
                         <div class="nav-more-dropdown">
-                            {% if user.is_authenticated and user.profile.user_type == 'citizen' %}
-                            <a href="{% url 'activity_feed' %}">Feed</a>
-                            {% endif %}
-                            {% if user.profile.verification_status == 'not_applicable' %}
-                            <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
+                            <a href="{% url 'about' %}">About Us</a>
+                            <a href="{% url 'contact' %}">Contact</a>
+                            {% if user.profile.verification_status == 'not_applicable' and not user.is_staff %}
+                                <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
                             {% endif %}
                         </div>
                     </div>
-                    {% endif %}
                 </nav>
                 <div class="nav-buttons desktop-buttons">
                     {% if user.is_authenticated %}
-                    {% if user.is_staff %}
-                    <a href="{% url 'admin_dashboard' %}" class="btn-dashboard">Admin Dashboard</a>
-                    <span class="btn-profile-avatar" style="cursor: default;">
-                        <span class="avatar-circle" style="background: linear-gradient(135deg, #FF9500, #B36B00);">
-                            <ion-icon name="shield-checkmark-outline"></ion-icon>
-                        </span>
-                        Administrator
-                    </span>
-                    {% elif user.profile.user_type == 'govt' %}
-                    <a href="{% url 'dashboard' %}" class="btn-dashboard">Government Dashboard</a>
-                    <a href="{% url 'activity_feed' %}">Feed</a>
-                    <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                    <a href="{% url 'profile' %}" class="btn-profile-avatar">
-                        <span class="avatar-circle">
-                            {% if user.profile.profile_picture %}
-                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
-                            {% else %}
-                                {{ user.username|first|upper }}
-                            {% endif %}
-                        </span>
-                        My Profile
-                    </a>
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin_dashboard' %}" class="btn-dashboard">Admin Dashboard</a>
+                            <span class="btn-profile-avatar" style="cursor: default;">
+                                <span class="avatar-circle" style="background: linear-gradient(135deg, #FF9500, #B36B00);">
+                                    <ion-icon name="shield-checkmark-outline"></ion-icon>
+                                </span>
+                                Admin
+                            </span>
+                        {% else %}
+                            <!-- 1. Primary Action -->
+                            <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
+
+                            <!-- 2. User Dropdown (Contains Dashboard, Feed, Profile, Logout) -->
+                            <div class="user-dropdown" id="user-dropdown">
+                                <button class="user-dropdown-toggle" id="user-dropdown-toggle" type="button" aria-expanded="false">
+                                    <span class="avatar-circle">
+                                        {% if user.profile.profile_picture %}
+                                            <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
+                                        {% else %}
+                                            {{ user.username|first|upper }}
+                                        {% endif %}
+                                    </span>
+                                    <ion-icon name="chevron-down-outline"></ion-icon>
+                                </button>
+                                
+                                <div class="user-dropdown-menu">
+                                    <!-- Dashboard Link (Changes based on role) -->
+                                    {% if user.profile.user_type == 'govt' %}
+                                        <a href="{% url 'dashboard' %}">Government Dashboard</a>
+                                    {% else %}
+                                        <a href="{% url 'citizen_dashboard' %}">My Complaints</a>
+                                    {% endif %}
+                                    
+                                    <!-- Feed Link -->
+                                    {% if user.profile.user_type == 'citizen' or user.profile.user_type == 'govt' %}
+                                        <a href="{% url 'activity_feed' %}">Community Feed</a>
+                                    {% endif %}
+                                    
+                                    <a href="{% url 'profile' %}">My Profile</a>
+                                    
+                                    <div class="dropdown-divider"></div>
+                                    
+                                    <form action="{% url 'logout' %}" method="post" style="margin:0;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-danger">Logout</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
                     {% else %}
-                    <a href="{% url 'citizen_dashboard' %}" class="btn-dashboard">My Complaints</a>
-                    <a href="{% url 'report_complaint' %}" class="btn-report">Report Issue</a>
-                    <a href="{% url 'profile' %}" class="btn-profile-avatar">
-                        <span class="avatar-circle">
-                            {% if user.profile.profile_picture %}
-                                <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}">
-                            {% else %}
-                                {{ user.username|first|upper }}
-                            {% endif %}
-                        </span>
-                        My Profile
-                    </a>
-                    {% endif %}
-                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-logout">Logout</button>
-                    </form>
-                    {% else %}
-                    <a href="{% url 'login' %}" class="btn-login">Login</a>
-                    <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
+                        <a href="{% url 'login' %}" class="btn-login">Login</a>
+                        <a href="{% url 'signup' %}" class="btn-signup">Sign Up</a>
                     {% endif %}
                 </div>
             </div>
