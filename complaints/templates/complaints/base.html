@@ -858,12 +858,7 @@
             text-decoration: none;
         }
 
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
+        
 
         .card {
             background-color: #FFFFFF;
@@ -1595,7 +1590,7 @@
             /* 1. Constrain the width to match your 3-column footer */
             max-width: 1152px;
             margin: 2rem auto 0 auto;
-            padding: 1.5rem 1rem 0 1rem;
+            padding: 1.5rem 2rem 0 2rem;
             
             /* 2. Add the responsive padding you use elsewhere */
             @media (min-width: 640px) {
@@ -1644,10 +1639,12 @@
         }
 
         /* The R Logo Box */
-        /* The Logo Image */
+        /* 4. Force the image to be small and contained */
         .ray-dev-img {
-            height: 32px; /* Shrunk to match text size */
-            width: auto;
+            height: 32px !important; 
+            width: auto !important;
+            max-width: 32px;
+            object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             transition: var(--transition);
@@ -1655,14 +1652,14 @@
 
         .ray-dev-text {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.1rem; /* Smaller, sleeker */
+            font-size: 1.1rem; 
             font-weight: 800;
             color: var(--text-primary);
             letter-spacing: 0.5px;
         }
 
         .ray-dev-tagline {
-            font-size: 0.55rem; /* Very small */
+            font-size: 0.55rem; 
             letter-spacing: 2px;
             font-weight: 700;
             color: var(--text-muted);
@@ -1677,12 +1674,13 @@
             color: var(--brand-cyan);
         }
 
-        /* Mobile Responsiveness (Stacks neatly on small screens) */
+        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .footer-bottom {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
+                padding-top: 1.5rem;
             }
             
             .copyright-block {
@@ -1850,25 +1848,42 @@
             {% block header_navigation %}
             <div class="desktop-nav-wrap">
                 <nav class="desktop-nav">
-                    <!-- Removed Home, as the logo links to it -->
+                    <!-- Analytics is always visible -->
                     <a href="{% url 'analytics_dashboard' %}">Analytics</a>
-                    {% if not user.is_staff and user.is_authenticated and user.profile.user_type == 'citizen' %}
-                        <a href="{% url 'community_complaints' %}">Community</a>
-                    {% endif %}
 
-                    <div class="nav-more" id="nav-more">
-                        <button type="button" class="nav-more-toggle" id="nav-more-toggle">
-                            More <ion-icon name="chevron-down-outline" class="nav-more-caret"></ion-icon>
-                        </button>
-                        <div class="nav-more-dropdown">
-                            <a href="{% url 'about' %}">About Us</a>
-                            <a href="{% url 'contact' %}">Contact</a>
-                            {% if user.profile.verification_status == 'not_applicable' and not user.is_staff %}
-                                <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
-                            {% endif %}
+                    {% if user.is_authenticated %}
+                        <!-- ========================================== -->
+                        <!-- LOGGED IN: Show Community & "More" Dropdown -->
+                        <!-- ========================================== -->
+                        
+                        {% if not user.is_staff and user.profile.user_type == 'citizen' %}
+                            <a href="{% url 'community_complaints' %}">Community</a>
+                        {% endif %}
+
+                        <div class="nav-more" id="nav-more">
+                            <button type="button" class="nav-more-toggle" id="nav-more-toggle">
+                                More <ion-icon name="chevron-down-outline" class="nav-more-caret"></ion-icon>
+                            </button>
+                            <div class="nav-more-dropdown">
+                                <a href="{% url 'about' %}">About Us</a>
+                                <a href="{% url 'contact' %}">Contact</a>
+                                {% if user.profile.verification_status == 'not_applicable' and not user.is_staff %}
+                                    <a href="{% url 'apply_govt_official' %}">Become a Govt Official</a>
+                                {% endif %}
+                            </div>
                         </div>
-                    </div>
+
+                    {% else %}
+                        <!-- ========================================== -->
+                        <!-- GUEST (NOT LOGGED IN): Show normal links   -->
+                        <!-- ========================================== -->
+                        
+                        <a href="{% url 'about' %}">About Us</a>
+                        <a href="{% url 'contact' %}">Contact</a>
+                        
+                    {% endif %}
                 </nav>
+                
                 <div class="nav-buttons desktop-buttons">
                     {% if user.is_authenticated %}
                         {% if user.is_staff %}
@@ -2093,6 +2108,7 @@
 
         <!-- THE ARTIST'S SIGNATURE -->
             <!-- COMPACT ARTIST'S SIGNATURE -->
+                <!-- COMPACT ARTIST'S SIGNATURE -->
         <div class="footer-bottom">
             
             <!-- Left Side: Copyright -->
