@@ -1034,143 +1034,143 @@
             }
         }
 
-            /* Notification System Styles */
-            .notification-container {
-                position: relative;
-                display: inline-block;
-                margin-left: 10px;
-            }
+        /* Notification System Styles */
+        .notification-container {
+            position: relative;
+            display: inline-block;
+            margin-left: 10px;
+        }
 
-            .notification-btn {
-                background: var(--brand-cyan-glow);
-                border: 1px solid var(--brand-cyan);
-                color: var(--brand-cyan);
-                padding: 10px;
-                border-radius: 50%;
-                cursor: pointer;
-                position: relative;
-                transition: var(--transition);
-                min-width: 48px;
-                min-height: 48px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-            }
+        .notification-btn {
+            background: var(--brand-cyan-glow);
+            border: 1px solid var(--brand-cyan);
+            color: var(--brand-cyan);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            min-width: 48px;
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-            .notification-btn:hover {
-                background: var(--brand-cyan);
-                color: #FFFFFF;
-            }
+        .notification-btn:hover {
+            background: var(--brand-cyan);
+            color: #FFFFFF;
+        }
 
-            .bell-icon {
-                font-size: 20px;
-                color: var(--brand-cyan);
-            }
+        .bell-icon {
+            font-size: 20px;
+            color: var(--brand-cyan);
+        }
 
-            .notification-btn:hover .bell-icon {
-                color: #FFFFFF;
-            }
+        .notification-btn:hover .bell-icon {
+            color: #FFFFFF;
+        }
 
-            .notification-badge {
-                position: absolute;
-                top: -5px;
-                right: -5px;
-                background: var(--error-red);
-                color: #FFFFFF;
-                border-radius: 50%;
-                padding: 2px 6px;
-                font-size: 12px;
-                font-weight: bold;
-                min-width: 18px;
-                text-align: center;
-                font-weight: 700;
-            }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error-red);
+            color: #FFFFFF;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 18px;
+            text-align: center;
+            font-weight: 700;
+        }
 
         /* ============================================================
            PHASE 5 — NOTIFICATION DROPDOWN RESTYLE
            Applies glass-card treatment to the dropdown.
            ============================================================ */
-            .notification-dropdown {
-                position: absolute;
-                top: 100%;
-                right: 0;
-                background: var(--glass);
-                border: 1px solid var(--glass-border);
-                border-radius: var(--radius-lg);
-                width: 360px;
-                max-height: 420px;
-                z-index: 1202;
-                box-shadow: var(--shadow-lg);
-                -webkit-backdrop-filter: blur(16px);
-                backdrop-filter: blur(16px);
-                overflow: hidden;
-            }
+        .notification-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            width: 360px;
+            max-height: 420px;
+            z-index: 1202;
+            box-shadow: var(--shadow-lg);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            overflow: hidden;
+        }
 
-            .notification-header {
-                padding: 16px 18px;
-                border-bottom: 1px solid var(--border-dim);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                background: rgba(255,255,255,0.4);
-            }
+        .notification-header {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border-dim);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.4);
+        }
 
-            .notification-header h4 {
-                margin: 0;
-                color: var(--brand-cyan);
-            }
+        .notification-header h4 {
+            margin: 0;
+            color: var(--brand-cyan);
+        }
 
-            .mark-all-read-btn {
-                background: var(--brand-cyan);
-                color: #FFFFFF;
-                border: none;
-                padding: 5px 10px;
-                border-radius: 15px;
-                cursor: pointer;
-                font-size: 12px;
-                transition: 0.2s;
-            }
-            .mark-all-read-btn:hover {
-                background: var(--brand-cyan-deep);
-            }
+        .mark-all-read-btn {
+            background: var(--brand-cyan);
+            color: #FFFFFF;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }   
+        .mark-all-read-btn:hover {
+            background: var(--brand-cyan-deep);
+        }
 
-            .notification-list {
-                max-height: 300px;
-                overflow-y: auto;
-                background: rgba(255,255,255,0.6);
-            }
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.6);
+        }
 
-            .notification-item {
-                padding: 14px 16px;
-                border-bottom: 1px solid var(--border-dim);
-                cursor: pointer;
-                transition: var(--transition);
-                background: transparent;
-                color: var(--text-primary);
-            }
+        .notification-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-dim);
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            color: var(--text-primary);
+        }
 
-            .notification-item:hover {
-                background: rgba(255,255,255,0.4);
-            }
+        .notification-item:hover {
+            background: rgba(255,255,255,0.4);
+        }
 
-            .notification-item.unread {
-                background: var(--brand-cyan-glow);
-                border-left: 3px solid var(--brand-cyan);
-            }
+        .notification-item.unread {
+            background: var(--brand-cyan-glow);
+            border-left: 3px solid var(--brand-cyan);
+        }
         
 
-            .notification-item .title {
-                font-weight: 600;
-                color: var(--text-primary);
-                margin-bottom: 5px;
-            }
+        .notification-item .title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
 
-            .notification-item .message {
-                font-size: 14px;
-                color: var(--text-secondary);
-                margin-bottom: 6px;
-                line-height: 1.4;
-            }
+        .notification-item .message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
 
         .notification-item .time {
             font-size: 12px;
