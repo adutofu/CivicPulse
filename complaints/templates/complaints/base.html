@@ -1634,19 +1634,11 @@
         }
 
         /* The R Logo Box */
-        .ray-dev-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            background: var(--brand-cyan);
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+        .ray-dev-img {
+            height: 40px; /* Adjust this if you want it bigger or smaller */
+            width: auto;
+            border-radius: 10px; /* Gives it that nice rounded square look */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow to make it pop */
             transition: var(--transition);
         }
 
@@ -1666,9 +1658,9 @@
         }
 
         /* Hover Effects */
-        .ray-dev-link:hover .ray-dev-logo {
-            background: var(--brand-cyan-deep);
-            transform: rotate(-8deg) scale(1.1); /* Playful tilt */
+        .ray-dev-link:hover .ray-dev-img {
+            transform: rotate(-5deg) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 122, 255, 0.3); /* Blue glow on hover */
         }
 
         .ray-dev-link:hover .ray-dev-text {
