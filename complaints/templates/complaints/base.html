@@ -1587,6 +1587,121 @@
             height: 100%;
         }
 
+        /* =========================================
+        ARTIST SIGNATURE (RAY-DEV)
+        ========================================= */
+
+        .footer-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            gap: 2rem; /* Space between signature and copyright */
+        }
+
+        .signature-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 1.5rem 2rem;
+            background: rgba(21, 101, 255, 0.03); /* Very subtle blue tint */
+            border: 1px solid rgba(21, 101, 255, 0.1);
+            border-radius: 16px;
+            transition: var(--transition);
+        }
+
+        .signature-block:hover {
+            background: rgba(21, 101, 255, 0.05);
+            border-color: rgba(21, 101, 255, 0.2);
+        }
+
+        .credit-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .ray-dev-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            margin: 0.2rem 0;
+        }
+
+        /* The R Logo Box */
+        .ray-dev-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--brand-cyan);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+            transition: var(--transition);
+        }
+
+        .ray-dev-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+
+        .ray-dev-tagline {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            font-weight: 700;
+            color: var(--brand-cyan);
+        }
+
+        /* Hover Effects */
+        .ray-dev-link:hover .ray-dev-logo {
+            background: var(--brand-cyan-deep);
+            transform: rotate(-8deg) scale(1.1); /* Playful tilt */
+        }
+
+        .ray-dev-link:hover .ray-dev-text {
+            color: var(--brand-cyan);
+        }
+
+        /* Copyright Text */
+        .copyright-block {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .copyright-block p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .copyright-block .built-by a,
+        .copyright-block a {
+            color: var(--brand-cyan);
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .copyright-block a:hover {
+            color: var(--brand-cyan-deep);
+            text-decoration: underline;
+        }
+
     </style>
 
     <!-- Extra CSS from child pages -->
